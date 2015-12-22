@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--<bean id="commonPayFactory" class="com.wetrack.wechat.deprecated.pay.factory.CommonPayFactory">-->
+        <!--&lt;!&ndash;<property name="alipay">-->
+            <!--<bean class="com.wetrack.ikongtiao.wechat.pay.impl.Alipay">-->
+                <!--<property name="alipayConfigMap" ref="alipayConfigMap" />-->
+            <!--</bean>-->
+        <!--</property>&ndash;&gt;-->
+        <!--<property name="wechatPay">-->
+            <!--<bean class="com.wetrack.wechat.deprecated.pay.impl.WechatPay">-->
+                <!--<property name="wechatPayConfig" ref="wechatConfig"/>-->
+            <!--</bean>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--<bean id="wechatConfig" class="com.wetrack.wechat.deprecated.pay.config.WechatPayConfig">-->
+        <!--<property name="appId" value="${pay.wechatpay.app_id}"/>-->
+        <!--<property name="appSecret" value="${pay.wechatpay.app_secret}"/>-->
+        <!--<property name="partner" value="${pay.wechatpay.partner}"/>-->
+        <!--<property name="partnerKey" value="${pay.wechatpay.partner_key}"/>-->
+        <!--<property name="targetUrl" value="${pay.wechatpay.target_url}"/>-->
+        <!--<property name="payNotifyUrl" value="${pay.wechatpay.pay.notify.url}"/>-->
+        <!--<property name="refundNotifyUrl" value="${pay.wechatpay.refund.notify.url}"/>-->
+        <!--<property name="certFile" value="${pay.wechatpay.cert}"/>-->
+        <!--<property name="caCertFile" value="${pay.wechatpay.cacert}"/>-->
+        <!--<property name="caJksFile" value="${pay.wechatpay.ca_jks_file}"/>-->
+        <!--<property name="caJksAlias" value="${pay.wechatpay.ca_jks_alias}"/>-->
+    <!--</bean>-->
+    <!--<bean id="alipayConfig" class="com.wetrack.ikongtiao.wechat.pay.config.AlipayConfig">
+        <property name="partnerId" value="${pay.alipay.partner_id.2}" />
+        <property name="sellerId" value="${pay.alipay.seller_id.2}" />
+        <property name="privateKey" value="${pay.alipay.private_key.2}" />
+        <property name="md5Key" value="${pay.alipay.md5_key.2}" />
+        <property name="payNotifyUrl" value="${pay.alipay.pay.notify.url.2}" />
+        <property name="refundNotifyUrl" value="${pay.alipay.refund.notify.url.2}" />
+    </bean>-->
+
+
+    <!--<bean id="proxyPayFactory" class="com.wetrack.ikongtiao.wechat.pay.factory.ProxyPayFactory">
+        <property name="tenProxyPay">
+            <bean class="com.wetrack.ikongtiao.wechat.pay.impl.TenProxyPay">
+                <property name="tenProxyPayConfig" ref="tenProxyPayConfig" />
+            </bean>
+        </property>
+    </bean>
+    <bean id="tenProxyPayConfig" class="com.wetrack.ikongtiao.wechat.pay.config.TenProxyPayConfig">
+        <property name="opUser" value="${pay.tenpay.op_user}"/>
+        <property name="opPasswd" value="${pay.tenpay.op_passwd}"/>
+        <property name="spId" value="${pay.tenpay.sp_id}"/>
+        <property name="certFile" value="${pay.tenpay.cert}"/>
+        <property name="certPwd" value="${pay.tenpay.cert_pwd}"/>
+        <property name="caCertFile" value="${pay.tenpay.cacert}" />
+        <property name="caJksFile" value="${pay.tenpay.ca_jks_file}"/>
+        <property name="caJksAlias" value="${pay.tenpay.ca_jks_alias}" />
+        <property name="md5Key" value="${pay.tenpay.md5_key}" />
+    </bean>-->
+
+</beans>

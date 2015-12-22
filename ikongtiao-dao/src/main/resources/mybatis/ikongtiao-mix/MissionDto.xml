@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.dto.MissionDto" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.dto.MissionDto" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />
+    <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
+    <result column="mission_state" property="missionState" jdbcType="TINYINT" />
+    <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
+    <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <!--<result column="mission_address_id" property="missionAddressId" jdbcType="INTEGER" />
+    <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />-->
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, machine_type_id, mission_desc, mission_state, is_need_more, fixer_id,
+    admin_user_id, mission_address_id, operator, create_time, update_time
+  </sql>
+  <select id="listMissionByAppQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+    select
+    <include refid="Base_Column_List" />
+    from mission
+    <where>
+      <if test="userId!=null">
+        and user_id = #{userId,jdbcType=VARCHAR}
+      </if>
+      <if test="type==0">
+        and  mission_state &lt; 10
+      </if>
+    </where>
+    order by create_time desc limit #{start},#{pageSize}
+  </select>
+
+  <select id="countMissionByAppQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+    select
+    count(*) as totalSize
+    from mission
+    <where>
+      <if test="userId!=null">
+        and user_id = #{userId,jdbcType=VARCHAR}
+      </if>
+      <if test="type==0">
+        and mission_state &lt; 10
+      </if>
+    </where>
+  </select>
+</mapper>

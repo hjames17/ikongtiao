@@ -1,0 +1,5 @@
+java -jar /Users/zhangsong/work/ikongtiao/ikongtiao-tool/src/test/tool/mybatis-generator-core-1.3.2.jar -configfile /Users/zhangsong/work/ikongtiao/ikongtiao-tool/src/test/tool/generator.xml -overwrite -verbose
+
+scp /Users/zhangsong/work/ikongtiao/ikongtiao-web/target/ikongtiao-web-1.0.0-SNAPSHOT.war root@test.weiwaisong.com:/data/www/ikongtiao
+
+pwd testWeiwais0ng

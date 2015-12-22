@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<classPathEntry
+		location="/Users/zhangsong/work/.m2/repository/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar" />
+
+	<context id="MySQLTables" targetRuntime="MyBatis3">
+		<!--去除注释 （true好像不起作用） -->
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>
+		<plugin type="org.mybatis.generator.plugins.ToStringPlugin"></plugin>
+		<commentGenerator>
+			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://test.weiwaisong.com:3306/ikongtiao" userId="wechat"
+			password="123">
+		</jdbcConnection>
+
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<javaModelGenerator
+			targetPackage="com.wetrack.ikongtiao.domain"
+			targetProject="/Users/zhangsong/work/study/temp/">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<sqlMapGenerator targetPackage="xml"
+			targetProject="/Users/zhangsong/work/study/temp/">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+
+
+		<table tableName="address" domainObjectName="Address"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<table tableName="fixer" domainObjectName="Fixer"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<!--<table tableName="micro_code" domainObjectName="MicroCode"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>-->
+
+		<table tableName="mission" domainObjectName="Mission"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<table tableName="mission_address" domainObjectName="MissionAddress"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<table tableName="mission_img" domainObjectName="MissionImg"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<table tableName="payment_info" domainObjectName="PaymentInfo"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<table tableName="repair_order" domainObjectName="RepairOrder"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+
+		<!--<table tableName="system_param" domainObjectName="SystemParam"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>-->
+
+		<table tableName="user_auth_action" domainObjectName="UserAuthAction"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+
+		<table tableName="user_info" domainObjectName="UserInfo"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+		<!--<table tableName="machine_type" domainObjectName="MachineType"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>-->
+
+	</context>
+</generatorConfiguration>

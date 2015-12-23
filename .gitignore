@@ -6,3 +6,7 @@
 target/
 .idea/
 .settings/
+.DS_Store
+rebel-remote.xml
+rebel.xml
+.classpath

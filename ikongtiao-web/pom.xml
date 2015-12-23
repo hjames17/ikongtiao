@@ -19,6 +19,7 @@
     </dependencies>
 
     <build>
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -35,6 +36,12 @@
                     <url>http://api.ikongtiao.wetrack.studio:8080/manager/text</url>
                     <server>RemoteTomcatServer</server>
                     <path>/</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>ROOT</warName>
                 </configuration>
             </plugin>
         </plugins>

@@ -10,7 +10,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>base-core</name>
-    <url>http://www.leixias.com</url>
+    <url>http://www..com</url>
     <properties>
         <build.test.skip>true</build.test.skip>
     </properties>

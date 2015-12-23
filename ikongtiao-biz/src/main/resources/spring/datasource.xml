@@ -25,9 +25,9 @@
 	</bean>
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		  parent="dataSourceConfig" destroy-method="close">
-		<property name="jdbcUrl" value="${jdbc.zhou.url}" />
-		<property name="user" value="${jdbc.zhou.user}" />
-		<property name="password" value="${jdbc.zhou.password}" />
+		<property name="jdbcUrl" value="${jdbc.wetrack.url}" />
+		<property name="user" value="${jdbc.wetrack.user}" />
+		<property name="password" value="${jdbc.wetrack.password}" />
 	</bean>
 	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" >
 		<property name="dataSource">

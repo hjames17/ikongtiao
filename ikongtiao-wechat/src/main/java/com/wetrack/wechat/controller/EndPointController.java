@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class EndPointController {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(EndPointController.class);
 
     private static final String WEIXIN = "/";
 

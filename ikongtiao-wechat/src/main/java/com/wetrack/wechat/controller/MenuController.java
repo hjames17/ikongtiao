@@ -14,17 +14,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 
 /**
  * Created by zhanghong on 15/12/14.
  */
 @Controller
-public class ApiController {
+public class MenuController {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger log = LoggerFactory.getLogger(MenuController.class);
 
     @Autowired
     protected WxMpConfigStorage weixinConfigStorage;
@@ -33,8 +31,10 @@ public class ApiController {
     @Autowired
     protected WxMpMessageRouter wexinMessageRouter;
 
-    @RequestMapping(value = "/menu/create" , method = {RequestMethod.POST, RequestMethod.GET})
-    public AjaxResult<String> weixinMessage(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    static final String BASE_PATH = "/menu";
+
+    @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST, RequestMethod.GET})
+    public AjaxResult<String> create() throws Exception{
         AjaxResult<String> result = new AjaxResult<String>();
 //      InputStream is = ClassLoader.getSystemResourceAsStream("classpath:/menu.json");
         Resource resource = ContainerContext.get().getContext().getResource("classpath:/menu.json");
@@ -44,5 +44,6 @@ public class ApiController {
         result.setMessage("菜单创建完成: ");
         return result;
     }
+
 
 }

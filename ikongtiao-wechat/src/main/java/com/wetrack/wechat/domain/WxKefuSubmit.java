@@ -1,19 +1,28 @@
 package com.wetrack.wechat.domain;
 
+import me.chanjar.weixin.common.util.json.WxGsonBuilder;
+
 import java.io.Serializable;
 
 /**
  * Created by zhanghong on 15/12/23.
- * !!!!!!该数据结构不可持久化，因为创建客服账号需要设置密码，该密码是明文
+ * 创建，修改和删除客服账号的时候提交的数据结构
+ * 微信接口：
+ * https://api.weixin.qq.com/customservice/kfaccount/add
+ * https://api.weixin.qq.com/customservice/kfaccount/update
+ * https://api.weixin.qq.com/customservice/kfaccount/del
+ *
  */
-public class WxKefu implements Serializable {
+public class WxKefuSubmit implements Serializable {
 
     //格式: 名称@微信号
     String kf_account;
     String nickname;
     String password;
-    String kf_headimgurl;
 
+    public String toJson() {
+        return WxGsonBuilder.create().toJson(this);
+    }
 
 
     public String getKf_account() {
@@ -38,13 +47,5 @@ public class WxKefu implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getKf_headimgurl() {
-        return kf_headimgurl;
-    }
-
-    public void setKf_headimgurl(String kf_headimgurl) {
-        this.kf_headimgurl = kf_headimgurl;
     }
 }

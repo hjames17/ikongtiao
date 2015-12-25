@@ -32,7 +32,7 @@ public class CrossDomainFilter extends OncePerRequestFilter {
 		response.addHeader("Access-Control-Allow-Methods",
 				"GET, POST, PUT, DELETE, OPTIONS");
 		response.addHeader("Access-Control-Allow-Headers",
-				"origin, content-type, accept, x-requested-with");
+				"origin, content-type, accept, x-requested-with, customerId, token");
 		response.addHeader("Access-Control-Max-Age", "1800");// 30 min
 		filterChain.doFilter(request, response);
 	}

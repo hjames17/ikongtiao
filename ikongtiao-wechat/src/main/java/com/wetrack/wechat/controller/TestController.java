@@ -1,29 +1,25 @@
 package com.wetrack.wechat.controller;
 
 import com.wetrack.auth.filter.AjaxResponseWrapper;
-import com.wetrack.base.container.ContainerContext;
 import com.wetrack.ikongtiao.domain.admin.User;
-import me.chanjar.weixin.common.bean.WxMenu;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.io.InputStream;
 
 /**
  * Created by zhanghong on 15/12/14.
  */
 @Controller
-public class MenuController {
+@AjaxResponseWrapper
+public class TestController {
 
-    private static final Logger log = LoggerFactory.getLogger(MenuController.class);
+    private static final Logger log = LoggerFactory.getLogger(TestController.class);
 
     @Autowired
     protected WxMpConfigStorage weixinConfigStorage;
@@ -34,21 +30,22 @@ public class MenuController {
 
     static final String BASE_PATH = "/menu";
 
-    @AjaxResponseWrapper
-    @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String create() throws Exception{
-//        AjaxResult<String> result = new AjaxResult<String>();
-//      InputStream is = ClassLoader.getSystemResourceAsStream("classpath:/menu.json");
-        Resource resource = ContainerContext.get().getContext().getResource("classpath:/menu.json");
-        InputStream is = resource.getInputStream();
-        WxMenu menu = WxMenu.fromJson(is);
-        weixinService.menuCreate(menu);
-//        result.setData("菜单创建完成: ");
-//        return result;
+    @RequestMapping(value = BASE_PATH + "/test" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String test() throws Exception{
         return "菜单创建完成";
     }
 
+    @RequestMapping(value = BASE_PATH + "/user" , method = {RequestMethod.POST, RequestMethod.GET})
+    public User testUser() throws Exception{
+        User u = new User();
+        u.setEmail("a@b.c");
+        return u;
+    }
 
+    @RequestMapping(value = BASE_PATH + "/ex" , method = {RequestMethod.POST, RequestMethod.GET})
+    public User testEx() throws Exception{
+        throw new Exception("跑了跑了！");
+    }
 
 
 }

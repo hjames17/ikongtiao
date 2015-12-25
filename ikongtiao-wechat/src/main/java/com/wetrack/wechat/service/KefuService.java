@@ -1,6 +1,6 @@
 package com.wetrack.wechat.service;
 
-import com.wetrack.wechat.domain.WxKefu;
+import com.wetrack.wechat.domain.WxKefuOut;
 import me.chanjar.weixin.common.exception.WxErrorException;
 
 import java.io.File;
@@ -11,13 +11,15 @@ import java.util.List;
  */
 public interface KefuService {
 
-    void createAccount(WxKefu wxKefu) throws WxErrorException;
+    String createOneAccountName() throws Exception;
 
-    void modifyAccount(WxKefu wxKefu) throws WxErrorException;
+    void createAccount(String kf_account, String nickname, String password) throws WxErrorException;
 
-    void deleteAccount(WxKefu wxKefu) throws WxErrorException;
+    void modifyAccount(String kf_account, String nickname, String password) throws WxErrorException;
 
-    void setAvatar(WxKefu wxKefu, File avatorFile) throws WxErrorException;
+    void deleteAccount(String kf_account, String nickname) throws WxErrorException;
 
-    List<WxKefu> listAccounts() throws WxErrorException;
+    void setAvatar(String kf_account, File avatarFile) throws WxErrorException;
+
+    List<WxKefuOut> listAccounts() throws WxErrorException;
 }

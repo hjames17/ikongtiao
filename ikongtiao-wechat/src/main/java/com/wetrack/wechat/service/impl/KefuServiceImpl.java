@@ -43,7 +43,7 @@ public class KefuServiceImpl implements KefuService{
     public String createOneAccountName() throws Exception {
         CommonDao commonDao = (CommonDao) ContainerContext.get().getContext().getBean("commonDao");
         long id = commonDao.mapper(Sequence.class).sql("getNextVal").session().selectOne(KEFU_ACCOUNT_SEQUENCE);
-        return id + "@" + weixinId;
+        return "kf" + id + "@" + weixinId;
     }
 
     @Override

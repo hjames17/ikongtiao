@@ -2,7 +2,6 @@ package com.wetrack.wechat.controller;
 
 import com.wetrack.auth.filter.AjaxResponseWrapper;
 import com.wetrack.base.container.ContainerContext;
-import com.wetrack.ikongtiao.domain.admin.User;
 import me.chanjar.weixin.common.bean.WxMenu;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
@@ -37,14 +36,10 @@ public class MenuController {
     @AjaxResponseWrapper
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST, RequestMethod.GET})
     public String create() throws Exception{
-//        AjaxResult<String> result = new AjaxResult<String>();
-//      InputStream is = ClassLoader.getSystemResourceAsStream("classpath:/menu.json");
         Resource resource = ContainerContext.get().getContext().getResource("classpath:/menu.json");
         InputStream is = resource.getInputStream();
         WxMenu menu = WxMenu.fromJson(is);
         weixinService.menuCreate(menu);
-//        result.setData("菜单创建完成: ");
-//        return result;
         return "菜单创建完成";
     }
 

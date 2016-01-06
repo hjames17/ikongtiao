@@ -24,4 +24,8 @@ public interface MissionService {
 	 */
 	PageList<MissionDto> listMissionByAppQueryParam(AppMissionQueryParam param);
 
+	void acceptMission(Integer missionId, Integer adminUserId) throws Exception;
+	void denyMission(Integer missionId, Integer adminUser, String reason) throws Exception;
+	void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception;
+	void submitMissionDescription(Integer missionId, String description) throws Exception;
 }

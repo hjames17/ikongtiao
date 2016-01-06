@@ -37,4 +37,6 @@ public interface MissionRepo {
 	int countMissionByAppQueryParam(AppMissionQueryParam param);
 
 
+	int deleteMission(Integer missionId) throws Exception;
+
 }

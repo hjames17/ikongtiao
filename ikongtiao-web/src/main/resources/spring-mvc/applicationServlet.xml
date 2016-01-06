@@ -12,6 +12,17 @@
 	http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd
 	">
+    <bean id="containerConfProperty"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <!-- 是否忽略不可解析的 -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <!-- 多个locations， 单个location <value> -->
+        <property name="locations">
+            <list>
+                <value>classpath*:/conf/*.conf</value>
+            </list>
+        </property>
+    </bean>
     <context:component-scan base-package="com.wetrack.ikongtiao.web.controller"/>
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
           p:defaultEncoding="UTF-8"></bean>

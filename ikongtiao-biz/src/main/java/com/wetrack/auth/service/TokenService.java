@@ -23,15 +23,25 @@ public class TokenService {
     TokenStorageService tokenStorageService;
 
     public Token login(User user){
-        String tokenString = UUIDGenerator.generate().toUpperCase();
-        Token token = new Token(tokenString, user);
-        addToken(token);
-        return token;
+        return doLogin(user);
     }
 
     public Token login(String id, String password){
+        return doLogin(new User(id, password, User.ROLE_FULL));
+    }
+
+    private Token doLogin(User user){
+        //found one valid token for this user
+        Collection<Token> tokens = tokenStorageService.findAllByUserId(user.getId());
+        if(tokens != null){
+            for(Token token : tokens){
+                if(!token.isExpired() && !token.isLoggedout()){
+                    return token;
+                }
+            }
+        }
+        //otherwise, create one
         String tokenString = UUIDGenerator.generate().toUpperCase();
-        User user = new User(id, password, User.ROLE_FULL);
         Token token = new Token(tokenString, user);
         addToken(token);
         return token;

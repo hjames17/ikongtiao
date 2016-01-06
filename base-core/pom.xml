@@ -43,6 +43,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+        <dependency>
             <!--  https://github.com/mybatis/mybatis-3/releases  -->
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>

@@ -3,11 +3,12 @@ package com.wetrack.base.utils.encrypt;
 /**
  * Created by zhangsong on 15/8/14.
  */
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class MD5 {
     private static Log log = LogFactory.getLog(MD5.class);
@@ -46,5 +47,9 @@ public class MD5 {
             log.error("No such Algorithm in digest");
             return new byte[0];
         }
+    }
+
+    public static void main(String[] args){
+        System.out.println(MD5.encryptHex("ikongtiao"));
     }
 }

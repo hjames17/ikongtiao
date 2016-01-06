@@ -5,6 +5,8 @@ package com.wetrack.ikongtiao.domain.admin;
  */
 public class User {
 
+    String id;
+
     String email;
 
     String phone;

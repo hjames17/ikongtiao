@@ -139,8 +139,8 @@ public class Jackson {
 			// 对于值为空的属性不生成
 			mapper.setSerializationInclusion(Include.NON_NULL);
 			mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-			// 去除属性名称的双引号
-			mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+			// 属性名称加双引号
+			mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, true);
 			// 设置全局动态字段包含过滤器
 			mapper.addMixInAnnotations(Object.class, DynamicFieldFilterProvider.class);
 			mapper.setFilters(new DynamicFieldFilterProvider(null, null));

@@ -59,6 +59,7 @@ public class Mission implements Serializable {
     /**
      * operator:操作人
      */
+    @Deprecated
     private String operator;
 
     /**

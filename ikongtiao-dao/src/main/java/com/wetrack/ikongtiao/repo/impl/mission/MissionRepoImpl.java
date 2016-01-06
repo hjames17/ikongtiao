@@ -43,4 +43,9 @@ public class MissionRepoImpl implements MissionRepo {
 		Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
 		return count == null ? 0 : count;
 	}
+
+	@Override
+	public int deleteMission(Integer missionId) throws Exception {
+		return commonDao.mapper(Mission.class).sql("deleteByPrimaryKey").session().delete(missionId);
+	}
 }

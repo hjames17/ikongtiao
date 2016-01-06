@@ -88,5 +88,6 @@
         <module>../ikongtiao-wechat</module>
         <module>../ikongtiao-biz</module>
         <module>../ikongtiao-web</module>
+        <module>../ikongtiao-adminweb</module>
     </modules>
 </project>

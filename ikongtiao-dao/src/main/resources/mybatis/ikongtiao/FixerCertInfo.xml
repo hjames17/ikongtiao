@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.fixer.FixerCertInfo" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.fixer.FixerCertInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
+    <result column="id_num" property="idNum" jdbcType="VARCHAR" />
+    <result column="id_with_face_img" property="idWithFaceImg" jdbcType="VARCHAR" />
+    <result column="id_img_front" property="idImgFront" jdbcType="VARCHAR" />
+    <result column="id_img_back" property="idImgBack" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="check_state" property="checkState" jdbcType="TINYINT" />
+    <result column="check_time" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="deny_reason" property="denyReason" jdbcType="VARCHAR" />
+    <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, fixer_id, id_num, id_with_face_img, id_img_front, id_img_back, create_time, check_state, check_time,
+    deny_reason, admin_user_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from fixer_cert_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from fixer_cert_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.fixer.FixerCertInfo" >
+    <!--<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >-->
+      <!--SELECT LAST_INSERT_ID()-->
+    <!--</selectKey>-->
+    insert into fixer_cert_info (id, fixer_id, id_num, id_with_face_img, id_img_front, id_img_back, check_state)
+      values (#{id,jdbcType=INTEGER}, #{fixerId,jdbcType=INTEGER}, #{idNum,jdbcType=VARCHAR}, #{idWithFaceImg,jdbcType=VARCHAR},
+    #{idImgFront,jdbcType=VARCHAR}, #{idImgBack,jdbcType=VARCHAR}, #{checkState,jdbcType=TINYINT})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.fixer.FixerCertInfo" >
+    update fixer_cert_info
+    <set >
+      <if test="fixer_id != null" >
+        fixer_id = #{fixerId,jdbcType=INTEGER},
+      </if>
+      <if test="id_num != null" >
+        id_num = #{idNum,jdbcType=VARCHAR},
+      </if>
+      <if test="id_with_face_img != null" >
+        id_with_face_img = #{idWithFaceImg,jdbcType=VARCHAR},
+      </if>
+      <if test="id_img_front != null" >
+        id_img_front = #{idImgFront,jdbcType=VARCHAR},
+      </if>
+      <if test="id_img_back != null" >
+        id_img_back = #{idImgBack,jdbcType=VARCHAR},
+      </if>
+      <if test="check_state != null" >
+        check_state = #{checkState,jdbcType=TINYINT},
+      </if>
+      <if test="check_time != null" >
+        check_time = #{checkTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deny_reason != null" >
+        deny_reason = #{denyReason,jdbcType=VARCHAR},
+      </if>
+      <if test="admin_user_id != null" >
+        admin_user_id = #{adminUserId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectLatestForFixer" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select <include refid="Base_Column_List" />
+    from fixer_cert_info
+    where fixer_id = #{id,jdbcType=INTEGER}
+    ORDER BY create_time DESC
+    limit 1
+  </select>
+  <insert id="insertFull" parameterType="com.wetrack.ikongtiao.domain.fixer.FixerCertInfo" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fixer_cert_info (fixer_id, id_num, id_with_face_img, id_img_front, id_img_back
+    , create_time, check_state, check_time,
+    deny_reason, admin_user_id)
+    values (#{fixerId,jdbcType=INTEGER}, #{idNum,jdbcType=VARCHAR}, #{idWithFaceImg,jdbcType=VARCHAR},
+    #{idImgFront,jdbcType=VARCHAR}, #{idImgBack,jdbcType=VARCHAR},  #{createTime,jdbcType=TIMESTAMP},
+    #{checkState,jdbcType=TINYINT}, #{checkTime,jdbcType=TIMESTAMP},
+    #{denyReason,jdbcType=VARCHAR}, #{adminUserId,jdbcType=INTEGER})
+  </insert>
+</mapper>

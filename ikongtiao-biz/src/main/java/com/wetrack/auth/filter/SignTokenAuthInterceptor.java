@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SignTokenAuthInterceptor extends HandlerInterceptorAdapter{
 
-    private static final String HEADER_CUSTOMER_ID = "customerId";
+//    private static final String HEADER_CUSTOMER_ID = "customerId";
     public static final String HEADER_CUSTOMER_TOKEN = "token";
 
     @Autowired
@@ -32,13 +32,16 @@ public class SignTokenAuthInterceptor extends HandlerInterceptorAdapter{
         if (!(handler instanceof HandlerMethod)) {// 可能处理的是静态资源。无需登录检测
             return true;
         }
+
+        boolean shouldToken = false;// 是否需要Token验证
+
         // 获取是否需要签名及Token验证的标注信息
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         SignTokenAuth signTokenAuth = handlerMethod.getMethodAnnotation(SignTokenAuth.class);// 从方法中获取
         if (signTokenAuth == null) {// 从类定义中获取
             signTokenAuth = handlerMethod.getBeanType().getAnnotation(SignTokenAuth.class);
         }
-        boolean shouldToken = true;// 是否需要Token验证
+
         if (signTokenAuth != null) {
             shouldToken = signTokenAuth.token();
         }
@@ -50,6 +53,8 @@ public class SignTokenAuthInterceptor extends HandlerInterceptorAdapter{
             Token token = tokenService.findByTokenString(tokenString);
             if (token == null ) {// 请求头中必须包含token信息
                 throw new TokenAuthorizationException("token无效");
+            }else{
+                request.setAttribute("user", token.getUser());
             }
             if(signTokenAuth != null) {
                 String role = signTokenAuth.roleNameRequired();

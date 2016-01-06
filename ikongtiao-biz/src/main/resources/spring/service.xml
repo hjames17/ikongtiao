@@ -2,28 +2,31 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:cache="http://www.springframework.org/schema/cache" xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/cache
     http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
 	http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context.xsd">
+	http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
     <!-- 对包中的所有类进行扫描类上的注解，以完成Bean创建和自动依赖注入的功能 需要更改 -->
     <!--<context:component-scan base-package="com.wetrack.ikongtiao"/>-->
     <!--<context:component-scan base-package="com.wetrack.wechat"/>-->
-    <context:component-scan base-package="com.wetrack"/>
-    <bean id="containerConfProperty"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <!-- 是否忽略不可解析的 -->
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <!-- 多个locations， 单个location <value> -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
+                <!-- 这里支持多种寻址方式：classpath和file -->
+                <!--<value>classpath:/conf/weixin.properties</value>-->
+                <!--<value>classpath:/conf/redis.conf</value>-->
                 <value>classpath*:/conf/*.conf</value>
+                <!-- 推荐使用file的方式引入，这样可以将配置和代码分离 -->
+                <!--<value>file:/opt/demo/config.properties/demo-mq.properties</value>-->
             </list>
         </property>
     </bean>
+    <context:component-scan base-package="com.wetrack"/>
+    <mvc:annotation-driven />
+
 
     <cache:annotation-driven cache-manager="cacheManager" />
     <!-- Spring自己的基于java.util.concurrent.ConcurrentHashMap实现的缓存管理器(该功能是从Spring3.1开始提供的) -->
@@ -35,4 +38,10 @@
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
         <property name="cacheManager" ref="cacheManagerFactory" />
     </bean>
+
+    <mvc:interceptors>
+        <!--ajax response wrapper的包装拦截器， 和@AjaxResponseWrapper结合使用，目前只支持启用  <mvc:annotation-driven/> 的mvc配置-->
+        <bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>
+        <bean class="com.wetrack.auth.filter.SignTokenAuthInterceptor"></bean>
+    </mvc:interceptors>
 </beans>

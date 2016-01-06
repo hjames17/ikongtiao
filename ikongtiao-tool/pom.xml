@@ -62,6 +62,11 @@
             <optional>true</optional>
             <scope>${xia.build.libScope}</scope>
         </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+        </dependency>
         <!-- soa 暂时不需要可以关闭以后可以开启-->
         <!--<dependency>
             <groupId>com.alibaba</groupId>

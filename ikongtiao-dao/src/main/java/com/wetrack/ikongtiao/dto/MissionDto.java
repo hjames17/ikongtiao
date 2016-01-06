@@ -64,6 +64,7 @@ public class MissionDto {
 
 	/**
 	 * img:机器图片地址
+	 * TODO : 图片应该有多张
 	 */
 	private String machineImg;
 
@@ -71,6 +72,21 @@ public class MissionDto {
 	 * remark:机器描述
 	 */
 	private String machineRemark;
+
+
+	Integer missionAddressId;
+
+	Integer adminUserId;
+
+	/**
+	 * operator:操作人
+	 */
+	private String operator;
+
+	/**
+	 * update_time:
+	 */
+	private Date updateTime;
 
 	public Integer getId() {
 		return id;
@@ -166,5 +182,37 @@ public class MissionDto {
 
 	public void setMachineRemark(String machineRemark) {
 		this.machineRemark = machineRemark;
+	}
+
+	public Integer getMissionAddressId() {
+		return missionAddressId;
+	}
+
+	public void setMissionAddressId(Integer missionAddressId) {
+		this.missionAddressId = missionAddressId;
+	}
+
+	public Integer getAdminUserId() {
+		return adminUserId;
+	}
+
+	public void setAdminUserId(Integer adminUserId) {
+		this.adminUserId = adminUserId;
+	}
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
 	}
 }

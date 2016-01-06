@@ -15,6 +15,10 @@ public class AppMissionQueryParam extends BaseCondition {
 	 */
 	private String userId;
 
+	private Integer adminUserId;
+
+	Integer missionState;
+
 	public Integer getType() {
 		return type;
 	}
@@ -29,5 +33,21 @@ public class AppMissionQueryParam extends BaseCondition {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public Integer getAdminUserId() {
+		return adminUserId;
+	}
+
+	public void setAdminUserId(Integer adminUserId) {
+		this.adminUserId = adminUserId;
+	}
+
+	public Integer getMissionState() {
+		return missionState;
+	}
+
+	public void setMissionState(Integer missionState) {
+		this.missionState = missionState;
 	}
 }

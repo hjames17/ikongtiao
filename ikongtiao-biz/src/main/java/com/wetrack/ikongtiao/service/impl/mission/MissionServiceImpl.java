@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.service.impl.mission;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
+import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.MachineType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.UserInfo;
@@ -71,6 +72,7 @@ public class MissionServiceImpl implements MissionService {
 		return mission;
 	}
 
+	//TODO 缓存
 	@Override public PageList<MissionDto> listMissionByAppQueryParam(AppMissionQueryParam param) {
 		PageList<MissionDto> page = new PageList<>();
 		page.setPage(param.getPage());
@@ -90,5 +92,62 @@ public class MissionServiceImpl implements MissionService {
 		}
 		page.setData(missionDtos);
 		return page;
+	}
+
+	@Transactional
+	@Override
+	public void acceptMission(Integer missionId, Integer adminUserId) throws Exception {
+		//先读取任务状态，防止多人抢单，导致最后一个来的抢成功了
+		Mission mission = missionRepo.getMissionById(missionId);
+		if(mission == null){
+			throw new Exception("任务不存在");
+		}
+		if(mission.getMissionState() > MissionState.NEW.getCode()){
+			throw new Exception("任务已经被受理");
+		}
+		//修改状态
+		mission.setMissionState(MissionState.ACCEPET.getCode());
+		missionRepo.update(mission);
+
+		//TODO 发送通知, 记录操作
+	}
+
+	@Override
+	public void denyMission(Integer missionId, Integer adminUserId, String reason) throws Exception {
+
+		//先读取任务状态，不能拒绝已经被处理的订单
+		Mission mission = missionRepo.getMissionById(missionId);
+		if(mission == null){
+			throw new Exception("任务不存在");
+		}
+		if(mission.getMissionState() > MissionState.NEW.getCode()){
+			throw new Exception("任务已经被受理,不能拒绝");
+		}
+		//修改状态
+		mission.setMissionState(MissionState.REJECT.getCode());
+		missionRepo.update(mission);
+
+		//TODO，发送通知, 记录操作
+	}
+
+	@Override
+	public void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception {
+		//修改状态
+		Mission mission = new Mission();
+		mission.setId(missionId);
+		mission.setFixerId(fixerId);
+		missionRepo.update(mission);
+
+		//TODO 发送通知, 记录操作
+	}
+
+	@Override
+	public void submitMissionDescription(Integer missionId, String description) throws Exception {
+		//修改状态
+		Mission mission = new Mission();
+		mission.setId(missionId);
+		mission.setMissionDesc(description);
+		missionRepo.update(mission);
+
 	}
 }

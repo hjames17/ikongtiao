@@ -133,7 +133,7 @@ public class AjaxResponseInterceptor extends HandlerInterceptorAdapter{
         }
 
         //抛出异常，是则构造异常对象，的AjaxResult<T>返回
-        response.setHeader("Content-Type", "application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
         Type t = handlerMethod.getReturnType().getGenericParameterType();
         AjaxResult<Object> result = new AjaxResult<Object>();
         result.setMessage(ex.getMessage());

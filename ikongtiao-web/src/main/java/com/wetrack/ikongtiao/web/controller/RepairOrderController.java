@@ -30,7 +30,7 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form) throws Exception{
 
-        RepairOrder repairOrder = repairOrderService.create(form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getAccessoryContent());
+        RepairOrder repairOrder = repairOrderService.create(form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
         return repairOrder.getId().toString();
     }
 

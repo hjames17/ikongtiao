@@ -4,6 +4,7 @@ import com.wetrack.auth.domain.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
@@ -12,7 +13,7 @@ import java.util.Collection;
  * redis中存储token
  */
 
-//@Service("defaultTokenStorageService")
+@Service("defaultTokenStorageService")
 public class TokenRedisStorageService implements TokenStorageService {
 
 

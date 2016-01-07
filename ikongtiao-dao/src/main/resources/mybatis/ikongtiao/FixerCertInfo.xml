@@ -39,31 +39,31 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.fixer.FixerCertInfo" >
     update fixer_cert_info
     <set >
-      <if test="fixer_id != null" >
+      <if test="fixerId != null" >
         fixer_id = #{fixerId,jdbcType=INTEGER},
       </if>
-      <if test="id_num != null" >
+      <if test="idNum != null" >
         id_num = #{idNum,jdbcType=VARCHAR},
       </if>
-      <if test="id_with_face_img != null" >
+      <if test="idWithFaceImg != null" >
         id_with_face_img = #{idWithFaceImg,jdbcType=VARCHAR},
       </if>
-      <if test="id_img_front != null" >
+      <if test="idImgFront != null" >
         id_img_front = #{idImgFront,jdbcType=VARCHAR},
       </if>
-      <if test="id_img_back != null" >
+      <if test="idImgBack != null" >
         id_img_back = #{idImgBack,jdbcType=VARCHAR},
       </if>
-      <if test="check_state != null" >
+      <if test="checkState != null" >
         check_state = #{checkState,jdbcType=TINYINT},
       </if>
-      <if test="check_time != null" >
+      <if test="checkTime != null" >
         check_time = #{checkTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="deny_reason != null" >
+      <if test="denyReason != null" >
         deny_reason = #{denyReason,jdbcType=VARCHAR},
       </if>
-      <if test="admin_user_id != null" >
+      <if test="adminUserId != null" >
         admin_user_id = #{adminUserId,jdbcType=INTEGER},
       </if>
     </set>

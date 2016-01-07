@@ -2,6 +2,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
@@ -36,9 +37,40 @@
     <import resource="classpath*:/spring/datasource.xml"></import>
 
 
-    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
-        <!--<property name="prefix" value="/WEB-INF/pages/"/>-->
-        <!--<property name="suffix" value=".jsp"/>-->
-    <!--</bean>-->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/WEB-INF/jsp/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <bean id="ajaxExceptionHandler" class="com.wetrack.base.exception.AjaxExceptionHandler"/>
+    <!-- 全局异常处理类 -->
+    <bean id="globalExceptionHandler" p:errorPage="errors/exception"
+          class="com.wetrack.base.exception.GlobalExceptionHandler">
+    </bean>
+
+    <!-- 全局异常处理 -->
+    <bean id="exceptionResolver" p:defaultStatusCode="503"
+          class="com.wetrack.base.exception.HandlerMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <!-- 遇到AjaxException异常时，采用 ajaxExceptionHandler 处理 -->
+                <prop key="com.wetrack.base.result.AjaxException">handler:ajaxExceptionHandler</prop>
+            </props>
+        </property>
+        <!-- 全局异常：在exceptionMappings里面找不到对应的异常时，采用 globalExceptionHandler 处理 -->
+        <property name="defaultErrorView" value="handler:globalExceptionHandler"/>
+        <!-- 定义在发生异常时视图跟返回码的对应关系 -->
+        <property name="statusCodes">
+            <props>
+                <!-- 发生AjaxException时对应视图handler:ajaxExceptionHandler，返回状态码200 -->
+                <prop key="handler:ajaxExceptionHandler">200</prop>
+            </props>
+        </property>
+    </bean>
 
 </beans>

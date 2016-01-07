@@ -1,6 +1,5 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
-import com.wetrack.auth.filter.AjaxResponseWrapper;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.dto.MissionDto;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class MissionController {
 
-    static final String BASE_PATH = "mission";
+    static final String BASE_PATH = "/mission";
 
     @Autowired
     MissionService missionService;
@@ -33,9 +32,9 @@ public class MissionController {
         return missionService.listMissionByAppQueryParam(param);
     }
 
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/deny" , method = {RequestMethod.POST})
-    public String denyMission(@RequestBody DenyForm denyForm) throws Exception{
+    public void denyMission(@RequestBody DenyForm denyForm) throws Exception{
 
         checkValid(denyForm.getMissionId(), denyForm.getAdminUserId());
         if(StringUtils.isEmpty(denyForm.getReason())){
@@ -43,24 +42,22 @@ public class MissionController {
         }
 
         missionService.denyMission(denyForm.getMissionId(), denyForm.getAdminUserId(), denyForm.getReason());
-        return "任务成功关闭!";
     }
 
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/accept" , method = {RequestMethod.GET})
-    public String acceptMission(@RequestParam(value = "adminUserId") Integer adminUserId,
+    public void acceptMission(@RequestParam(value = "adminUserId") Integer adminUserId,
                                 @RequestParam(value = "missionId") Integer missionId) throws Exception{
 
         checkValid(missionId, adminUserId);
 
         missionService.acceptMission(missionId, adminUserId);
 
-        return "任务受理成功!";
     }
 
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.GET})
-    public String dispatchMission(@RequestParam(value = "adminUserId") Integer adminUserId,
+    public void dispatchMission(@RequestParam(value = "adminUserId") Integer adminUserId,
                                   @RequestParam(value = "missionId") Integer missionId,
                                   @RequestParam(value = "fixerId") Integer fixerId) throws Exception{
 
@@ -70,18 +67,16 @@ public class MissionController {
         }
 
         missionService.dispatchMission(missionId, fixerId, adminUserId);
-        return "任务指派成功!";
     }
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/describe" , method = {RequestMethod.POST})
-    public String describeMission(@RequestBody DescribeForm form) throws Exception {
+    public void describeMission(@RequestBody DescribeForm form) throws Exception {
         checkValid(form.getMissionId(), form.getAdminUserId());
         if(StringUtils.isEmpty(form.getDecription())){
             throw new Exception("描述为空");
         }
 
         missionService.submitMissionDescription(form.getMissionId(), form.getDecription());
-        return "任务描述已提交!";
     }
 
     void checkValid(Integer missionId, Integer adminUserId) throws Exception{

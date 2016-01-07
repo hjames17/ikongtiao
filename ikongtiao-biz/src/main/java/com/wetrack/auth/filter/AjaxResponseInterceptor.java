@@ -88,7 +88,7 @@ public class AjaxResponseInterceptor extends HandlerInterceptorAdapter{
         if(!isAjaxWrapperHandler(handlerMethod)){
             return;
         }
-        //获取方法返回值类型，如果是void不处理，返回
+        //获取方法返回值类型，如果是void返回success
         if(handlerMethod.isVoid()){
             return;
         }

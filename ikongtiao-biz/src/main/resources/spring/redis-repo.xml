@@ -42,6 +42,6 @@
 	<!-- redis template definition -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 	<property name="connectionFactory" ref="jedisConnFactory" />
-	<property name="defaultSerializer" ref="stringRedisSerializer" />
+	<property name="hashKeySerializer" ref="stringRedisSerializer" />
 	</bean>
 </beans>

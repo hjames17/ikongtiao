@@ -83,29 +83,30 @@ public class FixerController {
     }
 
     @SignTokenAuth
-    @AjaxResponseWrapper
+//    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/certificate/submit", method = RequestMethod.POST)
     void certificateSubmit(@RequestBody FixerCertInfo fixerCertInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        fixerCertInfo.setId(Integer.valueOf(user.getId()));
+        fixerCertInfo.setFixerId(Integer.valueOf(user.getId()));
         fixerService.submitCertInfo(fixerCertInfo);
     }
 
     @SignTokenAuth
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/insurance/submit", method = RequestMethod.POST)
     void insuranceSubmit(@RequestBody FixerInsuranceInfo insuranceInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        insuranceInfo.setId(Integer.valueOf(user.getId()));
+        insuranceInfo.setFixerId(Integer.valueOf(user.getId()));
         fixerService.submitInsuranceInfo(insuranceInfo);
     }
 
     @SignTokenAuth
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/profession/submit", method = RequestMethod.POST)
     void professSubmit(@RequestBody FixerProfessionInfo professionInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        professionInfo.setId(Integer.valueOf(user.getId()));
+        professionInfo.setFixerId(Integer.valueOf(user.getId()));
         fixerService.submitProfessInfo(professionInfo);
     }
 

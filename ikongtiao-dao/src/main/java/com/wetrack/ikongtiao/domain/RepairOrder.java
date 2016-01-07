@@ -7,14 +7,17 @@
  */
 package com.wetrack.ikongtiao.domain;
 
+import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class RepairOrder implements Serializable {
     /**
      * id:
      */
-    private Integer id;
+    private Long id;
 
     /**
      * mission_id:任务id
@@ -39,7 +42,9 @@ public class RepairOrder implements Serializable {
     /**
      * operator:操作人
      */
+    @Deprecated
     private String operator;
+    Integer adminUserId;
 
     /**
      * create_time:
@@ -57,21 +62,44 @@ public class RepairOrder implements Serializable {
     String namePlateImg;
 
     /**
+     * 制令号
+     */
+    String makeOrderNum;
+
+    /**
      * 维修员提交的配件清单描述，
      * 不是精确的清单，供客服制定精确清单的依据
      */
-    String accessoriesContent;
+    String accessoryContent;
 
     /**
-     * 总金额
+     * 人工费
      */
-    Float total;
+    Float laborCost;
+
+    /**
+     * 配件清单，单独存表
+     * 关联accessory表
+     */
+    List<Accessory> accessoryList;
 
     Float discount; //折扣
 
+    /**
+     * 付款方式， 0 线下， 1 线上
+     */
+    Integer payment;
 
+    //以下只在线上付款情况下有效
+    /**
+     * 已付款
+     */
+    boolean paid;
 
-
+    /**
+     * 关联字段，关联支付信息表
+     */
+    String paymentInfoId;
 
 
     /**
@@ -85,14 +113,14 @@ public class RepairOrder implements Serializable {
     /**
      * @return the value of id
      */
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the value for id
      */
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -192,6 +220,86 @@ public class RepairOrder implements Serializable {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getNamePlateImg() {
+        return namePlateImg;
+    }
+
+    public void setNamePlateImg(String namePlateImg) {
+        this.namePlateImg = namePlateImg;
+    }
+
+    public String getMakeOrderNum() {
+        return makeOrderNum;
+    }
+
+    public void setMakeOrderNum(String makeOrderNum) {
+        this.makeOrderNum = makeOrderNum;
+    }
+
+    public String getAccessoryContent() {
+        return accessoryContent;
+    }
+
+    public void setAccessoryContent(String accessoryContent) {
+        this.accessoryContent = accessoryContent;
+    }
+
+    public Float getLaborCost() {
+        return laborCost;
+    }
+
+    public void setLaborCost(Float laborCost) {
+        this.laborCost = laborCost;
+    }
+
+    public List<Accessory> getAccessoryList() {
+        return accessoryList;
+    }
+
+    public void setAccessoryList(List<Accessory> accessoryList) {
+        this.accessoryList = accessoryList;
+    }
+
+    public Float getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Float discount) {
+        this.discount = discount;
+    }
+
+    public Integer getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Integer payment) {
+        this.payment = payment;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
+    public String getPaymentInfoId() {
+        return paymentInfoId;
+    }
+
+    public void setPaymentInfoId(String paymentInfoId) {
+        this.paymentInfoId = paymentInfoId;
+    }
+
+    public Integer getAdminUserId() {
+        return adminUserId;
+    }
+
+    public void setAdminUserId(Integer adminUserId) {
+        this.adminUserId = adminUserId;
     }
 
     /**

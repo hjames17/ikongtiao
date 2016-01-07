@@ -1,7 +1,6 @@
 package com.wetrack.auth.service;
 
 import com.wetrack.auth.domain.Token;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import java.util.Map;
  * 仅在内存中保存，每次重启，token都会失效。
  * 适合在开发阶段调试使用
  */
-@Service("defaultTokenStorageService")
+//@Service("defaultTokenStorageService")
 public class TokenInMemoryStorageService implements TokenStorageService {
 
     private Map<String, Token> tokenKeyMap;

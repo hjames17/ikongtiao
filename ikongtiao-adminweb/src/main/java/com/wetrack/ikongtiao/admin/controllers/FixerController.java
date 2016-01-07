@@ -1,6 +1,5 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
-import com.wetrack.auth.filter.AjaxResponseWrapper;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
@@ -70,10 +69,10 @@ public class FixerController {
         return map;
     }
 
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/check", method = {RequestMethod.POST})
     public void check(@RequestBody CheckForm form) throws Exception{
-        int state = form.isPass() ? 1 : -1;
+        int state = form.isPass() ? 2 : -1;
         switch (form.getType()){
             case 0: //实名
                 fixerService.checkCertInfo(form.getFixerId(), state, form.getDenyReason(), form.getAdminUserId());

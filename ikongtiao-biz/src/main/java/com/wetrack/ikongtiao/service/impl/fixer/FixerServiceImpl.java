@@ -63,7 +63,7 @@ public class FixerServiceImpl implements FixerService {
             //save id to Fixer
             Fixer fixer = new Fixer();
             fixer.setId(certInfo.getFixerId());
-            fixer.setCertInfoId(certInfo.getId());
+//            fixer.setCertInfoId(certInfo.getId());
             fixer.setCertificateState(certInfo.getCheckState());
             int i = fixerRepo.update(fixer);
             if(i != 1){
@@ -85,7 +85,7 @@ public class FixerServiceImpl implements FixerService {
             //save id to fixer
             Fixer fixer = new Fixer();
             fixer.setId(insuranceInfo.getFixerId());
-            fixer.setInsuranceInfoId(insuranceInfo.getId());
+//            fixer.setInsuranceInfoId(insuranceInfo.getId());
             fixer.setInsuranceState(insuranceInfo.getCheckState());
             int i = fixerRepo.update(fixer);
             if(i != 1){
@@ -107,10 +107,10 @@ public class FixerServiceImpl implements FixerService {
             Fixer fixer = new Fixer();
             fixer.setId(professionInfo.getFixerId());
             if(professionInfo.getProfessType() == 0) { //电工
-                fixer.setElectricianInfoId(professionInfo.getId());
+//                fixer.setElectricianInfoId(professionInfo.getId());
                 fixer.setElectricianState(professionInfo.getCheckState());
             }else{
-                fixer.setWelderInfoId(professionInfo.getId());
+//                fixer.setWelderInfoId(professionInfo.getId());
                 fixer.setWelderState(professionInfo.getCheckState());
             }
             int i = fixerRepo.update(fixer);
@@ -151,12 +151,13 @@ public class FixerServiceImpl implements FixerService {
         Fixer fixer = new Fixer();
         fixer.setId(fixerId);
         fixer.setCertificateState(fixerCertInfo.getCheckState());
-        fixer.setCertInfoId(fixerCertInfo.getId());
+//        fixer.setCertInfoId(fixerCertInfo.getId());
         fixerRepo.update(fixer);
 
         //TODO 发送消息
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void checkInsuranceInfo(Integer fixerId, int checkState, String denyReason, Integer adminUserId) throws Exception {
         if(adminUserId == null){
@@ -184,12 +185,13 @@ public class FixerServiceImpl implements FixerService {
         Fixer fixer = new Fixer();
         fixer.setId(fixerId);
         fixer.setInsuranceState(insuranceInfo.getCheckState());
-        fixer.setInsuranceInfoId(insuranceInfo.getId());
+//        fixer.setInsuranceInfoId(insuranceInfo.getId());
         fixerRepo.update(fixer);
 
         //TODO 发送消息
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void checkProfessInfo(int type, Integer fixerId, int checkState, String denyReason, Integer adminUserId) throws Exception {
         if(adminUserId == null){
@@ -218,10 +220,10 @@ public class FixerServiceImpl implements FixerService {
         fixer.setId(fixerId);
         if(type == 0){
             fixer.setElectricianState(professionInfo.getCheckState());
-            fixer.setElectricianInfoId(professionInfo.getId());
+//            fixer.setElectricianInfoId(professionInfo.getId());
         }else{
             fixer.setWelderState(professionInfo.getCheckState());
-            fixer.setWelderInfoId(professionInfo.getId());
+//            fixer.setWelderInfoId(professionInfo.getId());
         }
         fixerRepo.update(fixer);
 
@@ -241,6 +243,11 @@ public class FixerServiceImpl implements FixerService {
     @Override
     public FixerProfessionInfo getProfessInfo(int fixerId, int type) throws Exception {
         return professionInfoRepo.findLatestForFixerIdAndType(fixerId, type);
+    }
+
+    @Override
+    public void updateInfo(Fixer fixer) throws Exception {
+        fixerRepo.update(fixer);
     }
 
     @Override

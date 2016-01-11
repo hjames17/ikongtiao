@@ -2,15 +2,16 @@ package com.wetrack.ikongtiao.web.controller;
 
 import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.domain.User;
-import com.wetrack.auth.filter.AjaxResponseWrapper;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.fileupload.FileUploadService;
 import com.wetrack.fileupload.form.Base64ImageForm;
+import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.utils.RegExUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,7 @@ public class FixerController {
     private static final String BASE_PATH = "/fixer";
 
 
-    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/signup", method = RequestMethod.POST)
     void signUp(@RequestBody SignUpForm form) throws Exception{
 
@@ -135,6 +136,27 @@ public class FixerController {
         map.put("electrician", fixerService.getProfessInfo(Integer.valueOf(user.getId()), 0));
         map.put("welder", fixerService.getProfessInfo(Integer.valueOf(user.getId()), 1));
         return map;
+    }
+
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/info/update", method = RequestMethod.GET)
+    void update(HttpServletRequest request , @RequestBody UpdateForm form) throws Exception{
+        User user = (User)request.getAttribute("user");
+        Fixer fixer = new Fixer();
+        BeanUtils.copyProperties(form, fixer);
+        fixer.setId(Integer.valueOf(user.getId()));
+        fixerService.updateInfo(fixer);
+    }
+
+    static class UpdateForm{
+        String name;
+        String avatar;
+        String address;
+        String provinceId;
+        String cityId;
+        String districtId;
+        Boolean inService;
     }
 
 

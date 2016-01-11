@@ -132,6 +132,9 @@ public class Fixer implements Serializable {
      */
     //实名认证状态： 0 未认证 1 待审核 2 已认证 －1 被驳回
     Integer certificateState;
+    /**
+     * 不存表
+     */
     Integer certInfoId; //最新的FixerCertInfo记录id
 
     /**
@@ -141,6 +144,9 @@ public class Fixer implements Serializable {
      */
     //人身意外险投保认证状态 : 0 未投保 1 待审核 2 已投保 －1 被驳回 －2 已过期
     Integer insuranceState;
+    /**
+     * 不存表
+     */
     Integer insuranceInfoId; //最新的FixerInsuranceInfo记录id
 
     /**
@@ -148,9 +154,15 @@ public class Fixer implements Serializable {
      */
     //焊工证认证状态 : 0 未认证 1 待审核 2 已认证 －1 被驳回
     Integer welderState;
+    /**
+     * 不存表
+     */
     Integer welderInfoId; //最新的FixerProfessionInfo记录
     //电工证认证状态 : 0 未认证 1 待审核 2 已认证 －1 被驳回
     Integer electricianState;
+    /**
+     * 不存表
+     */
     Integer electricianInfoId; //最新的FixerProfessionInfo记录
 
     boolean deleted; //逻辑删除

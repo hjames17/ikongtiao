@@ -25,6 +25,11 @@ public class RepairOrder implements Serializable {
     private Integer missionId;
 
     /**
+     * 创建该维修单的维修员id
+     */
+    Integer creatorFixerId;
+
+    /**
      * fixer_id:维修人id
      */
     private Integer fixerId;

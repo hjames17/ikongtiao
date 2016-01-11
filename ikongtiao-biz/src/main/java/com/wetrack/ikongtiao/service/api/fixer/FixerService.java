@@ -36,4 +36,6 @@ public interface FixerService {
     FixerInsuranceInfo getInsuranceInfo(int fixerId) throws Exception;
 
     FixerProfessionInfo getProfessInfo(int fixerId, int type) throws Exception;
+
+    void updateInfo(Fixer fixer) throws Exception;
 }

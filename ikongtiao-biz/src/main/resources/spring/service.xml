@@ -41,7 +41,7 @@
 
     <mvc:interceptors>
         <!--ajax response wrapper的包装拦截器， 和@AjaxResponseWrapper结合使用，目前只支持启用  <mvc:annotation-driven/> 的mvc配置-->
-        <bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>
+        <!--<bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>-->
         <bean class="com.wetrack.auth.filter.SignTokenAuthInterceptor"></bean>
     </mvc:interceptors>
 </beans>

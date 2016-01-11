@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.repo.api.mission;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
+import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ public interface MissionRepo {
 	int update(Mission mission);
 
 	/**
-	 *  根据任务id获取任务信息
+	 * 根据任务id获取任务信息
+	 *
 	 * @param missionId
 	 * @return
 	 */
@@ -24,6 +26,7 @@ public interface MissionRepo {
 
 	/**
 	 * 根据用户id获取任务列表
+	 *
 	 * @param param
 	 * @return
 	 */
@@ -31,6 +34,7 @@ public interface MissionRepo {
 
 	/**
 	 * 根据条件查询数量
+	 *
 	 * @param param
 	 * @return
 	 */
@@ -38,5 +42,9 @@ public interface MissionRepo {
 
 
 	int deleteMission(Integer missionId) throws Exception;
+
+	List<MissionDto> listMissionIdByFixer(FixerMissionQueryParam param) throws Exception;
+
+	Integer countMissionByFixer(FixerMissionQueryParam param) throws Exception;
 
 }

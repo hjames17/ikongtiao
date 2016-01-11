@@ -22,17 +22,18 @@
     <result column="min_price" property="minPrice" jdbcType="DECIMAL" />
     <result column="dw_create_time" property="dwCreateTime" jdbcType="TIMESTAMP" />
     <result column="dw_update_time" property="dwUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="dw_update_time" property="dwUpdateTime" jdbcType="TIMESTAMP" />
     <result column="operate_id" property="operateId" jdbcType="INTEGER" />
-    <result column="in_service" property="inService" jdbcType="BIT" />
+    <result column="in_service" property="inService" jdbcType="TINYINT" />
     <result column="certificate_state" property="certificateState" jdbcType="TINYINT" />
-    <result column="cert_info_id" property="certInfoId" jdbcType="INTEGER" />
+    <!--<result column="cert_info_id" property="certInfoId" jdbcType="INTEGER" />-->
     <result column="insurance_state" property="insuranceState" jdbcType="TINYINT" />
-    <result column="insurance_info_id" property="insuranceInfoId" jdbcType="INTEGER" />
+    <!--<result column="insurance_info_id" property="insuranceInfoId" jdbcType="INTEGER" />-->
     <result column="welder_state" property="welderState" jdbcType="TINYINT" />
-    <result column="welder_info_id" property="welderInfoId" jdbcType="INTEGER" />
+    <!--<result column="welder_info_id" property="welderInfoId" jdbcType="INTEGER" />-->
     <result column="electrician_state" property="electricianState" jdbcType="TINYINT" />
-    <result column="electrician_info_id" property="electricianInfoId" jdbcType="INTEGER" />
-    <result column="deleted" property="deleted" jdbcType="BIT" />
+    <!--<result column="electrician_info_id" property="electricianInfoId" jdbcType="INTEGER" />-->
+    <result column="deleted" property="deleted" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, password, avatar, phone, contacts, province_name, province_id, city_name, city_id,
@@ -259,32 +260,32 @@
         operate_id = #{operateId,jdbcType=INTEGER},
       </if>
       <if test="inService != null" >
-        in_service = #{inService,jdbcType=BIT},
+        in_service = #{inService,jdbcType=TINYINT},
       </if>
       <if test="certificateState != null" >
         certificate_state = #{certificateState,jdbcType=TINYINT},
       </if>
-      <if test="certInfoId != null" >
-        cert_info_id = #{certInfoId,jdbcType=INTEGER},
-      </if>
+      <!--<if test="certInfoId != null" >-->
+        <!--cert_info_id = #{certInfoId,jdbcType=INTEGER},-->
+      <!--</if>-->
       <if test="insuranceState != null" >
         insurance_state = #{insuranceState,jdbcType=TINYINT},
       </if>
-      <if test="insuranceInfoId != null" >
-        insurance_info_id = #{insuranceInfoId,jdbcType=INTEGER},
-      </if>
+      <!--<if test="insuranceInfoId != null" >-->
+        <!--insurance_info_id = #{insuranceInfoId,jdbcType=INTEGER},-->
+      <!--</if>-->
       <if test="welderState != null" >
         welder_state = #{welderState,jdbcType=TINYINT},
       </if>
-      <if test="welderInfoId != null" >
-        welder_info_id = #{welderInfoId,jdbcType=INTEGER},
-      </if>
+      <!--<if test="welderInfoId != null" >-->
+        <!--welder_info_id = #{welderInfoId,jdbcType=INTEGER},-->
+      <!--</if>-->
       <if test="electricianState != null" >
         electrician_state = #{electricianState,jdbcType=TINYINT},
       </if>
-      <if test="electricianInfoId != null" >
-        electrician_info_id = #{electricianInfoId,jdbcType=INTEGER},
-      </if>
+      <!--<if test="electricianInfoId != null" >-->
+        <!--electrician_info_id = #{electricianInfoId,jdbcType=INTEGER},-->
+      <!--</if>-->
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -317,7 +318,7 @@
     from fixer
     <where>
       <if test="inService!=null">
-        and in_service = #{inService,jdbcType=BIT}
+        and in_service = #{inService,jdbcType=TINYINT}
       </if>
       <if test="certificated == false ">
         and  certificate_state != 1
@@ -344,7 +345,7 @@
     from fixer
     <where>
       <if test="inService!=null">
-        and in_service = #{inService,jdbcType=BIT}
+        and in_service = #{inService,jdbcType=TINYINT}
       </if>
       <if test="certificated == false ">
         and  certificate_state != 1

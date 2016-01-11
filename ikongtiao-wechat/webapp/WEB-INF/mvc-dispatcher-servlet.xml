@@ -2,6 +2,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
@@ -27,9 +28,9 @@
     <mvc:default-servlet-handler />
     <context:component-scan base-package="com.wetrack"/>
 
-    <mvc:interceptors>
-        <bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>
-    </mvc:interceptors>
+    <!--<mvc:interceptors>-->
+        <!--<bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>-->
+    <!--</mvc:interceptors>-->
 
     <import resource="classpath*:/spring/redis-repo.xml"></import>
     <import resource="classpath*:/spring/datasource.xml"></import>

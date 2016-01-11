@@ -72,11 +72,11 @@ public class MissionController {
     @RequestMapping(value = BASE_PATH + "/describe" , method = {RequestMethod.POST})
     public void describeMission(@RequestBody DescribeForm form) throws Exception {
         checkValid(form.getMissionId(), form.getAdminUserId());
-        if(StringUtils.isEmpty(form.getDecription())){
-            throw new Exception("描述为空");
-        }
+//        if(StringUtils.isEmpty(form.getDescription())){
+//            throw new Exception("描述为空");
+//        }
 
-        missionService.submitMissionDescription(form.getMissionId(), form.getDecription());
+        missionService.submitMissionDescription(form.getMissionId(), form.getDescription(), form.getName(), form.getProvinceId(), form.getCityId(), form.getDistrictId(), form.getAddress(), form.getLatitude(), form.getLongitude());
     }
 
     void checkValid(Integer missionId, Integer adminUserId) throws Exception{
@@ -123,7 +123,22 @@ public class MissionController {
     public static class DescribeForm {
         Integer adminUserId;
         Integer missionId;
-        String decription;
+        String description;
+        Integer provinceId;
+        Integer cityId;
+        Integer districtId;
+        String address;
+        String name;
+
+        /**
+         * latitude:纬度
+         */
+        private Double latitude;
+
+        /**
+         * longitude:经度
+         */
+        private Double longitude;
 
         public Integer getAdminUserId() {
             return adminUserId;
@@ -141,12 +156,68 @@ public class MissionController {
             this.missionId = missionId;
         }
 
-        public String getDecription() {
-            return decription;
+        public String getDescription() {
+            return description;
         }
 
-        public void setDecription(String decription) {
-            this.decription = decription;
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public Integer getProvinceId() {
+            return provinceId;
+        }
+
+        public void setProvinceId(Integer provinceId) {
+            this.provinceId = provinceId;
+        }
+
+        public Integer getCityId() {
+            return cityId;
+        }
+
+        public void setCityId(Integer cityId) {
+            this.cityId = cityId;
+        }
+
+        public Integer getDistrictId() {
+            return districtId;
+        }
+
+        public void setDistrictId(Integer districtId) {
+            this.districtId = districtId;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Double getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(Double latitude) {
+            this.latitude = latitude;
+        }
+
+        public Double getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(Double longitude) {
+            this.longitude = longitude;
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.wetrack.wechat.controller;
 
-import com.wetrack.auth.filter.AjaxResponseWrapper;
 import com.wetrack.wechat.domain.WxKefuOut;
 import com.wetrack.wechat.service.KefuService;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
@@ -10,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +17,8 @@ import java.util.List;
  * Created by zhanghong on 15/12/14.
  */
 @Controller
-@AjaxResponseWrapper
+//@AjaxResponseWrapper
+@ResponseBody
 public class KefuController {
 
     private static final Logger log = LoggerFactory.getLogger(KefuController.class);

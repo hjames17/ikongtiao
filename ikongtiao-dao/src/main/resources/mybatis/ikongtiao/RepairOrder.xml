@@ -5,6 +5,7 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="mission_id" property="missionId" jdbcType="INTEGER" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
+    <result column="creator_fixer_id" property="creatorFixerId" jdbcType="INTEGER" />
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
     <result column="repair_order_desc" property="repairOrderDesc" jdbcType="VARCHAR" />
     <result column="repair_order_state" property="repairOrderState" jdbcType="TINYINT" />
@@ -18,7 +19,7 @@
     <result column="payment_info_id" property="paymentInfoId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, mission_id, fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
+    id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
     update_time, name_plate_img, labor_cost, discount, payment_info_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -37,7 +38,7 @@
     </selectKey>
     insert into repair_order
     <trim prefix="(" suffix=")" suffixOverrides="," >
-        mission_id, repair_order_desc,
+        mission_id, repair_order_desc, creator_fixer_id
       <if test="namePlateImg != null" >
         name_plate_img,
       </if>
@@ -48,6 +49,7 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
         #{missionId,jdbcType=INTEGER},
         #{repairOrderDesc,jdbcType=VARCHAR},
+        #{creatorFixerId,jdbcType=INTEGER},
       <if test="namePlateImg != null" >
         #{namePlateImg,jdbcType=VARCHAR},
       </if>

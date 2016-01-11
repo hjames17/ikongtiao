@@ -5,13 +5,16 @@ import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.MachineType;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.MissionAddress;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
+import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
 import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
+import com.wetrack.ikongtiao.repo.api.mission.MissionAddressRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,6 +38,9 @@ public class MissionServiceImpl implements MissionService {
 
 	@Resource
 	private MissionRepo missionRepo;
+
+	@Resource
+	MissionAddressRepo missionAddressRepo;
 
 	@Resource
 	private UserInfoRepo userInfoRepo;
@@ -56,19 +63,28 @@ public class MissionServiceImpl implements MissionService {
 				userInfo.setPhone(param.getPhone());
 			}
 		}
+
+		//创建一个地址信息
+		MissionAddress missionAddress = new MissionAddress();
+		missionAddress.setPhone(param.getPhone());
+		missionAddressRepo.save(missionAddress);
+
 		Mission mission = null;
 		// 提交的手机号和已经绑定的手机号要一致
-		if (userInfo.getPhone().equals(param.getPhone())) {
-			MachineType machineType = machineTypeRepo.getMachineTypeById(param.getMachineTypeId());
-			// 检查机器类型是否存在
-			if (machineType == null) {
-				throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
-			}
-			mission = new Mission();
-			mission.setMachineTypeId(param.getMachineTypeId());
-			mission.setUserId(param.getUserId());
-			mission = missionRepo.save(mission);
+
+//		if (userInfo.getPhone().equals(param.getPhone())) {
+		MachineType machineType = machineTypeRepo.getMachineTypeById(param.getMachineTypeId());
+		// 检查机器类型是否存在
+		if (machineType == null) {
+			throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
 		}
+		mission = new Mission();
+		mission.setMissionAddressId(missionAddress.getId());
+		mission.setMachineTypeId(param.getMachineTypeId());
+		mission.setUserId(param.getUserId());
+		mission = missionRepo.save(mission);
+//		}
+
 		return mission;
 	}
 
@@ -91,6 +107,27 @@ public class MissionServiceImpl implements MissionService {
 			missionDto.setMachineTypeParentId(machineType.getParentId());
 		}
 		page.setData(missionDtos);
+		return page;
+	}
+
+	@Override
+	public PageList<MissionDto> ListFixerMissionByParam(FixerMissionQueryParam param) throws Exception {
+
+		//set total
+		PageList<MissionDto> page = new PageList<>();
+		page.setPage(param.getPage());
+		page.setPageSize(param.getPageSize());
+		param.setStart(page.getStart());
+		page.setTotalSize(missionRepo.countMissionByFixer(param));
+
+		//1. mission in which repairOrder is created or dispatched to the fixer
+		//2. mission which is dispatched to the fixer
+		//ordered by time desc
+		List<MissionDto> missionList = missionRepo.listMissionIdByFixer(param);
+
+		//return the selected page data
+
+		page.setData(missionList);
 		return page;
 	}
 
@@ -141,13 +178,54 @@ public class MissionServiceImpl implements MissionService {
 		//TODO 发送通知, 记录操作
 	}
 
+
 	@Override
-	public void submitMissionDescription(Integer missionId, String description) throws Exception {
+	public void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address, Double longitude, Double latitude) throws Exception {
+		Mission mission = missionRepo.getMissionById(id);
+		if(mission == null){
+			throw new Exception("不存在该任务");
+		}
+
+		MissionAddress missionAddress = new MissionAddress();
+		missionAddress.setId(mission.getMissionAddressId());
+		boolean addressChanged = false;
+		if(name != null) {
+			missionAddress.setName(name);
+			addressChanged = true;
+		}
+		if(provinceId != null) {
+			missionAddress.setProvinceId(provinceId);
+			addressChanged = true;
+		}
+		if(cityId != null) {
+			missionAddress.setCityId(cityId);
+			addressChanged = true;
+		}
+		if(districtId != null) {
+			missionAddress.setDistrictId(districtId);
+			addressChanged = true;
+		}
+		if(address != null) {
+			missionAddress.setDetail(address);
+			addressChanged = true;
+		}
+		if(latitude != null) {
+			missionAddress.setLatitude(BigDecimal.valueOf(latitude));
+			addressChanged = true;
+		}
+		if(longitude != null) {
+			missionAddress.setLongitude(BigDecimal.valueOf(longitude));
+			addressChanged = true;
+		}
+		if(addressChanged) {
+			missionAddressRepo.update(missionAddress);
+		}
 		//修改状态
-		Mission mission = new Mission();
-		mission.setId(missionId);
-		mission.setMissionDesc(description);
-		missionRepo.update(mission);
+		if(description != null) {
+			mission.setMissionDesc(description);
+			missionRepo.update(mission);
+		}
+
 
 	}
 }

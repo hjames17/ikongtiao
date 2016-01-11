@@ -19,6 +19,16 @@ public class MissionDto {
 	 */
 	private String userId;
 
+	String contactName;
+	String contactPhone;
+	Integer provinceId;
+	Integer cityId;
+	Integer districtId;
+	String address;
+	String longitude;
+	String latitude;
+
+
 	/**
 	 * mission_desc:任务描述
 	 */
@@ -87,6 +97,8 @@ public class MissionDto {
 	 * update_time:
 	 */
 	private Date updateTime;
+
+	Integer repairOrderCount;
 
 	public Integer getId() {
 		return id;
@@ -214,5 +226,77 @@ public class MissionDto {
 
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public Integer getRepairOrderCount() {
+		return repairOrderCount;
+	}
+
+	public void setRepairOrderCount(Integer repairOrderCount) {
+		this.repairOrderCount = repairOrderCount;
+	}
+
+	public String getContactName() {
+		return contactName;
+	}
+
+	public void setContactName(String contactName) {
+		this.contactName = contactName;
+	}
+
+	public String getContactPhone() {
+		return contactPhone;
+	}
+
+	public void setContactPhone(String contactPhone) {
+		this.contactPhone = contactPhone;
+	}
+
+	public Integer getProvinceId() {
+		return provinceId;
+	}
+
+	public void setProvinceId(Integer provinceId) {
+		this.provinceId = provinceId;
+	}
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getDistrictId() {
+		return districtId;
+	}
+
+	public void setDistrictId(Integer districtId) {
+		this.districtId = districtId;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
 	}
 }

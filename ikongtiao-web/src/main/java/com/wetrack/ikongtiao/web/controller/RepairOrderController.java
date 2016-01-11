@@ -5,16 +5,16 @@ import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
  * Created by zhanghong on 16/1/4.
  */
 
+@ResponseBody
 @Controller
 public class RepairOrderController {
 
@@ -34,12 +34,17 @@ public class RepairOrderController {
         return repairOrder.getId().toString();
     }
 
-    @RequestMapping(value = BASE_PATH , method = {RequestMethod.POST})
+    @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
+    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
+        return repairOrderService.listForMission(missionId);
+    }
+
+    @RequestMapping(value = BASE_PATH , method = {RequestMethod.GET})
     public RepairOrder get(@RequestParam(value = "id") Long id) throws Exception{
         return repairOrderService.getById(id);
     }
 
-    @RequestMapping(value = BASE_PATH , method = {RequestMethod.POST})
+    @RequestMapping(value = BASE_PATH + "/finish", method = {RequestMethod.POST})
     public void setFinished(@RequestParam(value = "id") Long id) throws Exception{
         repairOrderService.setFinished(id);
     }

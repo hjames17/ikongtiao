@@ -89,7 +89,7 @@ public class MissionServiceTest {
 //			Assert.assertTrue(true);
 //		}
 
-		missionService.submitMissionDescription(mission.getId(), testDescribe);
+//		missionService.submitMissionDescription(form.getMissionId(), form.getDescription(), form.getProvinceId(), form.getCityId(), mission.getId(), testDescribe, form.getLatitude(), form.getLatitude());
 
 		Mission readAgain = missionRepo.getMissionById(mission.getId());
 		Assert.assertEquals(testDescribe, readAgain.getMissionDesc());

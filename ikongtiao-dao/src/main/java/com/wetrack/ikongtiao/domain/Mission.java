@@ -32,7 +32,7 @@ public class Mission implements Serializable {
     private String missionDesc;
 
     /**
-     * mission_state:任务状态:0-新任务,1-已受理,2-诊断中,3-维修中,4-已关闭
+     * mission_state:任务状态:0-新任务,1-已受理,2-诊断中,3-维修中, -1 -已关闭 10 已完成
      */
     private Integer missionState;
 

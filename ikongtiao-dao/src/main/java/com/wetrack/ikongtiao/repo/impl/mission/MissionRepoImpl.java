@@ -5,6 +5,7 @@ import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
+import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import org.springframework.stereotype.Repository;
 
@@ -47,5 +48,17 @@ public class MissionRepoImpl implements MissionRepo {
 	@Override
 	public int deleteMission(Integer missionId) throws Exception {
 		return commonDao.mapper(Mission.class).sql("deleteByPrimaryKey").session().delete(missionId);
+	}
+
+	@Override
+	public List<MissionDto> listMissionIdByFixer(FixerMissionQueryParam param) throws Exception {
+		return commonDao.mapper(MissionDto.class).sql("listMissionByFixerQueryParam").session().selectList(param);
+	}
+
+	@Override
+	public Integer countMissionByFixer(FixerMissionQueryParam param) throws Exception {
+		BaseCondition baseCondition =  commonDao.mapper(MissionDto.class).sql("countMissionByFixerQueryParam").session().selectOne(param);
+		Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
+		return count == null ? 0 : count;
 	}
 }

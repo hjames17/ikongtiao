@@ -14,15 +14,32 @@
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
     <result column="operator" property="operator" jdbcType="VARCHAR" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="repair_order_count" property="repairOrderCount" jdbcType="INTEGER" />
+    <result column="name" property="contactName" jdbcType="VARCHAR" />
+    <result column="phone" property="contactPhone" jdbcType="VARCHAR" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="district_id" property="districtId" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_id, machine_type_id, mission_desc, mission_state, is_need_more, fixer_id,
     admin_user_id, mission_address_id, operator, create_time, update_time
   </sql>
+  <sql id="Mission_Dto_List" >
+    mission.id, mission.user_id, mission.machine_type_id, mission.mission_desc, mission.mission_state, mission.is_need_more, mission.fixer_id,
+    mission.admin_user_id, mission.mission_address_id, mission.operator, mission.create_time, mission.update_time,
+    mission_address.name, mission_address.phone, mission_address.province_id, mission_address.city_id, mission_address.district_id,
+    mission_address.detail, mission_address.longitude, mission_address.latitude
+  </sql>
   <select id="listMissionByAppQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
-    select
-    <include refid="Base_Column_List" />
-    from mission
+    SELECT DISTINCT <include refid="Mission_Dto_List"/> , COUNT(repair_order.id) as repair_order_count
+    from mission LEFT OUTER JOIN repair_order
+    ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN mission_address
+    ON mission.mission_address_id = mission_address.id
     <where>
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
@@ -37,19 +54,76 @@
         and  mission_state = #{missionState}
       </if>
     </where>
+    GROUP BY mission.id
     order by create_time desc limit #{start},#{pageSize}
   </select>
 
   <select id="countMissionByAppQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
     select
     count(*) as totalSize
-    from mission
+    from mission LEFT OUTER JOIN repair_order
+    ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN mission_address
+    ON mission.mission_address_id = mission_address.id
     <where>
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
       </if>
       <if test="type==0">
         and mission_state &lt; 10
+      </if>
+    </where>
+  </select>
+
+  <select id="listMissionByFixerQueryParam" parameterType="com.wetrack.ikongtiao.param.FixerMissionQueryParam" resultMap="BaseResultMap" >
+    SELECT DISTINCT <include refid="Mission_Dto_List"/> , COUNT(repair_order.id) as repair_order_count
+    from mission LEFT OUTER JOIN repair_order
+    ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN mission_address
+    ON mission.mission_address_id = mission_address.id
+    <where>
+      (mission.fixer_id = #{fixerId,jdbcType=INTEGER}
+      or repair_order.fixer_id = #{fixerId,jdbcType=INTEGER}
+      or repair_order.creator_fixer_id = #{fixerId,jdbcType=INTEGER})
+      <if test="history!=null">
+        <choose>
+          <when test="history==false">
+            and mission.mission_state &lt; 10
+            and mission.mission_state &gt;= 0
+          </when>
+          <when test="history==true">
+            and (mission.mission_state = 10
+            or mission.mission_state = -1)
+          </when>
+        </choose>
+      </if>
+    </where>
+    GROUP BY mission.id
+    order by create_time desc
+    limit #{start},#{pageSize}
+  </select>
+
+  <select id="countMissionByFixerQueryParam" parameterType="com.wetrack.ikongtiao.param.FixerMissionQueryParam" resultType="com.wetrack.base.page.BaseCondition"  >
+    SELECT COUNT(*) as totalSize
+    from mission LEFT OUTER JOIN repair_order
+    ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN mission_address
+    ON mission.mission_address_id = mission_address.id
+    <where>
+      (mission.fixer_id = #{fixerId,jdbcType=INTEGER}
+      or repair_order.fixer_id = #{fixerId,jdbcType=INTEGER}
+      or repair_order.creator_fixer_id = #{fixerId,jdbcType=INTEGER})
+      <if test="history!=null">
+        <choose>
+          <when test="history==false">
+            and mission.mission_state &lt; 10
+            and mission.mission_state &gt;= 0
+          </when>
+          <when test="history==true">
+            and (mission.mission_state = 10
+            or mission.mission_state = -1)
+          </when>
+        </choose>
       </if>
     </where>
   </select>

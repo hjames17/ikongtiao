@@ -88,12 +88,11 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/cost/finish" , method = {RequestMethod.POST})
     public void costFinish(@RequestBody OperationForm form) throws Exception {
 
-        repairOrderService.setPrepared(form.getAdminUserId(), form.getRepairOrderId());
+        repairOrderService.setCostFinished(form.getAdminUserId(), form.getRepairOrderId());
     }
 
     @RequestMapping(value = BASE_PATH + "/prepared" , method = {RequestMethod.POST})
     public void prepared(@RequestBody OperationForm form) throws Exception {
-
         repairOrderService.setPrepared(form.getAdminUserId(), form.getRepairOrderId());
     }
 

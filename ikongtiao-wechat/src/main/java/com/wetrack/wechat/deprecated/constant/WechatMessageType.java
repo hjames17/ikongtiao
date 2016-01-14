@@ -12,7 +12,7 @@ public enum WechatMessageType {
 	SHORT_VIDEO("shortvideo", "短视频类型"),
 	LOCATION("location", "地理位置类型"),
 	LINK("link", "链接类型"),
-	EVENT("event", "事件"),
+	EVENT("push", "事件"),
 	MUSIT("music", "音乐类型（返回消息使用）"),
 	NEWS("news", "文章类型（返回消息使用）"),;
 

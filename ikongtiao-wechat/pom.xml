@@ -20,13 +20,13 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.4.7</version>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
             <version>4.3.5</version>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
     </dependencies>
 

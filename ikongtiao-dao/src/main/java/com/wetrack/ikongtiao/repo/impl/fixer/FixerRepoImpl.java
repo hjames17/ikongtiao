@@ -62,4 +62,8 @@ public class FixerRepoImpl implements FixerRepo {
     public int delete(Integer id) throws Exception {
         return 0;
     }
+
+    @Override public Fixer getFixerById(Integer fixId) {
+        return commonDao.mapper(Fixer.class).sql("selectByPrimaryKey").session().selectOne(fixId);
+    }
 }

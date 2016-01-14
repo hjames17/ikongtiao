@@ -23,4 +23,5 @@ public interface FixerRepo {
     //彻底删除纪录
     int delete(Integer id) throws Exception;
 
+    Fixer getFixerById(Integer fixId);
 }

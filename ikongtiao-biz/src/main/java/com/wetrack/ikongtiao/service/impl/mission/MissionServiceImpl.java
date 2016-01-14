@@ -3,21 +3,22 @@ package com.wetrack.ikongtiao.service.impl.mission;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.constant.MissionState;
-import com.wetrack.ikongtiao.domain.MachineType;
-import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.MissionAddress;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.*;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
+import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionAddressRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
+import com.wetrack.message.push.PushData;
+import com.wetrack.message.push.PushProcess;
+import com.wetrack.message.push.PushEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,11 @@ public class MissionServiceImpl implements MissionService {
 	@Resource
 	private MachineTypeRepo machineTypeRepo;
 
+	@Resource
+	private PushProcess pushProcess;
+
+	@Resource
+	private FixerRepo fixerRepo;
 	@Transactional
 	@Override public Mission saveMission(MissionSubmitParam param) {
 		UserInfo userInfo = userInfoRepo.getById(param.getUserId());
@@ -146,6 +152,9 @@ public class MissionServiceImpl implements MissionService {
 		mission.setMissionState(MissionState.ACCEPET.getCode());
 		missionRepo.update(mission);
 
+		PushData pushData = new PushData();
+		pushData.setUserId(mission.getUserId());
+		pushProcess.post(PushEventType.ACCEPT_MISSION,pushData);
 		//TODO 发送通知, 记录操作
 	}
 
@@ -174,7 +183,10 @@ public class MissionServiceImpl implements MissionService {
 		mission.setId(missionId);
 		mission.setFixerId(fixerId);
 		missionRepo.update(mission);
-
+		PushData pushData = new PushData();
+		pushData.setUserId(mission.getUserId());
+		pushData.setFixId(fixerId);
+		pushProcess.post(PushEventType.ASSIGNED_MISSION,pushData);
 		//TODO 发送通知, 记录操作
 	}
 

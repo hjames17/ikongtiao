@@ -17,35 +17,35 @@
             <artifactId>dom4j</artifactId>
             <version>1.6</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.axis</groupId>
             <artifactId>axis</artifactId>
             <version>1.4</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>commons-discovery</groupId>
             <artifactId>commons-discovery</artifactId>
             <version>0.2</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.axis</groupId>
             <artifactId>axis-saaj</artifactId>
             <version>1.4</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.axis</groupId>
             <artifactId>axis-ant</artifactId>
             <version>1.4</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
 
         <dependency>
@@ -53,14 +53,14 @@
             <artifactId>axis-jaxrpc</artifactId>
             <version>1.4</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>axis</groupId>
             <artifactId>axis-wsdl4j</artifactId>
             <version>1.5.1</version>
             <optional>true</optional>
-            <scope>${xia.build.libScope}</scope>
+            <scope>${ikongtiao.build.libScope}</scope>
         </dependency>
         <dependency>
             <groupId>org.imgscalr</groupId>

@@ -5,8 +5,8 @@ package com.wetrack.message.push;
  */
 public enum PushChannelType {
 
-	WECHAT(0, "微信通道", new WechatPushService(), "openId"),
-	SNS(1, "短信通道", new SmsPushService(), "phone"),
+	WECHAT(0, "微信通道", "wechatPushService", "openId"),
+	SNS(1, "短信通道", "smsPushService", "phone"),
 
 	GETUI(2, "个推通道", null, ""),
 	WEB(3, "浏览器推送", null, ""),;
@@ -15,12 +15,12 @@ public enum PushChannelType {
 
 	private String toKey;
 
-	private PushService pushService;
+	private String beanName;
 
-	PushChannelType(Integer code, String message, PushService pushService, String toKey) {
+	PushChannelType(Integer code, String message,String beanName, String toKey) {
 		this.code = code;
 		this.message = message;
-		this.pushService = pushService;
+		this.beanName = beanName;
 		this.toKey = toKey;
 	}
 
@@ -32,8 +32,8 @@ public enum PushChannelType {
 		return message;
 	}
 
-	public PushService getPushService() {
-		return pushService;
+	public String getBeanName() {
+		return beanName;
 	}
 
 	public String getToKey() {

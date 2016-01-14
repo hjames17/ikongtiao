@@ -304,7 +304,16 @@ public class RepairOrder implements Serializable {
     }
 
     public void setAdminUserId(Integer adminUserId) {
+
         this.adminUserId = adminUserId;
+    }
+
+    public Integer getCreatorFixerId() {
+        return creatorFixerId;
+    }
+
+    public void setCreatorFixerId(Integer creatorFixerId) {
+        this.creatorFixerId = creatorFixerId;
     }
 
     /**

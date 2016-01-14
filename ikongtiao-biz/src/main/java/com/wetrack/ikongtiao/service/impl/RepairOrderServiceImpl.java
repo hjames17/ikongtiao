@@ -34,8 +34,9 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     }
 
     @Override
-    public RepairOrder create(Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception{
+    public RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception{
         RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setCreatorFixerId(creatorId);
         repairOrder.setMissionId(missionId);
         repairOrder.setNamePlateImg(namePlateImg);
         repairOrder.setMakeOrderNum(makeOrderNum);
@@ -48,12 +49,16 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     @Override
     public void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost) throws Exception{
         //insert accessory list into accessory table
-        accessoryRepo.createMulti(accessoryList);
+        if(accessoryList != null && accessoryList.size() > 0) {
+            accessoryRepo.createMulti(accessoryList);
+        }
         //update repairOrder
-        RepairOrder repairOrder = new RepairOrder();
-        repairOrder.setId(repairOrderId);
-        repairOrder.setLaborCost(laborCost);
-        repairOrderRepo.update(repairOrder);
+        if(laborCost != null) {
+            RepairOrder repairOrder = new RepairOrder();
+            repairOrder.setId(repairOrderId);
+            repairOrder.setLaborCost(laborCost);
+            repairOrderRepo.update(repairOrder);
+        }
 
         //TODO 发送通知
     }
@@ -71,14 +76,26 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     }
 
     @Override
+    public void setCostFinished(Integer adminUserId, Long repairOrderId) throws Exception {
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setId(repairOrderId);
+        repairOrder.setAdminUserId(adminUserId);
+        repairOrder.setRepairOrderState((byte) 1);
+        repairOrderRepo.update(repairOrder);
+
+        //TODO 发送通知给用户，有维修单待确认
+    }
+
+    @Override
     public void setPrepared(Integer adminUserId, Long repairOrderId) throws Exception{
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setId(repairOrderId);
         repairOrder.setAdminUserId(adminUserId);
-        repairOrder.setRepairOrderState((byte)4);
+        repairOrder.setRepairOrderState((byte) 4);
         repairOrderRepo.update(repairOrder);
 
     }
+
 
     @Override
     public void setFinished(Long repairOrderId) throws Exception{
@@ -104,5 +121,25 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         commentRepo.create(comment);
 
         //TODO 发送通知
+    }
+
+    @Override
+    public Accessory createAccessory(Long repairOrderId, String name, Integer count, Float price) throws Exception {
+        Accessory accessory = new Accessory();
+        accessory.setRepairOrderId(repairOrderId);
+        accessory.setCount(count);
+        accessory.setName(name);
+        accessory.setPrice(price);
+        return accessoryRepo.create(accessory);
+    }
+
+    @Override
+    public boolean updateAccessory(Accessory accessory) throws Exception {
+        return accessoryRepo.update(accessory);
+    }
+
+    @Override
+    public boolean deleteAccessory(Long accessoryId) throws Exception {
+        return accessoryRepo.delete(accessoryId);
     }
 }

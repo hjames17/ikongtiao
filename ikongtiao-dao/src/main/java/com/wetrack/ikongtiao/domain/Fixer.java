@@ -61,7 +61,7 @@ public class Fixer implements Serializable {
     /**
      * city_id:
      */
-    private String cityId;
+    private Integer cityId;
 
     /**
      * district_name:
@@ -290,15 +290,15 @@ public class Fixer implements Serializable {
     /**
      * @return the value of city_id
      */
-    public String getCityId() {
+    public Integer getCityId() {
         return cityId;
     }
 
     /**
      * @param cityId the value for city_id
      */
-    public void setCityId(String cityId) {
-        this.cityId = cityId == null ? null : cityId.trim();
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
     }
 
     /**

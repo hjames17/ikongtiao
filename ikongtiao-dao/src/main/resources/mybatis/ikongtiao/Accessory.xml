@@ -11,7 +11,7 @@
     <result column="discount" property="discount" jdbcType="FLOAT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, mission_id, repair_order_id, name, price, discount
+    id, mission_id, repair_order_id, name, price, discount, count
   </sql>
   <select id="selectByRepairOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -19,9 +19,23 @@
     from accessory
     where repair_order_id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="selectByRepairOrderIds" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    from accessory
+    where repair_order_id IN
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item,jdbcType=BIGINT}
+    </foreach>
+    ORDER BY repair_order_id, name
+  </select>
   <delete id="deleteByRepairOrderId" parameterType="java.lang.Long" >
     delete from accessory
-    where repair_order_id = #{id,jdbcType=INTEGER}
+    where repair_order_id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from accessory
+    where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.repairOrder.Accessory" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >

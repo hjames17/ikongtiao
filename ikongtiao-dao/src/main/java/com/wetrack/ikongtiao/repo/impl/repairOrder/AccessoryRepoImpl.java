@@ -30,4 +30,33 @@ public class AccessoryRepoImpl implements AccessoryRepo {
             throw new Exception("错误！共有" + accessoryList.size() + "条配件信息，实际插入" + count + "条");
         }
     }
+
+    @Override
+    public Accessory create(Accessory accessory) throws Exception {
+        int count = commonDao.mapper(Accessory.class).sql("insert").session().insert(accessory);
+        if(count != 1){
+            throw new Exception("创建配件错误！实际插入" + count + "条");
+        }
+        return accessory;
+    }
+
+    @Override
+    public boolean update(Accessory accessory) throws Exception {
+        int count = commonDao.mapper(Accessory.class).sql("updateByPrimaryKeySelective").session().update(accessory);
+        if(count != 1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
+    public boolean delete(Long accessoryId) throws Exception {
+        int count = commonDao.mapper(Accessory.class).sql("deleteById").session().delete(accessoryId);
+        if(count != 1){
+            return false;
+        }else{
+            return true;
+        }
+    }
 }

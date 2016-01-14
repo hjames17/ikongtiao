@@ -9,4 +9,10 @@ import java.util.List;
  */
 public interface AccessoryRepo {
     void createMulti(List<Accessory> accessoryList) throws Exception;
+
+    Accessory create(Accessory accessory) throws Exception;
+
+    boolean update(Accessory accessory) throws Exception;
+
+    boolean delete(Long accessoryId) throws Exception;
 }

@@ -11,7 +11,7 @@
     <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
     <result column="city_name" property="cityName" jdbcType="VARCHAR" />
-    <result column="city_id" property="cityId" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
     <result column="district_name" property="districtName" jdbcType="VARCHAR" />
     <result column="district_id" property="districtId" jdbcType="INTEGER" />
     <result column="address" property="address" jdbcType="VARCHAR" />
@@ -224,7 +224,7 @@
         city_name = #{cityName,jdbcType=VARCHAR},
       </if>
       <if test="cityId != null" >
-        city_id = #{cityId,jdbcType=VARCHAR},
+        city_id = #{cityId,jdbcType=INTEGER},
       </if>
       <if test="districtName != null" >
         district_name = #{districtName,jdbcType=VARCHAR},
@@ -298,7 +298,7 @@
       province_name = #{provinceName,jdbcType=VARCHAR},
       province_id = #{provinceId,jdbcType=INTEGER},
       city_name = #{cityName,jdbcType=VARCHAR},
-      city_id = #{cityId,jdbcType=VARCHAR},
+      city_id = #{cityId,jdbcType=INTEGER},
       district_name = #{districtName,jdbcType=VARCHAR},
       district_id = #{districtId,jdbcType=INTEGER},
       address = #{address,jdbcType=VARCHAR},

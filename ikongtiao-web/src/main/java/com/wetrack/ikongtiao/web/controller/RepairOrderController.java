@@ -1,5 +1,7 @@
 package com.wetrack.ikongtiao.web.controller;
 
+import com.wetrack.auth.domain.User;
+import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -27,10 +30,11 @@ public class RepairOrderController {
     RepairOrderService repairOrderService;
 
 
+    @SignTokenAuth
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
-    public String create(@RequestBody CreateForm form) throws Exception{
-
-        RepairOrder repairOrder = repairOrderService.create(form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
+    public String create(@RequestBody CreateForm form, HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        RepairOrder repairOrder = repairOrderService.create(Integer.valueOf(user.getId()), form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
         return repairOrder.getId().toString();
     }
 
@@ -47,36 +51,6 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/finish", method = {RequestMethod.POST})
     public void setFinished(@RequestParam(value = "id") Long id) throws Exception{
         repairOrderService.setFinished(id);
-    }
-
-    public static class OperationForm {
-        Integer adminUserId;
-        Long repairOrderId;
-        Integer fixerId;
-
-        public Integer getAdminUserId() {
-            return adminUserId;
-        }
-
-        public void setAdminUserId(Integer adminUserId) {
-            this.adminUserId = adminUserId;
-        }
-
-        public Long getRepairOrderId() {
-            return repairOrderId;
-        }
-
-        public void setRepairOrderId(Long repairOrderId) {
-            this.repairOrderId = repairOrderId;
-        }
-
-        public Integer getFixerId() {
-            return fixerId;
-        }
-
-        public void setFixerId(Integer fixerId) {
-            this.fixerId = fixerId;
-        }
     }
 
     public static class CreateForm {

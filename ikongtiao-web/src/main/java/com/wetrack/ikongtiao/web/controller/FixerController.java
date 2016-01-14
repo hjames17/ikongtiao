@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -140,23 +141,105 @@ public class FixerController {
 
     @SignTokenAuth
     @ResponseBody
-    @RequestMapping(value = BASE_PATH + "/info/update", method = RequestMethod.GET)
-    void update(HttpServletRequest request , @RequestBody UpdateForm form) throws Exception{
+    @RequestMapping(value = BASE_PATH + "/info/update", method = RequestMethod.POST)
+    String update(HttpServletRequest request , @RequestBody UpdateForm form) throws Exception{
         User user = (User)request.getAttribute("user");
         Fixer fixer = new Fixer();
         BeanUtils.copyProperties(form, fixer);
         fixer.setId(Integer.valueOf(user.getId()));
         fixerService.updateInfo(fixer);
+        return "ok";
     }
 
     static class UpdateForm{
         String name;
         String avatar;
         String address;
-        String provinceId;
-        String cityId;
-        String districtId;
+        Integer provinceId;
+        Integer cityId;
+        Integer districtId;
         Boolean inService;
+        /**
+         * latitude:纬度
+         */
+        private BigDecimal latitude;
+
+        /**
+         * longitude:经度
+         */
+        private BigDecimal longitude;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+        }
+
+        public Integer getProvinceId() {
+            return provinceId;
+        }
+
+        public void setProvinceId(Integer provinceId) {
+            this.provinceId = provinceId;
+        }
+
+        public Integer getCityId() {
+            return cityId;
+        }
+
+        public void setCityId(Integer cityId) {
+            this.cityId = cityId;
+        }
+
+        public Integer getDistrictId() {
+            return districtId;
+        }
+
+        public void setDistrictId(Integer districtId) {
+            this.districtId = districtId;
+        }
+
+        public Boolean isInService() {
+            return inService;
+        }
+
+        public void setInService(Boolean inService) {
+            this.inService = inService;
+        }
+
+        public BigDecimal getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(BigDecimal latitude) {
+            this.latitude = latitude;
+        }
+
+        public BigDecimal getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(BigDecimal longitude) {
+            this.longitude = longitude;
+        }
     }
 
 

@@ -72,7 +72,7 @@ public class RepairOrderController {
                 accessory.setMissionId(repairOrder.getMissionId());
             }
         }
-        repairOrderService.addCost(form.getRepairOrderId(), form.getAccessoryList(), form.getLaborCost());
+        repairOrderService.addCost(form.getRepairOrderId(), form.getAccessoryList(), form.getLaborCost(), form.isFinishCost());
     }
 
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.POST})
@@ -131,6 +131,7 @@ public class RepairOrderController {
         Long repairOrderId;
         List<Accessory> accessoryList;
         Float laborCost;
+        Boolean finishCost;
 
         public Long getRepairOrderId() {
             return repairOrderId;
@@ -154,6 +155,14 @@ public class RepairOrderController {
 
         public void setLaborCost(Float laborCost) {
             this.laborCost = laborCost;
+        }
+
+        public Boolean isFinishCost() {
+            return finishCost;
+        }
+
+        public void setFinishCost(Boolean finishCost) {
+            this.finishCost = finishCost;
         }
     }
 

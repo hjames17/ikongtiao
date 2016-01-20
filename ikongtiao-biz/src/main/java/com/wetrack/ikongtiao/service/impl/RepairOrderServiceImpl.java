@@ -1,16 +1,24 @@
 package com.wetrack.ikongtiao.service.impl;
 
+import com.wetrack.ikongtiao.constant.MissionState;
+import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
+import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.AccessoryRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.CommentRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
+import com.wetrack.message.push.PushData;
+import com.wetrack.message.push.PushEventType;
+import com.wetrack.message.push.PushProcess;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -33,6 +41,7 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         return repairOrderRepo.listForMission(missionId);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception{
         RepairOrder repairOrder = new RepairOrder();
@@ -42,12 +51,14 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         repairOrder.setMakeOrderNum(makeOrderNum);
         repairOrder.setRepairOrderDesc(repairOrderDesc);
         repairOrder.setAccessoryContent(accessoryContent);
-        return repairOrderRepo.create(repairOrder);
+        repairOrder = repairOrderRepo.create(repairOrder);
+
+        return repairOrder;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost) throws Exception{
+    public void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost, Boolean finishCost) throws Exception{
         //insert accessory list into accessory table
         if(accessoryList != null && accessoryList.size() > 0) {
             accessoryRepo.createMulti(accessoryList);
@@ -57,20 +68,32 @@ public class RepairOrderServiceImpl implements RepairOrderService{
             RepairOrder repairOrder = new RepairOrder();
             repairOrder.setId(repairOrderId);
             repairOrder.setLaborCost(laborCost);
+            if(finishCost){
+                repairOrder.setRepairOrderState((byte)1);
+                sendCostFinishEvent(repairOrderId);
+            }
             repairOrderRepo.update(repairOrder);
         }
 
-        //TODO 发送通知
     }
 
 
     @Override
     public void dispatchRepairOrder(Integer adminUserId, Long repairOrderId, Integer fixerId) throws Exception{
+        RepairOrder order = repairOrderRepo.getById(repairOrderId);
+        if(order == null){
+            throw new Exception("不存在的维修单");
+        }
+
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setFixerId(fixerId);
         repairOrder.setId(repairOrderId);
         repairOrder.setAdminUserId(adminUserId);
         repairOrderRepo.update(repairOrder);
+
+        Mission mission = new Mission();
+        mission.setId(order.getMissionId());
+        mission.setMissionState(MissionState.FIXING.getCode());
 
         //TODO 发送通知
     }
@@ -83,7 +106,7 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         repairOrder.setRepairOrderState((byte) 1);
         repairOrderRepo.update(repairOrder);
 
-        //TODO 发送通知给用户，有维修单待确认
+        sendCostFinishEvent(repairOrderId);
     }
 
     @Override
@@ -108,8 +131,25 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     }
 
     @Override
+    public void confirm(Long repairOrderId, boolean deny) throws Exception {
+
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setId(repairOrderId);
+        if(deny) {
+            repairOrder.setRepairOrderState((byte) -1);
+        }else{
+            repairOrder.setRepairOrderState((byte) 2);
+        }
+        repairOrderRepo.update(repairOrder);
+
+        //TODO 发送通知
+    }
+
+    @Override
     public RepairOrder getById(Long id) throws Exception{
-        return repairOrderRepo.getById(id);
+        RepairOrder repairOrder = repairOrderRepo.getById(id);
+        repairOrder.setAccessoryList(accessoryRepo.listOfRepairOrderId(repairOrder.getId()));
+        return repairOrder;
     }
 
     @Override
@@ -141,5 +181,34 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     @Override
     public boolean deleteAccessory(Long accessoryId) throws Exception {
         return accessoryRepo.delete(accessoryId);
+    }
+
+
+    @Value("${weixin.page.host}")
+    String weixinPageHost;
+    @Value("${weixin.page.mission}")
+    String weixinMissionPage;
+    static final String ACTION_CONFIRMATION = "repairOderId";
+
+    @Resource
+    private PushProcess pushProcess;
+
+    @Autowired
+    MissionRepo missionRepo;
+
+    private void sendCostFinishEvent(Long repairOrderId){
+        try {
+            RepairOrder order = repairOrderRepo.getById(repairOrderId);
+            Mission mission = missionRepo.getMissionById(order.getMissionId());
+            PushData pushData = new PushData();
+            pushData.setUserId(mission.getUserId());
+            String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_CONFIRMATION, mission.getUserId(), repairOrderId);
+            pushData.setUrl(url);
+            pushData.setFirstData("");
+            pushData.setSecondData("");
+            pushProcess.post(PushEventType.WAITING_CONFIRM_FIX_ORDER, pushData);
+        }catch(Exception e){
+            //TODO 报警
+        }
     }
 }

@@ -32,9 +32,9 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
-                    <url>http://admin.ikongtiao.wetrack.studio:8080/manager/text</url>
+                    <url>http://115.29.203.145:8090/manager/text</url>
                     <server>RemoteTomcatServer</server>
-                    <path>/</path>
+                    <path>/admin</path>
                 </configuration>
             </plugin>
         </plugins>

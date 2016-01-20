@@ -34,6 +34,11 @@ public class MissionRepoImpl implements MissionRepo {
 		return commonDao.mapper(Mission.class).sql("selectByPrimaryKey").session().selectOne(missionId);
 	}
 
+	@Override
+	public MissionDto getMissionDetailById(Integer missionId) throws Exception {
+		return commonDao.mapper(MissionDto.class).sql("selectById").session().selectOne(missionId);
+	}
+
 	@Override public List<MissionDto> listMissionByAppQueryParam(AppMissionQueryParam param) {
 		return commonDao.mapper(MissionDto.class).sql("listMissionByAppQueryParam").session().selectList(param);
 	}
@@ -61,4 +66,5 @@ public class MissionRepoImpl implements MissionRepo {
 		Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
 		return count == null ? 0 : count;
 	}
+
 }

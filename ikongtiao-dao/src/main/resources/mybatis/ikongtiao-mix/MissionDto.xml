@@ -34,6 +34,17 @@
     mission_address.name, mission_address.phone, mission_address.province_id, mission_address.city_id, mission_address.district_id,
     mission_address.detail, mission_address.longitude, mission_address.latitude
   </sql>
+
+
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    SELECT <include refid="Mission_Dto_List"/>, COUNT(repair_order.id) as repair_order_count
+    from mission LEFT OUTER JOIN repair_order
+    ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN mission_address
+    ON mission.mission_address_id = mission_address.id
+    WHERE mission.id = #{id}
+  </select>
+
   <select id="listMissionByAppQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
     SELECT DISTINCT <include refid="Mission_Dto_List"/> , COUNT(repair_order.id) as repair_order_count
     from mission LEFT OUTER JOIN repair_order
@@ -44,8 +55,17 @@
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
       </if>
-      <if test="type==0">
-        and  mission_state &lt; 10
+      <if test="type!=null">
+        <choose>
+          <when test="type==0">
+            and mission.mission_state &lt; 10
+            and mission.mission_state &gt;= 0
+          </when>
+          <when test="type==1">
+            and (mission.mission_state = 10
+            or mission.mission_state = -1)
+          </when>
+        </choose>
       </if>
       <if test="adminUserId!=null">
         and  admin_user_id = #{adminUserId}
@@ -61,16 +81,22 @@
   <select id="countMissionByAppQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
     select
     count(*) as totalSize
-    from mission LEFT OUTER JOIN repair_order
-    ON repair_order.mission_id = mission.id
-    LEFT OUTER JOIN mission_address
-    ON mission.mission_address_id = mission_address.id
+    from mission
     <where>
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
       </if>
-      <if test="type==0">
-        and mission_state &lt; 10
+      <if test="type!=null">
+        <choose>
+          <when test="type==0">
+            and mission.mission_state &lt; 10
+            and mission.mission_state &gt;= 0
+          </when>
+          <when test="type==1">
+            and (mission.mission_state = 10
+            or mission.mission_state = -1)
+          </when>
+        </choose>
       </if>
     </where>
   </select>

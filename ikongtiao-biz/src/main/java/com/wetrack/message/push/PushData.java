@@ -8,7 +8,7 @@ public class PushData {
 	private String userId;
 	private Integer fixId;
 
-	private String url = "www.baidu.com";
+	private String url = "";
 
 	private String firstData = "";
 

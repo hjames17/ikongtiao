@@ -18,6 +18,7 @@
     <include refid="Base_Column_List" />
     from accessory
     where repair_order_id = #{id,jdbcType=BIGINT}
+    ORDER BY name
   </select>
   <select id="selectByRepairOrderIds" resultMap="BaseResultMap" parameterType="java.util.List" >
     select

@@ -15,4 +15,6 @@ public interface AccessoryRepo {
     boolean update(Accessory accessory) throws Exception;
 
     boolean delete(Long accessoryId) throws Exception;
+
+    List<Accessory> listOfRepairOrderId(Long repairOrderId) throws Exception;
 }

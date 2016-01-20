@@ -13,7 +13,7 @@ import com.wetrack.ikongtiao.param.FixerQueryForm;
  */
 public interface FixerService {
 
-    Fixer createAccount(String phone, String name, String password, String verification) throws Exception;
+    Fixer createAccount(String phone, String name, String password) throws Exception;
 
     Token login(String phone, String password) throws Exception;
 
@@ -38,4 +38,6 @@ public interface FixerService {
     FixerProfessionInfo getProfessInfo(int fixerId, int type) throws Exception;
 
     void updateInfo(Fixer fixer) throws Exception;
+
+    Fixer getFixer(Integer id) throws Exception;
 }

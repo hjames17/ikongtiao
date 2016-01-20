@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -47,5 +48,11 @@ public class MissionController {
 			throw new AjaxException(MissionErrorMessage.MISSION_LIST_PARAM_ERROR);
 		}
 		return missionService.listMissionByAppQueryParam(param);
+	}
+
+	@RequestMapping("/mission/detail")
+	@ResponseBody
+	public MissionDto getMission(@RequestParam(value="id") Integer id) throws Exception{
+		return missionService.getMission(id);
 	}
 }

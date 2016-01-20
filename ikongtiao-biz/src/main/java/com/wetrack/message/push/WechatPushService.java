@@ -1,14 +1,10 @@
 package com.wetrack.message.push;
 
 import me.chanjar.weixin.common.exception.WxErrorException;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
-import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.api.WxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.WxMpCustomMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,25 +22,9 @@ public class WechatPushService implements PushService {
 	@Value("${wechat.app.aesKey}")
 	String aesKey;
 
-
-	@Bean WxMpConfigStorage getWeixinConfigStorage(){
-		WxMpInMemoryConfigStorage wxMpConfigStorage = new WxMpInMemoryConfigStorage();
-		wxMpConfigStorage.setAppId(appId);
-		wxMpConfigStorage.setSecret(appSecret);
-		wxMpConfigStorage.setToken(token);
-		wxMpConfigStorage.setAesKey(aesKey);
-		return wxMpConfigStorage;
-	}
-
 	@Autowired
-	@Bean
-	WxMpService getWeixinService(WxMpConfigStorage weixinConfigStorage){
+	WxMpService wxMpService;
 
-		WxMpService weixinService = new WxMpServiceImpl();
-		weixinService.setWxMpConfigStorage(weixinConfigStorage);
-
-		return weixinService;
-	}
 	@Override public boolean pushMessage(Object messageTo, String title, String content, String url, String... data) {
 		WxMpCustomMessage.WxArticle article1 = new WxMpCustomMessage.WxArticle();
 		article1.setUrl(url);
@@ -58,7 +38,7 @@ public class WechatPushService implements PushService {
 
 		// 设置消息的内容等信息
 		try {
-			getWeixinService(getWeixinConfigStorage()).customMessageSend(message);
+			wxMpService.customMessageSend(message);
 		} catch (WxErrorException e) {
 			e.printStackTrace();
 		}

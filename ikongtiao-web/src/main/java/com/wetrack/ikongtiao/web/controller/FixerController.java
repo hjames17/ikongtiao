@@ -11,14 +11,12 @@ import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.utils.RegExUtil;
+import com.wetrack.verification.VerificationCodeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -46,6 +44,9 @@ public class FixerController {
     @Autowired
     FixerService fixerService;
 
+    @Autowired
+    VerificationCodeService verificationCodeService;
+
     private static final String BASE_PATH = "/fixer";
 
 
@@ -56,8 +57,11 @@ public class FixerController {
         if(!RegExUtil.isMobilePhone(form.getPhone())){
             throw new Exception("手机号码无效!");
         }
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+            throw new Exception("验证码无效");
+        }
 
-        fixerService.createAccount(form.getPhone(), form.getName(), form.getPassword(), form.getVerfication());
+        fixerService.createAccount(form.getPhone(), form.getName(), form.getPassword());
 
     }
 
@@ -141,6 +145,14 @@ public class FixerController {
 
     @SignTokenAuth
     @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/info", method = RequestMethod.GET)
+    Fixer info(HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        return fixerService.getFixer(Integer.valueOf(user.getId()));
+    }
+
+    @SignTokenAuth
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/info/update", method = RequestMethod.POST)
     String update(HttpServletRequest request , @RequestBody UpdateForm form) throws Exception{
         User user = (User)request.getAttribute("user");
@@ -149,6 +161,120 @@ public class FixerController {
         fixer.setId(Integer.valueOf(user.getId()));
         fixerService.updateInfo(fixer);
         return "ok";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/code", method = RequestMethod.GET)
+    String getRegisterCode(HttpServletRequest request , @RequestParam(value = "phone") String phone) throws Exception{
+        if(!RegExUtil.isMobilePhone(phone)){
+            throw new Exception("无效的手机号码！");
+        }
+        verificationCodeService.sendVericationCode(phone);
+        return "ok";
+    }
+
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/phone/bind", method = RequestMethod.POST)
+    String bindPhone(HttpServletRequest request , @RequestBody BindForm form) throws Exception{
+        User user = (User)request.getAttribute("user");
+        Fixer fixer = fixerService.getFixer(Integer.valueOf(user.getId()));
+        if(fixer.getPhone() != null){
+            throw new Exception("已经绑定过了电话，不能重复绑定");
+        }
+        if(!RegExUtil.isMobilePhone(form.getPhone())){
+            throw new Exception("手机号码错误!");
+        }
+        if(form.getVerfication() == null){
+            throw new Exception("验证码为空！");
+        }
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+            throw new Exception("验证码错误！");
+        }
+
+        Fixer fixer1 = new Fixer();
+        fixer1.setId(Integer.valueOf(user.getId()));
+        fixer1.setPhone(form.getPhone());
+        fixerService.updateInfo(fixer1);
+        return "ok";
+    }
+
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/phone/rebind", method = RequestMethod.POST)
+    String rebindPhone(HttpServletRequest request , @RequestBody BindForm form) throws Exception{
+        User user = (User)request.getAttribute("user");
+        Fixer fixer = fixerService.getFixer(Integer.valueOf(user.getId()));
+        if(fixer.getPhone() == null){
+            throw new Exception("未绑定过手机，不能换绑");
+        }
+        if(!fixer.getPhone().equals(form.getPhone())){
+            throw new Exception("原手机号码错误!");
+        }
+        if(form.getVerfication() == null){
+            throw new Exception("原手机验证码为空！");
+        }
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+            throw new Exception("原手机验证码错误！");
+        }
+        if(!RegExUtil.isMobilePhone(form.getNewPhone())){
+            throw new Exception("新手机号码错误");
+        }
+        if(form.getNewVerfication() == null){
+            throw new Exception("新手机验证码为空！");
+        }
+        if(form.getPhone().equals(form.getNewPhone())){
+            throw new Exception("新老手机号码一致！");
+        }
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+            throw new Exception("新验证码错误！");
+        }
+
+        Fixer fixer1 = new Fixer();
+        fixer1.setId(Integer.valueOf(user.getId()));
+        fixer1.setPhone(form.getPhone());
+        fixerService.updateInfo(fixer1);
+        return "ok";
+    }
+
+
+    static class BindForm{
+        String phone;
+        String verfication;
+        String newPhone;
+        String newVerfication;
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
+        public String getVerfication() {
+            return verfication;
+        }
+
+        public void setVerfication(String verfication) {
+            this.verfication = verfication;
+        }
+
+        public String getNewPhone() {
+            return newPhone;
+        }
+
+        public void setNewPhone(String newPhone) {
+            this.newPhone = newPhone;
+        }
+
+        public String getNewVerfication() {
+            return newVerfication;
+        }
+
+        public void setNewVerfication(String newVerfication) {
+            this.newVerfication = newVerfication;
+        }
     }
 
     static class UpdateForm{

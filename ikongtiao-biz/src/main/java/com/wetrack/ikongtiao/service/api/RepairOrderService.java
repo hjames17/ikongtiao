@@ -13,7 +13,7 @@ public interface RepairOrderService {
 
     RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception;
 
-    void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost) throws Exception;
+    void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost, Boolean finishCost) throws Exception;
 
     void dispatchRepairOrder(Integer adminUserId, Long repairOrderId, Integer fixerId) throws Exception;
 
@@ -30,4 +30,6 @@ public interface RepairOrderService {
     boolean updateAccessory(Accessory accessory) throws Exception;
 
     boolean deleteAccessory(Long accessoryId) throws Exception;
+
+    void confirm(Long repairOrderId, boolean deny) throws Exception;
 }

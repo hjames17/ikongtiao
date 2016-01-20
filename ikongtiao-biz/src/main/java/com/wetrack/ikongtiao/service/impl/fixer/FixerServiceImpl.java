@@ -251,14 +251,18 @@ public class FixerServiceImpl implements FixerService {
     }
 
     @Override
-    public Fixer createAccount(String phone, String name, String password, String verification) throws Exception {
+    public Fixer getFixer(Integer id) throws Exception {
+        return fixerRepo.getFixerById(id);
+    }
+
+    @Override
+    public Fixer createAccount(String phone, String name, String password) throws Exception {
         FixerQueryForm query = new FixerQueryForm();
         query.setPhone(phone);
         int count = fixerRepo.countFixerByQueryParam(query);
         if(count > 0){
             throw new Exception("该号码已经被注册");
         }
-        //TODO 短信验证码校验
         Fixer fixer = new Fixer();
         fixer.setPhone(phone);
         fixer.setName(name);

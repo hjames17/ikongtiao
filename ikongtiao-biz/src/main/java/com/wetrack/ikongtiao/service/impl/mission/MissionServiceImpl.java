@@ -3,7 +3,10 @@ package com.wetrack.ikongtiao.service.impl.mission;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.constant.MissionState;
-import com.wetrack.ikongtiao.domain.*;
+import com.wetrack.ikongtiao.domain.MachineType;
+import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.MissionAddress;
+import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
@@ -17,10 +20,11 @@ import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.message.push.PushData;
-import com.wetrack.message.push.PushProcess;
 import com.wetrack.message.push.PushEventType;
+import com.wetrack.message.push.PushProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -54,6 +58,13 @@ public class MissionServiceImpl implements MissionService {
 
 	@Resource
 	private FixerRepo fixerRepo;
+
+	@Value("${weixin.page.host}")
+	String weixinPageHost;
+	@Value("${weixin.page.mission}")
+	String weixinMissionPage;
+	static final String ACTION_DETAIL = "detail";
+
 	@Transactional
 	@Override public Mission saveMission(MissionSubmitParam param) {
 		UserInfo userInfo = userInfoRepo.getById(param.getUserId());
@@ -149,13 +160,15 @@ public class MissionServiceImpl implements MissionService {
 			throw new Exception("任务已经被受理");
 		}
 		//修改状态
-		mission.setMissionState(MissionState.ACCEPET.getCode());
+		mission.setMissionState(MissionState.ACCEPT.getCode());
 		missionRepo.update(mission);
 
+		//TODO 重构，数据获取提取分离出去，不要放在这里
 		PushData pushData = new PushData();
 		pushData.setUserId(mission.getUserId());
+		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
+		pushData.setUrl(url);
 		pushProcess.post(PushEventType.ACCEPT_MISSION,pushData);
-		//TODO 发送通知, 记录操作
 	}
 
 	@Override
@@ -173,21 +186,31 @@ public class MissionServiceImpl implements MissionService {
 		mission.setMissionState(MissionState.REJECT.getCode());
 		missionRepo.update(mission);
 
-		//TODO，发送通知, 记录操作
+		PushData pushData = new PushData();
+		pushData.setUserId(mission.getUserId());
+		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
+		pushData.setUrl(url);
+		pushProcess.post(PushEventType.REJECT_MISSION, pushData);
 	}
 
 	@Override
 	public void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception {
+		Mission mission = missionRepo.getMissionById(missionId);
+
 		//修改状态
-		Mission mission = new Mission();
-		mission.setId(missionId);
-		mission.setFixerId(fixerId);
-		missionRepo.update(mission);
+		if(mission.getMissionState() != MissionState.DISPATCHED.getCode() || mission.getFixerId() != fixerId) {
+			mission.setId(missionId);
+			mission.setFixerId(fixerId);
+			mission.setMissionState(MissionState.DISPATCHED.getCode());
+			missionRepo.update(mission);
+		}
+
 		PushData pushData = new PushData();
 		pushData.setUserId(mission.getUserId());
 		pushData.setFixId(fixerId);
+		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
+		pushData.setUrl(url);
 		pushProcess.post(PushEventType.ASSIGNED_MISSION,pushData);
-		//TODO 发送通知, 记录操作
 	}
 
 
@@ -238,6 +261,10 @@ public class MissionServiceImpl implements MissionService {
 			missionRepo.update(mission);
 		}
 
+	}
 
+	@Override
+	public MissionDto getMission(Integer id) throws Exception {
+		return missionRepo.getMissionDetailById(id);
 	}
 }

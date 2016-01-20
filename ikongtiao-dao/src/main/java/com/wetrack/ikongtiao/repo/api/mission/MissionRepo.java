@@ -24,6 +24,8 @@ public interface MissionRepo {
 	 */
 	Mission getMissionById(Integer missionId);
 
+	MissionDto getMissionDetailById(Integer missionId) throws Exception;
+
 	/**
 	 * 根据用户id获取任务列表
 	 *

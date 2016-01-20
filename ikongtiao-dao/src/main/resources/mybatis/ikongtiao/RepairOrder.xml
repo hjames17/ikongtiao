@@ -14,13 +14,14 @@
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="name_plate_img" property="namePlateImg" jdbcType="VARCHAR" />
     <result column="make_order_num" property="makeOrderNum" jdbcType="VARCHAR" />
+    <result column="accessory_content" property="accessoryContent" jdbcType="VARCHAR" />
     <result column="labor_cost" property="laborCost" jdbcType="FLOAT" />
     <result column="discount" property="discount" jdbcType="FLOAT" />
     <result column="payment_info_id" property="paymentInfoId" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
-    update_time, name_plate_img, labor_cost, discount, payment_info_id
+    update_time, name_plate_img, labor_cost, discount, payment_info_id, accessory_content
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -48,6 +49,9 @@
       <if test="makeOrderNum != null" >
         make_order_num,
       </if>
+      <if test="accessoryContent != null" >
+        accessory_content,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
         #{missionId,jdbcType=INTEGER},
@@ -60,6 +64,9 @@
       </if>
       <if test="makeOrderNum != null" >
         #{makeOrderNum,jdbcType=VARCHAR},
+      </if>
+      <if test="accessoryContent != null" >
+        #{accessoryContent,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

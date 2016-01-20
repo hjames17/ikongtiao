@@ -1,12 +1,8 @@
 package com.utils.test;
 
-import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.param.MissionSubmitParam;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,47 +61,50 @@ public class MissionServiceTest {
 //		System.out.println(s);
 //	}
 
+//	@Test
+//	public void testAcceptMission() throws Exception{
+//		MissionSubmitParam param = new MissionSubmitParam();
+//		param.setUserId("15121522052300000010");
+//		param.setMachineTypeId(3);
+//		param.setPhone("18768125668");
+//		Mission mission = missionService.saveMission(param);
+//		addedList.add(mission);
+//		System.out.println("CREATED :" + mission);
+//
+//		Integer testAdminUserId = 12345;
+//		String testDescribe = "describe";
+//		//do test
+//		missionService.acceptMission(mission.getId(), testAdminUserId);
+//
+//		Mission read = missionRepo.getMissionById(mission.getId());
+//		Assert.assertEquals(MissionState.ACCEPT.getCode(), read.getMissionState());
+//
+//
+//		Mission readAgain = missionRepo.getMissionById(mission.getId());
+//		Assert.assertEquals(testDescribe, readAgain.getMissionDesc());
+//
+//	}
+
 	@Test
-	public void testAcceptMission() throws Exception{
-		MissionSubmitParam param = new MissionSubmitParam();
-		param.setUserId("15121522052300000010");
-		param.setMachineTypeId(3);
-		param.setPhone("18768125668");
-		Mission mission = missionService.saveMission(param);
-		addedList.add(mission);
-		System.out.println("CREATED :" + mission);
+	public void testDispatchMission() throws Exception{
 
 		Integer testAdminUserId = 12345;
-		String testDescribe = "describe";
 		//do test
-		missionService.acceptMission(mission.getId(), testAdminUserId);
+		missionService.dispatchMission(27, 3, testAdminUserId);
 
-		Mission read = missionRepo.getMissionById(mission.getId());
-		Assert.assertEquals(MissionState.ACCEPET.getCode(), read.getMissionState());
+		Thread.sleep(60000);
+	}
 
-//		try{
-//			missionService.denyMission(mission.getId(), testAdminUserId, "reason");
-//		}catch(Exception e){
-//			Assert.assertTrue(true);
+//	@After
+//	public void afterTest(){
+//		for(Mission mission : addedList){
+//			try {
+//				missionRepo.deleteMission(mission.getId());
+//			} catch (Exception e) {
+//				Assert.fail("error on deleting added mission with id " + mission.getId());
+//				e.printStackTrace();
+//			}
 //		}
-
-//		missionService.submitMissionDescription(form.getMissionId(), form.getDescription(), form.getProvinceId(), form.getCityId(), mission.getId(), testDescribe, form.getLatitude(), form.getLatitude());
-
-		Mission readAgain = missionRepo.getMissionById(mission.getId());
-		Assert.assertEquals(testDescribe, readAgain.getMissionDesc());
-
-	}
-
-	@After
-	public void afterTest(){
-		for(Mission mission : addedList){
-			try {
-				missionRepo.deleteMission(mission.getId());
-			} catch (Exception e) {
-				Assert.fail("error on deleting added mission with id " + mission.getId());
-				e.printStackTrace();
-			}
-		}
-	}
+//	}
 
 }

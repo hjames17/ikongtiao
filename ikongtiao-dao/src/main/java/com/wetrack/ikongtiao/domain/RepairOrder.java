@@ -40,7 +40,7 @@ public class RepairOrder implements Serializable {
     private String repairOrderDesc;
 
     /**
-     * repair_order_state:维修单状态:0－待报价；1－待确认；2－已确认；3－等待配件；4－等待指派；5－维修中；6－完成；7－已关闭；
+     * repair_order_state:维修单状态:0－待报价；1－待确认；2－已确认；3－等待配件；4－等待指派；5－维修中；6－完成；-1－已关闭；
      */
     private Byte repairOrderState;
 

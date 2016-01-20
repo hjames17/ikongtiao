@@ -13,38 +13,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class WebConfig {
-
-    @Value("${wechat.app.token}")
-    String token;
-    @Value("${wechat.app.appSecret}")
-    String appSecret;
-    @Value("${wechat.app.appId}")
-    String appId;
-    @Value("${wechat.app.aesKey}")
-    String aesKey;
-
-
-    @Bean
-    WxMpConfigStorage getWeixinConfigStorage(){
-        WxMpInMemoryConfigStorage wxMpConfigStorage = new WxMpInMemoryConfigStorage();
-        wxMpConfigStorage.setAppId(appId);
-        wxMpConfigStorage.setSecret(appSecret);
-        wxMpConfigStorage.setToken(token);
-        wxMpConfigStorage.setAesKey(aesKey);
-        return wxMpConfigStorage;
-    }
-
     @Autowired
-    @Bean
-    WxMpService getWeixinService(WxMpConfigStorage weixinConfigStorage){
-
-        WxMpService weixinService = new WxMpServiceImpl();
-        weixinService.setWxMpConfigStorage(weixinConfigStorage);
-
-        return weixinService;
-    }
-
-
+    WxMpService weixinService;
 
     @Autowired
     SubscriptionHandler subscriptionHandler;

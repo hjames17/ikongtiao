@@ -25,7 +25,8 @@ public class PushProcess {
 	@Resource
 	private FixerRepo fixerRepo;
 
-	public void post(PushEventType pushEnventType, PushData pushData) {
+
+	public void post(PushEventType pushEventType, PushData pushData) {
 		Utils.get(ThreadExecutor.class).execute(new ThreadExecutor.Executor() {
 			@Override public void execute() {
 				UserInfo userInfo = userInfoRepo.getById(pushData.getUserId());
@@ -38,14 +39,21 @@ public class PushProcess {
 				if (fixer != null) {
 					data.put("fixer", fixer.getPhone());
 				}
-				String[] channelIds = pushEnventType.getChannelIds().split("\\|");
-				String[] contents = pushEnventType.getContent().split("\\|");
+				String[] channelIds = pushEventType.getChannelIds().split("\\|");
+				String[] contents = pushEventType.getContent().split("\\|");
 				for (int i = 0; i < channelIds.length; i++) {
+					/**
+					 * TODO:
+					 * 1.扩展一个消息体组装器messageAssembler, 为每个消息类型和每个通道制定一个实现，接收一个PushData, 组装出特定通道和消息所需要的内容体
+					 * 2.pushService.pushMessage接收一个messageAssembler对象，传入消息类型和pushData,
+					 */
+
+
 					String content = String.format(contents[i], pushData.getFirstData(), pushData.getSecondData());
 					PushChannelType pushChannelType = PushChannelType.parseCode(channelIds[i]);
 					PushService pushService = (PushService) ContainerContext.get().getContext()
 					                                                        .getBean(pushChannelType.getBeanName());
-					pushService.pushMessage(data.get(pushChannelType.getToKey()), pushEnventType.getTitile(), content,
+					pushService.pushMessage(data.get(pushChannelType.getToKey()), pushEventType.getTitile(), content,
 							pushData.getUrl(), "http://test.weiwaisong.com/images/ikongtiao/2.png");
 				}
 			}

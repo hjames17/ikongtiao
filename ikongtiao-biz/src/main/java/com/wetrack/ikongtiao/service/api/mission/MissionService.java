@@ -38,4 +38,6 @@ public interface MissionService {
 	void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception;
 	void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address, Double longitude, Double latitude) throws Exception;
 
+	MissionDto getMission(Integer id) throws Exception;
+
 }

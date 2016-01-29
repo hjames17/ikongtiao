@@ -16,6 +16,7 @@
             <groupId>com.wetrack.ikongtiao</groupId>
             <artifactId>ikongtiao-biz</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>

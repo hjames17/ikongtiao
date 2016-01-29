@@ -13,7 +13,6 @@ public class Token implements Serializable{
     private final long created = System.currentTimeMillis();
     private final String token;
     private final User user;
-    private boolean expired; //token已经过期
     private boolean loggedout; //token已经退出
 
     public Token(String token, User user) {
@@ -30,7 +29,7 @@ public class Token implements Serializable{
     }
 
     public boolean isExpired(){
-        return expired;
+        return !user.isNeverExpired() && ((System.currentTimeMillis() - created)/1000) > user.getLoginLifeTime();
     }
 
     public  boolean isLoggedout(){

@@ -20,6 +20,11 @@ public class RepairOrder implements Serializable {
     private Long id;
 
     /**
+     * user_id:用户Id
+     */
+    private String userId;
+
+    /**
      * mission_id:任务id
      */
     private Integer missionId;
@@ -40,7 +45,7 @@ public class RepairOrder implements Serializable {
     private String repairOrderDesc;
 
     /**
-     * repair_order_state:维修单状态:0－待报价；1－待确认；2－已确认；3－等待配件；4－等待指派；5－维修中；6－完成；-1－已关闭；
+     * repair_order_state:维修单状态:0－待报价；1－待确认；2－已确认/等待配件；3－等待指派；4－维修中；5－完成；-1－已关闭；
      */
     private Byte repairOrderState;
 
@@ -316,6 +321,14 @@ public class RepairOrder implements Serializable {
         this.creatorFixerId = creatorFixerId;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     /**
      * This method corresponds to the database table repair_order
      */
@@ -326,6 +339,7 @@ public class RepairOrder implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
+        sb.append(", userId=").append(userId);
         sb.append(", missionId=").append(missionId);
         sb.append(", fixerId=").append(fixerId);
         sb.append(", repairOrderDesc=").append(repairOrderDesc);
@@ -337,4 +351,5 @@ public class RepairOrder implements Serializable {
         sb.append("]");
         return sb.toString();
     }
+
 }

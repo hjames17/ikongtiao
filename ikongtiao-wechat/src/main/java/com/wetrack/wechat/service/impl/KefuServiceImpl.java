@@ -124,4 +124,8 @@ public class KefuServiceImpl implements KefuService{
                 new TypeToken<List<WxKefuOut>>() {
                 }.getType());
     }
+
+    public static void main(String[] args){
+        System.out.println(MD5.encryptHex("123456"));
+    }
 }

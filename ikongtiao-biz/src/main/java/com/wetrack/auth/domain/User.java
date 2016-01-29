@@ -14,8 +14,11 @@ import java.util.Collection;
  */
 public class User implements UserDetails {
 
+    public static final int NEVER_EXPIRED = -1;
+
     String id;
     String password;
+    int loginLifeTime; //登录有效期，单位为秒
 
     /**
      * 角色定义，这里不做预定义，由业务自行定义
@@ -36,9 +39,10 @@ public class User implements UserDetails {
      * @param password
      * @param roles, 角色名称的集合
      */
-    public User(String id, String password, String... roles){
+    public User(String id, String password, int loginLifeTime, String... roles){
         this.id = id;
         this.password = password;
+        this.loginLifeTime = loginLifeTime;
         this.roles = new ArrayList<GrantedAuthority>();
         if(roles != null) {
             for (String r : roles) {
@@ -101,6 +105,19 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public int getLoginLifeTime() {
+        return loginLifeTime;
+    }
+
+    public void setLoginLifeTime(int loginLifeTime) {
+        this.loginLifeTime = loginLifeTime;
+    }
+
+    public boolean isNeverExpired(){
+        return loginLifeTime == NEVER_EXPIRED;
+    }
+
 
     @Override
     public String toString(){

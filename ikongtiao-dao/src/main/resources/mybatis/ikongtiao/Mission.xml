@@ -10,14 +10,14 @@
     <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
-    <result column="mission_address_id" property="missionAddressId" jdbcType="INTEGER" />
+    <!--<result column="mission_address_id" property="missionAddressId" jdbcType="INTEGER" />-->
     <result column="operator" property="operator" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_id, machine_type_id, mission_desc, mission_state, is_need_more, fixer_id,
-    admin_user_id, mission_address_id, operator, create_time, update_time
+    admin_user_id, operator, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -41,11 +41,11 @@
     </selectKey>
     insert into mission (user_id, machine_type_id, mission_desc,
       mission_state, is_need_more, fixer_id, 
-      admin_user_id, mission_address_id, operator, 
+      admin_user_id, operator,
       create_time, update_time)
     values (#{userId,jdbcType=VARCHAR}, #{machineTypeId,jdbcType=INTEGER}, #{missionDesc,jdbcType=VARCHAR},
       #{missionState,jdbcType=TINYINT}, #{isNeedMore,jdbcType=TINYINT}, #{fixerId,jdbcType=INTEGER}, 
-      #{adminUserId,jdbcType=INTEGER}, #{missionAddressId,jdbcType=INTEGER}, #{operator,jdbcType=VARCHAR}, 
+      #{adminUserId,jdbcType=INTEGER}, #{operator,jdbcType=VARCHAR},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.Mission" >
@@ -75,9 +75,9 @@
       <if test="adminUserId != null" >
         admin_user_id,
       </if>
-      <if test="missionAddressId != null" >
-        mission_address_id,
-      </if>
+      <!--<if test="missionAddressId != null" >-->
+        <!--mission_address_id,-->
+      <!--</if>-->
       <if test="operator != null" >
         operator,
       </if>
@@ -110,9 +110,9 @@
       <if test="adminUserId != null" >
         #{adminUserId,jdbcType=INTEGER},
       </if>
-      <if test="missionAddressId != null" >
-        #{missionAddressId,jdbcType=INTEGER},
-      </if>
+      <!--<if test="missionAddressId != null" >-->
+        <!--#{missionAddressId,jdbcType=INTEGER},-->
+      <!--</if>-->
       <if test="operator != null" >
         #{operator,jdbcType=VARCHAR},
       </if>
@@ -148,9 +148,9 @@
       <if test="adminUserId != null" >
         admin_user_id = #{adminUserId,jdbcType=INTEGER},
       </if>
-      <if test="missionAddressId != null" >
-        mission_address_id = #{missionAddressId,jdbcType=INTEGER},
-      </if>
+      <!--<if test="missionAddressId != null" >-->
+        <!--mission_address_id = #{missionAddressId,jdbcType=INTEGER},-->
+      <!--</if>-->
       <if test="operator != null" >
         operator = #{operator,jdbcType=VARCHAR},
       </if>
@@ -172,7 +172,6 @@
       is_need_more = #{isNeedMore,jdbcType=TINYINT},
       fixer_id = #{fixerId,jdbcType=INTEGER},
       admin_user_id = #{adminUserId,jdbcType=INTEGER},
-      mission_address_id = #{missionAddressId,jdbcType=INTEGER},
       operator = #{operator,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}

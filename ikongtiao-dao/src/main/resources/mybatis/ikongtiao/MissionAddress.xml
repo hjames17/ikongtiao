@@ -8,7 +8,7 @@
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
     <result column="city_id" property="cityId" jdbcType="INTEGER" />
     <result column="district_id" property="districtId" jdbcType="INTEGER" />
-    <result column="detail" property="detail" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="latitude" property="latitude" jdbcType="DECIMAL" />
     <result column="longitude" property="longitude" jdbcType="DECIMAL" />
     <result column="is_deleted" property="isDeleted" jdbcType="BIT" />
@@ -16,7 +16,7 @@
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, phone, name, province_id, city_id, district_id, detail, latitude, longitude, 
+    id, phone, name, province_id, city_id, district_id, address, latitude, longitude,
     is_deleted, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -34,11 +34,11 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into mission_address (phone, name, province_id, 
-      city_id, district_id, detail, 
+      city_id, district_id, address,
       latitude, longitude, is_deleted, 
       create_time, update_time)
     values (#{phone,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{provinceId,jdbcType=INTEGER}, 
-      #{cityId,jdbcType=INTEGER}, #{districtId,jdbcType=INTEGER}, #{detail,jdbcType=VARCHAR}, 
+      #{cityId,jdbcType=INTEGER}, #{districtId,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR},
       #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL}, #{isDeleted,jdbcType=BIT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
@@ -63,8 +63,8 @@
       <if test="districtId != null" >
         district_id,
       </if>
-      <if test="detail != null" >
-        detail,
+      <if test="address != null" >
+        address,
       </if>
       <if test="latitude != null" >
         latitude,
@@ -98,8 +98,8 @@
       <if test="districtId != null" >
         #{districtId,jdbcType=INTEGER},
       </if>
-      <if test="detail != null" >
-        #{detail,jdbcType=VARCHAR},
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
       </if>
       <if test="latitude != null" >
         #{latitude,jdbcType=DECIMAL},
@@ -136,8 +136,8 @@
       <if test="districtId != null" >
         district_id = #{districtId,jdbcType=INTEGER},
       </if>
-      <if test="detail != null" >
-        detail = #{detail,jdbcType=VARCHAR},
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
       </if>
       <if test="latitude != null" >
         latitude = #{latitude,jdbcType=DECIMAL},
@@ -164,7 +164,7 @@
       province_id = #{provinceId,jdbcType=INTEGER},
       city_id = #{cityId,jdbcType=INTEGER},
       district_id = #{districtId,jdbcType=INTEGER},
-      detail = #{detail,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
       latitude = #{latitude,jdbcType=DECIMAL},
       longitude = #{longitude,jdbcType=DECIMAL},
       is_deleted = #{isDeleted,jdbcType=BIT},

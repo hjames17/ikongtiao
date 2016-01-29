@@ -45,12 +45,14 @@ public class RepairOrderController {
 
     @RequestMapping(value = BASE_PATH , method = {RequestMethod.GET})
     public RepairOrder get(@RequestParam(value = "id") Long id) throws Exception{
-        return repairOrderService.getById(id);
+        return repairOrderService.getById(id, false);
     }
 
+    @SignTokenAuth
     @RequestMapping(value = BASE_PATH + "/finish", method = {RequestMethod.POST})
-    public void setFinished(@RequestParam(value = "id") Long id) throws Exception{
+    public String setFinished(@RequestBody Long id) throws Exception{
         repairOrderService.setFinished(id);
+        return "ok";
     }
 
     public static class CreateForm {

@@ -42,9 +42,17 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into accessory (mission_id, repair_order_id, name,
+    insert into accessory (
+    <if test="missionId != null" >
+      mission_id,
+    </if>
+    repair_order_id, name,
     price, count, discount)
-    values (#{missionId,jdbcType=INTEGER}, #{repairOrderId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+    values (
+    <if test="missionId != null" >
+      mission_id = #{missionId,jdbcType=INTEGER},
+    </if>
+     #{repairOrderId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
       #{price,jdbcType=FLOAT}, #{count,jdbcType=SMALLINT}, #{discount,jdbcType=FLOAT})
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.repairOrder.Accessory" >

@@ -36,28 +36,28 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo" >
     update fixer_profession_info
     <set >
-      <if test="fixer_id != null" >
+      <if test="fixerId != null" >
         fixer_id = #{fixerId,jdbcType=INTEGER},
       </if>
-      <if test="profess_num != null" >
+      <if test="professNum != null" >
         profess_num = #{professNum,jdbcType=VARCHAR},
       </if>
-      <if test="profess_img != null" >
+      <if test="professImg != null" >
         profess_img = #{professImg,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null" >
+      <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="check_state != null" >
+      <if test="checkState != null" >
         check_state = #{checkState,jdbcType=TINYINT},
       </if>
-      <if test="check_time != null" >
+      <if test="checkTime != null" >
         check_time = #{checkTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="deny_reason != null" >
+      <if test="denyReason != null" >
         deny_reason = #{denyReason,jdbcType=VARCHAR},
       </if>
-      <if test="admin_user_id != null" >
+      <if test="adminUserId != null" >
         admin_user_id = #{adminUserId,jdbcType=INTEGER},
       </if>
     </set>

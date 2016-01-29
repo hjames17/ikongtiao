@@ -61,8 +61,8 @@ public class RepairOrderController {
     }
 
     @RequestMapping(value = BASE_PATH + "/cost/create" , method = {RequestMethod.POST})
-    public void createCost(@RequestBody CreateCostForm form) throws Exception{
-        RepairOrder repairOrder = repairOrderService.getById(form.getRepairOrderId());
+    public String createCost(@RequestBody CreateCostForm form) throws Exception{
+        RepairOrder repairOrder = repairOrderService.getById(form.getRepairOrderId(), false);
         if(repairOrder == null){
             throw new Exception("没有该维修单");
         }
@@ -73,27 +73,31 @@ public class RepairOrderController {
             }
         }
         repairOrderService.addCost(form.getRepairOrderId(), form.getAccessoryList(), form.getLaborCost(), form.isFinishCost());
+        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.POST})
-    public void dispatchOrder(@RequestBody OperationForm form) throws Exception{
+    public String dispatchOrder(@RequestBody OperationForm form) throws Exception{
 
         if(form.getFixerId() == null){
             throw new Exception("没有指定维修员id");
         }
 
         repairOrderService.dispatchRepairOrder(form.getAdminUserId(), form.getRepairOrderId(), form.getFixerId());
+        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/cost/finish" , method = {RequestMethod.POST})
-    public void costFinish(@RequestBody OperationForm form) throws Exception {
+    public String costFinish(@RequestBody OperationForm form) throws Exception {
 
         repairOrderService.setCostFinished(form.getAdminUserId(), form.getRepairOrderId());
+        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/prepared" , method = {RequestMethod.POST})
-    public void prepared(@RequestBody OperationForm form) throws Exception {
+    public String prepared(@RequestBody OperationForm form) throws Exception {
         repairOrderService.setPrepared(form.getAdminUserId(), form.getRepairOrderId());
+        return "ok";
     }
 
 

@@ -15,6 +15,7 @@ import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -253,6 +254,29 @@ public class FixerServiceImpl implements FixerService {
     @Override
     public Fixer getFixer(Integer id) throws Exception {
         return fixerRepo.getFixerById(id);
+    }
+
+    @Override
+    public void changePassword(Integer id, String oldPass, String newPass) throws Exception {
+        Fixer fixer = fixerRepo.getFixerById(id);
+        if(!fixer.getPassword().equals(oldPass)){
+            throw new Exception("原密码不对");
+        }
+        fixer.setPassword(newPass);
+        fixerRepo.update(fixer);
+    }
+
+    @Override
+    public Fixer getFixerByPhone(String phone) throws Exception {
+        return fixerRepo.getFixerByPhone(phone);
+    }
+
+    @Override
+    public void resetPassword(Integer id, String newPass) throws Exception {
+        Fixer fixer = new Fixer();
+        fixer.setId(id);
+        fixer.setPassword(newPass);
+        fixerRepo.update(fixer);
     }
 
     @Override

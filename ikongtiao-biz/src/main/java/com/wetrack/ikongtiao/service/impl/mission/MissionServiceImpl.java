@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -81,10 +82,6 @@ public class MissionServiceImpl implements MissionService {
 			}
 		}
 
-		//创建一个地址信息
-		MissionAddress missionAddress = new MissionAddress();
-		missionAddress.setPhone(param.getPhone());
-		missionAddressRepo.save(missionAddress);
 
 		Mission mission = null;
 		// 提交的手机号和已经绑定的手机号要一致
@@ -96,11 +93,18 @@ public class MissionServiceImpl implements MissionService {
 			throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
 		}
 		mission = new Mission();
-		mission.setMissionAddressId(missionAddress.getId());
+//		mission.setMissionAddressId(missionAddress.getId());
 		mission.setMachineTypeId(param.getMachineTypeId());
 		mission.setUserId(param.getUserId());
 		mission = missionRepo.save(mission);
 //		}
+
+
+		//创建一个地址信息
+		MissionAddress missionAddress = new MissionAddress();
+		missionAddress.setPhone(param.getPhone());
+		missionAddress.setId(mission.getId());
+		missionAddressRepo.save(missionAddress);
 
 		return mission;
 	}
@@ -161,6 +165,7 @@ public class MissionServiceImpl implements MissionService {
 		}
 		//修改状态
 		mission.setMissionState(MissionState.ACCEPT.getCode());
+		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 
 		//TODO 重构，数据获取提取分离出去，不要放在这里
@@ -184,6 +189,7 @@ public class MissionServiceImpl implements MissionService {
 		}
 		//修改状态
 		mission.setMissionState(MissionState.REJECT.getCode());
+		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 
 		PushData pushData = new PushData();
@@ -202,6 +208,7 @@ public class MissionServiceImpl implements MissionService {
 			mission.setId(missionId);
 			mission.setFixerId(fixerId);
 			mission.setMissionState(MissionState.DISPATCHED.getCode());
+			mission.setUpdateTime(new Date());
 			missionRepo.update(mission);
 		}
 
@@ -221,8 +228,9 @@ public class MissionServiceImpl implements MissionService {
 			throw new Exception("不存在该任务");
 		}
 
-		MissionAddress missionAddress = new MissionAddress();
-		missionAddress.setId(mission.getMissionAddressId());
+//		MissionAddress missionAddress = new MissionAddress();
+//		missionAddress.setId(mission.getMissionAddressId());
+		MissionAddress missionAddress = missionAddressRepo.getMissionAddressById(mission.getId());
 		boolean addressChanged = false;
 		if(name != null) {
 			missionAddress.setName(name);
@@ -241,7 +249,7 @@ public class MissionServiceImpl implements MissionService {
 			addressChanged = true;
 		}
 		if(address != null) {
-			missionAddress.setDetail(address);
+			missionAddress.setAddress(address);
 			addressChanged = true;
 		}
 		if(latitude != null) {
@@ -264,7 +272,23 @@ public class MissionServiceImpl implements MissionService {
 	}
 
 	@Override
-	public MissionDto getMission(Integer id) throws Exception {
+	public MissionDto getMissionDto(Integer id) throws Exception {
 		return missionRepo.getMissionDetailById(id);
+	}
+
+	@Override
+	public Mission getMission(Integer id) throws Exception {
+		return missionRepo.getMissionById(id);
+	}
+
+	@Override
+	public void finishMission(Integer missionId) throws Exception {
+		Mission mission = new Mission();
+		mission.setId(missionId);
+		mission.setMissionState(MissionState.COMPLETED.getCode());
+		mission.setUpdateTime(new Date());
+		missionRepo.update(mission);
+
+		//TODO 发送消息
 	}
 }

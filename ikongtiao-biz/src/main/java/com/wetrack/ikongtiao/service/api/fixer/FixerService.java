@@ -40,4 +40,10 @@ public interface FixerService {
     void updateInfo(Fixer fixer) throws Exception;
 
     Fixer getFixer(Integer id) throws Exception;
+
+    void changePassword(Integer id, String oldPass, String newPass) throws Exception;
+
+    Fixer getFixerByPhone(String phone) throws Exception;
+
+    void resetPassword(Integer id, String newPass) throws Exception;
 }

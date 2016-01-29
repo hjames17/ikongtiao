@@ -40,6 +40,16 @@ public class MissionRepoImpl implements MissionRepo {
 	}
 
 	@Override public List<MissionDto> listMissionByAppQueryParam(AppMissionQueryParam param) {
+
+		if(param.getPhone() != null){
+			//加上sql like查询通配符
+			param.setPhone("%" + param.getPhone() + "%");
+		}
+		if(param.getUserName() != null){
+			//加上sql like查询通配符
+			param.setUserName("%" + param.getUserName() + "%");
+		}
+
 		return commonDao.mapper(MissionDto.class).sql("listMissionByAppQueryParam").session().selectList(param);
 	}
 

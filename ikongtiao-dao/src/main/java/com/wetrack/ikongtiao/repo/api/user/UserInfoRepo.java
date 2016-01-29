@@ -1,6 +1,8 @@
 package com.wetrack.ikongtiao.repo.api.user;
 
+import com.wetrack.ikongtiao.domain.Address;
 import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.dto.UserInfoDto;
 
 /**
  * Created by zhangsong on 15/12/15.
@@ -34,5 +36,11 @@ public interface UserInfoRepo {
 	 * @return
 	 */
 	UserInfo getByOpenId(String openId);
+
+	UserInfoDto getDtoById(String userId);
+
+	Address saveAddress(Address address);
+
+	boolean updateAddress(Address address);
 
 }

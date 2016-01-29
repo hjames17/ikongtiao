@@ -50,9 +50,40 @@ public class MissionController {
 		return missionService.listMissionByAppQueryParam(param);
 	}
 
+	@RequestMapping("/mission/finish")
+	@ResponseBody
+	public void finishMission(@RequestBody UpdateForm form) throws Exception{
+		Mission mission = missionService.getMission(form.getMissionId());
+		if(!mission.getUserId().equals(form.getUserId())){
+			throw new Exception("不是您的任务!");
+		}
+		missionService.finishMission(form.getMissionId());
+	}
+
 	@RequestMapping("/mission/detail")
 	@ResponseBody
 	public MissionDto getMission(@RequestParam(value="id") Integer id) throws Exception{
-		return missionService.getMission(id);
+		return missionService.getMissionDto(id);
+	}
+
+	static class UpdateForm {
+		Integer missionId;
+		String userId;
+
+		public Integer getMissionId() {
+			return missionId;
+		}
+
+		public void setMissionId(Integer missionId) {
+			this.missionId = missionId;
+		}
+
+		public String getUserId() {
+			return userId;
+		}
+
+		public void setUserId(String userId) {
+			this.userId = userId;
+		}
 	}
 }

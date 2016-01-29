@@ -8,7 +8,7 @@ public enum PushChannelType {
 	WECHAT(0, "微信通道", "wechatPushService", "openId"),
 	SNS(1, "短信通道", "smsPushService", "phone"),
 
-	GETUI(2, "个推通道", null, ""),
+	GETUI(2, "个推通道", "getuiPushService", "fixer"),
 	WEB(3, "浏览器推送", null, ""),;
 	private Integer code;
 	private String message;

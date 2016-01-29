@@ -72,5 +72,16 @@
             <artifactId>spring-security-core</artifactId>
             <version>4.0.3.RELEASE</version>
         </dependency>
+
+
     </dependencies>
+
+
+
+    <repositories>
+        <repository>
+            <id>getui-nexus</id>
+            <url>http://mvn.gt.igexin.com/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
 </project>

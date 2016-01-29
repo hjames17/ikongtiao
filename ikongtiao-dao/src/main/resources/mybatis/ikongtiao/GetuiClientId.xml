@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.fixer.GetuiClientId" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.fixer.GetuiClientId" >
+    <id column="userId" property="userId" jdbcType="INTEGER" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userId, client_id
+  </sql>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.fixer.GetuiClientId" >
+    insert into getui_clientid (userId, client_id)
+    values (#{userId,jdbcType=INTEGER}, #{clientId,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.wetrack.ikongtiao.domain.fixer.GetuiClientId">
+    UPDATE getui_clientid
+    set client_id = #{clientId,jdbcType=VARCHAR}
+    WHERE userId = #{userId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from getui_clientid
+    where userId = #{userId,jdbcType=INTEGER}
+  </select>
+</mapper>

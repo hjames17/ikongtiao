@@ -24,4 +24,6 @@ public interface FixerRepo {
     int delete(Integer id) throws Exception;
 
     Fixer getFixerById(Integer fixId);
+
+    Fixer getFixerByPhone(String phone) throws Exception;
 }

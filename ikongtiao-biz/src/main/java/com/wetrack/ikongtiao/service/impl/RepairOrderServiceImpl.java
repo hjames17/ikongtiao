@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,14 +45,21 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception{
+        Mission mission = missionRepo.getMissionById(missionId);
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setCreatorFixerId(creatorId);
+        repairOrder.setUserId(mission.getUserId());
         repairOrder.setMissionId(missionId);
         repairOrder.setNamePlateImg(namePlateImg);
         repairOrder.setMakeOrderNum(makeOrderNum);
         repairOrder.setRepairOrderDesc(repairOrderDesc);
         repairOrder.setAccessoryContent(accessoryContent);
         repairOrder = repairOrderRepo.create(repairOrder);
+
+        //更新维修单状态
+        mission.setMissionState(MissionState.FIXING.getCode());
+        mission.setUpdateTime(new Date());
+        missionRepo.update(mission);
 
         return repairOrder;
     }
@@ -68,7 +76,7 @@ public class RepairOrderServiceImpl implements RepairOrderService{
             RepairOrder repairOrder = new RepairOrder();
             repairOrder.setId(repairOrderId);
             repairOrder.setLaborCost(laborCost);
-            if(finishCost){
+            if(finishCost != null && finishCost == true){
                 repairOrder.setRepairOrderState((byte)1);
                 sendCostFinishEvent(repairOrderId);
             }
@@ -89,6 +97,7 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         repairOrder.setFixerId(fixerId);
         repairOrder.setId(repairOrderId);
         repairOrder.setAdminUserId(adminUserId);
+        repairOrder.setRepairOrderState((byte) 4);
         repairOrderRepo.update(repairOrder);
 
         Mission mission = new Mission();
@@ -104,6 +113,7 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         repairOrder.setId(repairOrderId);
         repairOrder.setAdminUserId(adminUserId);
         repairOrder.setRepairOrderState((byte) 1);
+        repairOrder.setUpdateTime(new Date());
         repairOrderRepo.update(repairOrder);
 
         sendCostFinishEvent(repairOrderId);
@@ -114,7 +124,8 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setId(repairOrderId);
         repairOrder.setAdminUserId(adminUserId);
-        repairOrder.setRepairOrderState((byte) 4);
+        repairOrder.setRepairOrderState((byte) 3);
+        repairOrder.setUpdateTime(new Date());
         repairOrderRepo.update(repairOrder);
 
     }
@@ -124,14 +135,15 @@ public class RepairOrderServiceImpl implements RepairOrderService{
     public void setFinished(Long repairOrderId) throws Exception{
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setId(repairOrderId);
-        repairOrder.setRepairOrderState((byte)6);
+        repairOrder.setRepairOrderState((byte) 5);
+        repairOrder.setUpdateTime(new Date());
         repairOrderRepo.update(repairOrder);
 
         //TODO 发送通知
     }
 
     @Override
-    public void confirm(Long repairOrderId, boolean deny) throws Exception {
+    public void confirm(Long repairOrderId, boolean deny, Integer payment) throws Exception {
 
         RepairOrder repairOrder = new RepairOrder();
         repairOrder.setId(repairOrderId);
@@ -140,15 +152,19 @@ public class RepairOrderServiceImpl implements RepairOrderService{
         }else{
             repairOrder.setRepairOrderState((byte) 2);
         }
+        repairOrder.setPayment(payment);
+        repairOrder.setUpdateTime(new Date());
         repairOrderRepo.update(repairOrder);
 
         //TODO 发送通知
     }
 
     @Override
-    public RepairOrder getById(Long id) throws Exception{
+    public RepairOrder getById(Long id, boolean brief) throws Exception{
         RepairOrder repairOrder = repairOrderRepo.getById(id);
-        repairOrder.setAccessoryList(accessoryRepo.listOfRepairOrderId(repairOrder.getId()));
+        if(!brief) {
+            repairOrder.setAccessoryList(accessoryRepo.listOfRepairOrderId(repairOrder.getId()));
+        }
         return repairOrder;
     }
 

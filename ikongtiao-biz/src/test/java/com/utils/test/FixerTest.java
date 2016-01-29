@@ -3,7 +3,7 @@ package com.utils.test;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
-import org.junit.Assert;
+import com.wetrack.ikongtiao.service.api.fixer.GetuiClientIdService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +26,9 @@ public class FixerTest {
     @Autowired
     FixerService fixerService;
 
+    @Autowired
+    GetuiClientIdService getuiClientIdService;
+
 
     List<Fixer> fixerList;
     List<FixerCertInfo> fixerCertInfos;
@@ -36,17 +39,26 @@ public class FixerTest {
     }
 
     @Test
-    public void testUpdateCertInfoTest(){
+    public void testGetuiClientId(){
         try {
-            Fixer fixer = new Fixer();
-            fixer.setId(1);
-            fixer.setInService(false);
-            fixerService.updateInfo(fixer);
+            getuiClientIdService.registerClientId(1, "22222");
         } catch (Exception e) {
-            Assert.fail();
             e.printStackTrace();
         }
     }
+
+//    @Test
+//    public void testUpdateCertInfoTest(){
+//        try {
+//            Fixer fixer = new Fixer();
+//            fixer.setId(1);
+//            fixer.setInService(false);
+//            fixerService.updateInfo(fixer);
+//        } catch (Exception e) {
+//            Assert.fail();
+//            e.printStackTrace();
+//        }
+//    }
 
 //    @Test
 //    public void createFixer(){

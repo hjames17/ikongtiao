@@ -9,7 +9,9 @@ import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
+import com.wetrack.ikongtiao.domain.fixer.GetuiClientId;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
+import com.wetrack.ikongtiao.service.api.fixer.GetuiClientIdService;
 import com.wetrack.ikongtiao.utils.RegExUtil;
 import com.wetrack.verification.VerificationCodeService;
 import org.springframework.beans.BeanUtils;
@@ -57,7 +59,7 @@ public class FixerController {
         if(!RegExUtil.isMobilePhone(form.getPhone())){
             throw new Exception("手机号码无效!");
         }
-        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
             throw new Exception("验证码无效");
         }
 
@@ -73,6 +75,14 @@ public class FixerController {
         out.setToken(token.getToken());
         out.setId(token.getUser().getId());
         return out;
+    }
+
+
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/login/validate", method = RequestMethod.GET)
+    String isLoginValid(){
+        return "ok";
     }
 
     @Autowired
@@ -146,9 +156,16 @@ public class FixerController {
     @SignTokenAuth
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/info", method = RequestMethod.GET)
-    Fixer info(HttpServletRequest request) throws Exception{
-        User user = (User)request.getAttribute("user");
-        return fixerService.getFixer(Integer.valueOf(user.getId()));
+    Fixer info(HttpServletRequest request, @RequestParam(required = false, value = "fixerId") Integer fixerId) throws Exception{
+        if(fixerId == null) {
+            User user = (User) request.getAttribute("user");
+            fixerId = Integer.valueOf(user.getId());
+        }
+        Fixer fixer = fixerService.getFixer(fixerId);
+        if(fixer != null){
+            fixer.setPassword(null);
+        }
+        return fixer;
     }
 
     @SignTokenAuth
@@ -185,10 +202,10 @@ public class FixerController {
         if(!RegExUtil.isMobilePhone(form.getPhone())){
             throw new Exception("手机号码错误!");
         }
-        if(form.getVerfication() == null){
+        if(form.getVerification() == null){
             throw new Exception("验证码为空！");
         }
-        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
             throw new Exception("验证码错误！");
         }
 
@@ -211,22 +228,22 @@ public class FixerController {
         if(!fixer.getPhone().equals(form.getPhone())){
             throw new Exception("原手机号码错误!");
         }
-        if(form.getVerfication() == null){
+        if(form.getVerification() == null){
             throw new Exception("原手机验证码为空！");
         }
-        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
             throw new Exception("原手机验证码错误！");
         }
         if(!RegExUtil.isMobilePhone(form.getNewPhone())){
             throw new Exception("新手机号码错误");
         }
-        if(form.getNewVerfication() == null){
+        if(form.getNewVerification() == null){
             throw new Exception("新手机验证码为空！");
         }
         if(form.getPhone().equals(form.getNewPhone())){
             throw new Exception("新老手机号码一致！");
         }
-        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerfication())){
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
             throw new Exception("新验证码错误！");
         }
 
@@ -237,12 +254,78 @@ public class FixerController {
         return "ok";
     }
 
+    @Autowired
+    GetuiClientIdService getuiClientIdService;
 
-    static class BindForm{
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/getui/regcid", method = RequestMethod.POST)
+    String regCid(HttpServletRequest request , @RequestBody GetuiClientId form) throws Exception{
+        User user = (User)request.getAttribute("user");
+        form.setUid(Integer.valueOf(user.getId()));
+        getuiClientIdService.registerClientId(form.getUid(), form.getClientId());
+        return "ok";
+    }
+
+
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/password/change", method = RequestMethod.POST)
+    void changePass(HttpServletRequest request , @RequestBody ChangeForm form) throws Exception{
+        User user = (User)request.getAttribute("user");
+
+        fixerService.changePassword(Integer.valueOf(user.getId()), form.getOldPass(), form.getNewPass());
+    }
+
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/password/reset", method = RequestMethod.POST)
+    void resetPass(@RequestBody ResetForm form) throws Exception{
+
+        Fixer fixer = fixerService.getFixerByPhone(form.getPhone());
+        if(!RegExUtil.isMobilePhone(form.getPhone())){
+            throw new Exception("手机号码无效!");
+        }
+        if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
+            throw new Exception("验证码无效");
+        }
+        fixerService.resetPassword(fixer.getId(), form.getNewPass());
+    }
+
+
+
+    static class ChangeForm{
+        String oldPass;
+        String newPass;
+
+        public String getOldPass() {
+            return oldPass;
+        }
+
+        public void setOldPass(String oldPass) {
+            this.oldPass = oldPass;
+        }
+
+        public String getNewPass() {
+            return newPass;
+        }
+
+        public void setNewPass(String newPass) {
+            this.newPass = newPass;
+        }
+    }
+
+    static class ResetForm{
         String phone;
-        String verfication;
-        String newPhone;
-        String newVerfication;
+        String verification;
+        String newPass;
+
+        public String getNewPass() {
+            return newPass;
+        }
+
+        public void setNewPass(String newPass) {
+            this.newPass = newPass;
+        }
 
         public String getPhone() {
             return phone;
@@ -252,12 +335,36 @@ public class FixerController {
             this.phone = phone;
         }
 
-        public String getVerfication() {
-            return verfication;
+        public String getVerification() {
+            return verification;
         }
 
-        public void setVerfication(String verfication) {
-            this.verfication = verfication;
+        public void setVerification(String verification) {
+            this.verification = verification;
+        }
+    }
+
+
+    static class BindForm{
+        String phone;
+        String verification;
+        String newPhone;
+        String newVerification;
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
+        public String getVerification() {
+            return verification;
+        }
+
+        public void setVerification(String verification) {
+            this.verification = verification;
         }
 
         public String getNewPhone() {
@@ -268,12 +375,12 @@ public class FixerController {
             this.newPhone = newPhone;
         }
 
-        public String getNewVerfication() {
-            return newVerfication;
+        public String getNewVerification() {
+            return newVerification;
         }
 
-        public void setNewVerfication(String newVerfication) {
-            this.newVerfication = newVerfication;
+        public void setNewVerification(String newVerification) {
+            this.newVerification = newVerification;
         }
     }
 
@@ -442,11 +549,11 @@ public class FixerController {
             this.password = password;
         }
 
-        public String getVerfication() {
+        public String getVerification() {
             return verification;
         }
 
-        public void setVerfication(String verification) {
+        public void setVerification(String verification) {
             this.verification = verification;
         }
     }

@@ -84,7 +84,7 @@ public class MissionDto {
 	private String machineRemark;
 
 
-	Integer missionAddressId;
+//	Integer missionAddressId;
 
 	Integer adminUserId;
 
@@ -196,13 +196,13 @@ public class MissionDto {
 		this.machineRemark = machineRemark;
 	}
 
-	public Integer getMissionAddressId() {
-		return missionAddressId;
-	}
+//	public Integer getMissionAddressId() {
+//		return missionAddressId;
+//	}
 
-	public void setMissionAddressId(Integer missionAddressId) {
-		this.missionAddressId = missionAddressId;
-	}
+//	public void setMissionAddressId(Integer missionAddressId) {
+//		this.missionAddressId = missionAddressId;
+//	}
 
 	public Integer getAdminUserId() {
 		return adminUserId;

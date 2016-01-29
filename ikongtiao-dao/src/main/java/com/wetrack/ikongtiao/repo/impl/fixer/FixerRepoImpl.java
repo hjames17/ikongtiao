@@ -66,4 +66,9 @@ public class FixerRepoImpl implements FixerRepo {
     @Override public Fixer getFixerById(Integer fixId) {
         return commonDao.mapper(Fixer.class).sql("selectByPrimaryKey").session().selectOne(fixId);
     }
+
+    @Override
+    public Fixer getFixerByPhone(String phone) throws Exception {
+        return commonDao.mapper(Fixer.class).sql("selectByPhone").session().selectOne(phone);
+    }
 }

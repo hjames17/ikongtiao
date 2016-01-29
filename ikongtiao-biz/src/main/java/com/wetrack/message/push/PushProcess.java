@@ -7,6 +7,7 @@ import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,6 +19,9 @@ import java.util.Map;
  */
 @Service("pushProcess")
 public class PushProcess {
+
+	@Value("${host.static}")
+	String staticHost;
 
 	@Resource
 	private UserInfoRepo userInfoRepo;
@@ -37,7 +41,7 @@ public class PushProcess {
 					data.put("phone", userInfo.getPhone());
 				}
 				if (fixer != null) {
-					data.put("fixer", fixer.getPhone());
+					data.put("fixer", fixer.getId().toString());
 				}
 				String[] channelIds = pushEventType.getChannelIds().split("\\|");
 				String[] contents = pushEventType.getContent().split("\\|");
@@ -54,7 +58,7 @@ public class PushProcess {
 					PushService pushService = (PushService) ContainerContext.get().getContext()
 					                                                        .getBean(pushChannelType.getBeanName());
 					pushService.pushMessage(data.get(pushChannelType.getToKey()), pushEventType.getTitile(), content,
-							pushData.getUrl(), "http://test.weiwaisong.com/images/ikongtiao/2.png");
+							pushData.getUrl(), staticHost + "/images/ikongtiao/2.png");
 				}
 			}
 		});

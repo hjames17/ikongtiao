@@ -27,7 +27,10 @@ public class TokenService {
     }
 
     public Token login(String id, String password){
-        return doLogin(new User(id, password, User.ROLE_FULL));
+        return doLogin(new User(id, password, User.NEVER_EXPIRED, User.ROLE_FULL));
+    }
+    public Token login(String id, String password, int loginLifeTime){
+        return doLogin(new User(id, password, loginLifeTime, User.ROLE_FULL));
     }
 
     private Token doLogin(User user){
@@ -37,6 +40,8 @@ public class TokenService {
             for(Token token : tokens){
                 if(!token.isExpired() && !token.isLoggedout()){
                     return token;
+                }else{
+                    tokenStorageService.removeByTokenString(token.getToken());
                 }
             }
         }

@@ -35,7 +35,7 @@ public class RepairOrderTest {
     @Test
     public void get(){
         try {
-            RepairOrder repairOrder = repairOrderService.getById(34L);
+            RepairOrder repairOrder = repairOrderService.getById(34L, false);
             Assert.assertTrue(true);
         } catch (Exception e) {
             e.printStackTrace();

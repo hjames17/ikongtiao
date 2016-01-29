@@ -51,10 +51,10 @@ public class Mission implements Serializable {
      */
     private Integer adminUserId;
 
-    /**
-     * mission_address_id:任务地址id
-     */
-    private Integer missionAddressId;
+//    /**
+//     * mission_address_id:任务地址id
+//     */
+//    private Integer missionAddressId;
 
     /**
      * operator:操作人
@@ -174,19 +174,19 @@ public class Mission implements Serializable {
         this.adminUserId = adminUserId;
     }
 
-    /**
-     * @return the value of mission_address_id
-     */
-    public Integer getMissionAddressId() {
-        return missionAddressId;
-    }
-
-    /**
-     * @param missionAddressId the value for mission_address_id
-     */
-    public void setMissionAddressId(Integer missionAddressId) {
-        this.missionAddressId = missionAddressId;
-    }
+//    /**
+//     * @return the value of mission_address_id
+//     */
+//    public Integer getMissionAddressId() {
+//        return missionAddressId;
+//    }
+//
+//    /**
+//     * @param missionAddressId the value for mission_address_id
+//     */
+//    public void setMissionAddressId(Integer missionAddressId) {
+//        this.missionAddressId = missionAddressId;
+//    }
 
     /**
      * @return the value of operator

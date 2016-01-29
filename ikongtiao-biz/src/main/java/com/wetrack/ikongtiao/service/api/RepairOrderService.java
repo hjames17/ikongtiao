@@ -21,7 +21,7 @@ public interface RepairOrderService {
     void setPrepared(Integer adminUserId, Long repairOrderId) throws Exception;
 
     void setFinished(Long repairOrderId) throws Exception;
-    RepairOrder getById(Long id) throws Exception;
+    RepairOrder getById(Long id, boolean brief) throws Exception;
 
     void comment(Long repairOrderId, Integer rate, String comment) throws Exception;
 
@@ -31,5 +31,5 @@ public interface RepairOrderService {
 
     boolean deleteAccessory(Long accessoryId) throws Exception;
 
-    void confirm(Long repairOrderId, boolean deny) throws Exception;
+    void confirm(Long repairOrderId, boolean deny, Integer payment) throws Exception;
 }

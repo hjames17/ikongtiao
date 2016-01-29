@@ -16,6 +16,7 @@
             <groupId>com.wetrack.ikongtiao</groupId>
             <artifactId>ikongtiao-biz</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -37,6 +38,22 @@
                     <path>/admin</path>
                 </configuration>
             </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-war-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<webResources>-->
+                        <!--<resource>-->
+                            <!--<directory>${project.basedir}/../ikongtiao-biz/lib</directory>-->
+                            <!--<targetPath>WEB-INF/lib</targetPath>-->
+                            <!--<filtering>true</filtering>-->
+                            <!--<includes>-->
+                                <!--<include>**/*.jar</include>-->
+                            <!--</includes>-->
+                        <!--</resource>-->
+                    <!--</webResources>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 

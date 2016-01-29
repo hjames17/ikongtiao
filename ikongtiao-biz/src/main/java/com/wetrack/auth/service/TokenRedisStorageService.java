@@ -17,7 +17,14 @@ import java.util.Collection;
 public class TokenRedisStorageService implements TokenStorageService {
 
 
+    /**
+     * 所有的用户token都存在一个hash里，用来快速获取
+     */
     static final String TOKEN_HASH_KEY = "TOKEN_HASH";
+    /**
+     * 另外，单独为每个用户都保存一个，方便取特定用户的所有的token，因为redis不支持hash表内查询
+     * 相当于每个token有一份冗余数据
+     */
     static final String USER_TOKEN_HASH_KEY_PREFIX = "USER_TOKEN_HASH_";
 
     RedisTemplate<String, Token> redisTemplate;

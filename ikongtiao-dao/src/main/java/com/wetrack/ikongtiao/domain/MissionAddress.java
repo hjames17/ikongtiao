@@ -43,9 +43,9 @@ public class MissionAddress implements Serializable {
     private Integer districtId;
 
     /**
-     * detail:详细地址
+     * address:详细地址
      */
-    private String detail;
+    private String address;
 
     /**
      * latitude:纬度
@@ -165,17 +165,17 @@ public class MissionAddress implements Serializable {
     }
 
     /**
-     * @return the value of detail
+     * @return the value of address
      */
-    public String getDetail() {
-        return detail;
+    public String getAddress() {
+        return address;
     }
 
     /**
-     * @param detail the value for detail
+     * @param address the value for address
      */
-    public void setDetail(String detail) {
-        this.detail = detail == null ? null : detail.trim();
+    public void setAddress(String address) {
+        this.address = address == null ? null : address.trim();
     }
 
     /**
@@ -263,7 +263,7 @@ public class MissionAddress implements Serializable {
         sb.append(", provinceId=").append(provinceId);
         sb.append(", cityId=").append(cityId);
         sb.append(", districtId=").append(districtId);
-        sb.append(", detail=").append(detail);
+        sb.append(", address=").append(address);
         sb.append(", latitude=").append(latitude);
         sb.append(", longitude=").append(longitude);
         sb.append(", isDeleted=").append(isDeleted);

@@ -4,12 +4,13 @@ import com.wetrack.base.container.ContainerContext;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 /**
  * Created by zhangsong on 15/12/15.
  */
-@Service
+@Configuration
 public class ApplicationContextConfig implements ApplicationContextAware{
 
 	/**

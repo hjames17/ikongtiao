@@ -36,7 +36,7 @@
 		</sqlMapGenerator>
 
 
-		<table tableName="address" domainObjectName="Address"
+		<!--<table tableName="address" domainObjectName="Address"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
@@ -46,7 +46,7 @@
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
-		</table>
+		</table>-->
 
 		<!--<table tableName="micro_code" domainObjectName="MicroCode"
 			   enableCountByExample="false" enableUpdateByExample="false"
@@ -54,7 +54,7 @@
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>-->
 
-		<table tableName="mission" domainObjectName="Mission"
+		<!--<table tableName="mission" domainObjectName="Mission"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
@@ -82,7 +82,7 @@
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
-		</table>
+		</table>-->
 
 
 		<!--<table tableName="system_param" domainObjectName="SystemParam"
@@ -91,13 +91,13 @@
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>-->
 
-		<table tableName="user_auth_action" domainObjectName="UserAuthAction"
+		<!--<table tableName="user_auth_action" domainObjectName="UserAuthAction"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
-		</table>
+		</table>-->
 
-		<table tableName="user_info" domainObjectName="UserInfo"
+		<table tableName="fixer_device" domainObjectName="FixerDevice"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />

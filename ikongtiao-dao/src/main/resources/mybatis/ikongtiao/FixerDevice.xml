@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.FixerDevice" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.FixerDevice" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
+    <result column="os_type" property="osType" jdbcType="VARCHAR" />
+    <result column="os_version" property="osVersion" jdbcType="VARCHAR" />
+    <result column="device_type" property="deviceType" jdbcType="VARCHAR" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, fixer_id, os_type, os_version, device_type, client_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from fixer_device
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByFixerId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from fixer_device
+    where fixer_id = #{fixerId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from fixer_device
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.FixerDevice" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fixer_device (fixer_id, os_type, os_version, 
+      device_type, client_id)
+    values (#{fixerId,jdbcType=INTEGER}, #{osType,jdbcType=VARCHAR}, #{osVersion,jdbcType=VARCHAR}, 
+      #{deviceType,jdbcType=VARCHAR}, #{clientId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.FixerDevice" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fixer_device
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fixerId != null" >
+        fixer_id,
+      </if>
+      <if test="osType != null" >
+        os_type,
+      </if>
+      <if test="osVersion != null" >
+        os_version,
+      </if>
+      <if test="deviceType != null" >
+        device_type,
+      </if>
+      <if test="clientId != null" >
+        client_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fixerId != null" >
+        #{fixerId,jdbcType=INTEGER},
+      </if>
+      <if test="osType != null" >
+        #{osType,jdbcType=VARCHAR},
+      </if>
+      <if test="osVersion != null" >
+        #{osVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceType != null" >
+        #{deviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.FixerDevice" >
+    update fixer_device
+    <set >
+      <if test="fixerId != null" >
+        fixer_id = #{fixerId,jdbcType=INTEGER},
+      </if>
+      <if test="osType != null" >
+        os_type = #{osType,jdbcType=VARCHAR},
+      </if>
+      <if test="osVersion != null" >
+        os_version = #{osVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceType != null" >
+        device_type = #{deviceType,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null" >
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.FixerDevice" >
+    update fixer_device
+    set fixer_id = #{fixerId,jdbcType=INTEGER},
+      os_type = #{osType,jdbcType=VARCHAR},
+      os_version = #{osVersion,jdbcType=VARCHAR},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      client_id = #{clientId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

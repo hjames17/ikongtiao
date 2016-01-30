@@ -4,16 +4,16 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
-import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 /**
  * Created by zhangsong on 15/11/16.
  */
-@Service
+@Configuration
 public class RedisSentinelConfig {
 
 	private RedisSentinelConfiguration config;

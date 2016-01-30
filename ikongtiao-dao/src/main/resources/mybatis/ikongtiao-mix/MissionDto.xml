@@ -51,19 +51,15 @@
     ON repair_order.mission_id = mission.id
     LEFT OUTER JOIN mission_address
     ON mission.id = mission_address.id
-    <if test="userName!=null or phone!=null">
-      LEFT OUTER JOIN user_info
-      ON mission.user_id = user_info.id
-    </if>
     <where>
       <if test="userId!=null">
         and mission.user_id = #{userId,jdbcType=VARCHAR}
       </if>
       <if test="userName!=null">
-        and user_info.account_name LIKE #{userName,jdbcType=VARCHAR}
+        and mission_address.name LIKE #{userName,jdbcType=VARCHAR}
       </if>
       <if test="phone!=null">
-        and user_info.phone LIKE #{phone,jdbcType=VARCHAR}
+        and mission_address.phone LIKE #{phone,jdbcType=VARCHAR}
       </if>
       <if test="type!=null">
         <choose>
@@ -93,18 +89,18 @@
     count(*) as totalSize
     from mission
     <if test="userName!=null or phone!=null">
-      LEFT OUTER JOIN user_info
-      ON mission.user_id = user_info.id
+      LEFT OUTER JOIN mission_address
+      ON mission.id = mission_address.id
     </if>
     <where>
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
       </if>
       <if test="userName!=null">
-        and user_info.account_name LIKE #{userName,jdbcType=VARCHAR}
+        and mission_address.name LIKE #{userName,jdbcType=VARCHAR}
       </if>
       <if test="phone!=null">
-        and user_info.phone LIKE #{phone,jdbcType=VARCHAR}
+        and mission_address.phone LIKE #{phone,jdbcType=VARCHAR}
       </if>
       <if test="type!=null">
         <choose>
@@ -154,27 +150,27 @@
   </select>
 
   <select id="countMissionByFixerQueryParam" parameterType="com.wetrack.ikongtiao.param.FixerMissionQueryParam" resultType="com.wetrack.base.page.BaseCondition"  >
-    SELECT COUNT(*) as totalSize
-    from mission LEFT OUTER JOIN repair_order
-    ON repair_order.mission_id = mission.id
-    LEFT OUTER JOIN mission_address
-    ON mission.id = mission_address.id
-    <where>
-      (mission.fixer_id = #{fixerId,jdbcType=INTEGER}
-      or repair_order.fixer_id = #{fixerId,jdbcType=INTEGER}
-      or repair_order.creator_fixer_id = #{fixerId,jdbcType=INTEGER})
-      <if test="history!=null">
-        <choose>
-          <when test="history==false">
-            and mission.mission_state &lt; 10
-            and mission.mission_state &gt;= 0
-          </when>
-          <when test="history==true">
-            and (mission.mission_state = 10
-            or mission.mission_state = -1)
-          </when>
-        </choose>
-      </if>
-    </where>
-  </select>
+  SELECT COUNT(*) as totalSize
+  from mission LEFT OUTER JOIN repair_order
+  ON repair_order.mission_id = mission.id
+  LEFT OUTER JOIN mission_address
+  ON mission.id = mission_address.id
+  <where>
+    (mission.fixer_id = #{fixerId,jdbcType=INTEGER}
+    or repair_order.fixer_id = #{fixerId,jdbcType=INTEGER}
+    or repair_order.creator_fixer_id = #{fixerId,jdbcType=INTEGER})
+    <if test="history!=null">
+      <choose>
+        <when test="history==false">
+          and mission.mission_state &lt; 10
+          and mission.mission_state &gt;= 0
+        </when>
+        <when test="history==true">
+          and (mission.mission_state = 10
+          or mission.mission_state = -1)
+        </when>
+      </choose>
+    </if>
+  </where>
+</select>
 </mapper>

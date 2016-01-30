@@ -54,6 +54,14 @@ public class MissionRepoImpl implements MissionRepo {
 	}
 
 	@Override public int countMissionByAppQueryParam(AppMissionQueryParam param) {
+		if(param.getPhone() != null){
+			//加上sql like查询通配符
+			param.setPhone("%" + param.getPhone() + "%");
+		}
+		if(param.getUserName() != null){
+			//加上sql like查询通配符
+			param.setUserName("%" + param.getUserName() + "%");
+		}
 		BaseCondition baseCondition = commonDao.mapper(MissionDto.class).sql("countMissionByAppQueryParam").session()
 		                                       .selectOne(param);
 		Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();

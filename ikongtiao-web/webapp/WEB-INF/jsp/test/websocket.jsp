@@ -17,11 +17,11 @@
         $(function(){
             var websocket;
             if ('WebSocket' in window) {
-                websocket = new WebSocket("ws://api.ikongtiao.wetrack.studio/web/test");
+                websocket = new WebSocket("ws://115.29.203.145:8090/web/test");
             } else if ('MozWebSocket' in window) {
-                websocket = new MozWebSocket("ws://api.ikongtiao.wetrack.studio/web/test");
+                websocket = new MozWebSocket("ws://115.29.203.145:8090/web/test");
             } else {
-                websocket = new SockJS("ws://api.ikongtiao.wetrack.studio/web/test");
+                websocket = new SockJS("ws://115.29.203.145:8090/web/test");
             }
             websocket.onopen = function (evnt) {
                 $("#tou").html("Connect Success!")

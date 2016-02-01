@@ -13,15 +13,21 @@ import com.wetrack.base.result.AjaxResult;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.FixerDevice;
 import com.wetrack.ikongtiao.service.api.fixer.PushBindService;
+import com.wetrack.ikongtiao.socket.NotificationHandler;
+import com.wetrack.ikongtiao.web.filter.SignTokenAuth;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Created by zhangsong on 16/1/30.
@@ -35,6 +41,7 @@ public class CommonController {
 
 	@RequestMapping("/push/bind")
 	@ResponseBody
+	@SignTokenAuth(token = true)
 	public AjaxResult<String> pushBind(HttpServletRequest request, @RequestBody PushBindForm pushBindForm) {
 		FixerDevice fixerDevice = new FixerDevice();
 		User user = (User) request.getAttribute("user");
@@ -115,5 +122,27 @@ public class CommonController {
 		fixerDevice.setClientId("client");
 		template.setTransmissionContent(Jackson.base().writeValueAsString(fixerDevice));  // 透传内容（点击通知后SDK将透传内容传给你的客户端，需要客户端做相应开发）
 		return template;
+	}
+
+	@ResponseBody
+	@RequestMapping("/socket/test")
+	public String test(@RequestParam(value = "name")String name) throws IOException {
+		TextMessage textMessage = new TextMessage(name);
+		Iterator<WebSocketSession> iterator = NotificationHandler.sessions.iterator();
+
+		while (iterator.hasNext()){
+			WebSocketSession session = iterator.next();
+			if(session.isOpen()){
+				session.sendMessage(textMessage);
+			}else{
+				iterator.remove();
+			}
+		}
+		return "ok客户端数:" +NotificationHandler.sessions.size() ;
+	}
+	@RequestMapping("/socket/test/page")
+	public String testPage(){
+
+		return "test/websocket";
 	}
 }

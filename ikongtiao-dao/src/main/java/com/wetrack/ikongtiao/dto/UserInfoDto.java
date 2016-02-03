@@ -1,10 +1,8 @@
 package com.wetrack.ikongtiao.dto;
 
-import com.wetrack.ikongtiao.domain.Address;
-
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by zhanghong on 16/1/29.
@@ -61,13 +59,44 @@ public class UserInfoDto implements Serializable{
      */
     private Date createTime;
 
-    Address address;
+    /**
+     * province_id:所在省份id
+     */
+    private Integer provinceId;
 
+    /**
+     * city_id:所在城市id
+     */
+    private Integer cityId;
+
+    /**
+     * district_id:所在区域id
+     */
+    private Integer districtId;
+
+    /**
+     * address:详细地址
+     */
+    private String address;
+
+    /**
+     * latitude:纬度
+     */
+    private BigDecimal latitude;
+
+    /**
+     * longitude:经度
+     */
+    private BigDecimal longitude;
+
+    private Integer addressId;
+
+    private Integer missionCount;
 
     /**
      * 对于代理和厂商来说，有委托的业务，这是委托方信息
      */
-    List<Address> contactsList;
+//    List<Address> contactsList;
 
 
 
@@ -206,19 +235,75 @@ public class UserInfoDto implements Serializable{
         this.createTime = createTime;
     }
 
-    public Address getAddress() {
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public List<Address> getContactsList() {
-        return contactsList;
+    public BigDecimal getLatitude() {
+        return latitude;
     }
 
-    public void setContactsList(List<Address> contactsList) {
-        this.contactsList = contactsList;
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Integer addressId) {
+        this.addressId = addressId;
+    }
+
+    public Integer getMissionCount() {
+        return missionCount;
+    }
+
+    public void setMissionCount(Integer missionCount) {
+        this.missionCount = missionCount;
+    }
+
+    //    public List<Address> getContactsList() {
+//        return contactsList;
+////    }
+//
+//    public void setContactsList(List<Address> contactsList) {
+//        this.contactsList = contactsList;
+//    }
 }

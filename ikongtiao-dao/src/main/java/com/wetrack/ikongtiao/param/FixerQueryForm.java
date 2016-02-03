@@ -11,6 +11,8 @@ public class FixerQueryForm extends BaseCondition {
     Boolean certificated;
     Boolean insured;
     String phone;
+    String name;
+    String address;
 
     public Boolean isInsured() {
         return insured;
@@ -42,5 +44,21 @@ public class FixerQueryForm extends BaseCondition {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

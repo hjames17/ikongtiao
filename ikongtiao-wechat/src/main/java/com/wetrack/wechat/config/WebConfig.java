@@ -2,9 +2,9 @@ package com.wetrack.wechat.config;
 
 import com.wetrack.wechat.weixinHandlers.SubscriptionHandler;
 import me.chanjar.weixin.common.api.WxConsts;
-import me.chanjar.weixin.mp.api.*;
+import me.chanjar.weixin.mp.api.WxMpMessageRouter;
+import me.chanjar.weixin.mp.api.WxMpService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

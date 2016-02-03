@@ -3,6 +3,9 @@ package com.wetrack.ikongtiao.repo.api.user;
 import com.wetrack.ikongtiao.domain.Address;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
+import com.wetrack.ikongtiao.param.UserQueryParam;
+
+import java.util.List;
 
 /**
  * Created by zhangsong on 15/12/15.
@@ -43,4 +46,7 @@ public interface UserInfoRepo {
 
 	boolean updateAddress(Address address);
 
+	List<UserInfoDto> listByQueryParam(UserQueryParam param) throws Exception;
+
+	int countByQueryParam(UserQueryParam param) throws Exception;
 }

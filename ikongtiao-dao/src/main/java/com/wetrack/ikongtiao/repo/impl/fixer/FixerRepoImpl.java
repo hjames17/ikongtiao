@@ -41,6 +41,18 @@ public class FixerRepoImpl implements FixerRepo {
 
     @Override
     public int countFixerByQueryParam(FixerQueryForm form) throws Exception {
+        if(form.getPhone() != null){
+            //加上sql like查询通配符
+            form.setPhone("%" + form.getPhone() + "%");
+        }
+        if(form.getName() != null){
+            //加上sql like查询通配符
+            form.setName("%" + form.getName() + "%");
+        }
+        if(form.getAddress() != null){
+            //加上sql like查询通配符
+            form.setAddress("%" + form.getAddress() + "%");
+        }
         BaseCondition baseCondition = commonDao.mapper(Fixer.class).sql("countByQueryParam").session()
                 .selectOne(form);
         Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
@@ -50,6 +62,18 @@ public class FixerRepoImpl implements FixerRepo {
 
     @Override
     public List<Fixer> listFixerByQueryParam(FixerQueryForm form) throws Exception {
+        if(form.getPhone() != null){
+            //加上sql like查询通配符
+            form.setPhone("%" + form.getPhone() + "%");
+        }
+        if(form.getName() != null){
+            //加上sql like查询通配符
+            form.setName("%" + form.getName() + "%");
+        }
+        if(form.getAddress() != null){
+            //加上sql like查询通配符
+            form.setAddress("%" + form.getAddress() + "%");
+        }
         return commonDao.mapper(Fixer.class).sql("listByQueryParam").session().selectList(form);
     }
 

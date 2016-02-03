@@ -7,18 +7,18 @@
           {
             "type":"view",
             "name":"提交故障",
-            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AMISSION_NEW#wechat_redirect"
+            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fwechat%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AMISSION_NEW#wechat_redirect"
           },
           {
             "type":"view",
             "name":"我的故障",
-            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AMISSION_LIST#wechat_redirect"
+            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fwechat%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AMISSION_LIST#wechat_redirect"
           }]
       },
       {
         "type":"view",
         "name":"信息设置",
-        "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AUSER_SETTING#wechat_redirect"
+        "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fwechat%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AUSER_SETTING#wechat_redirect"
       },
       {
         "name":"帮助中心",

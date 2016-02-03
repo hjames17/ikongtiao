@@ -1,16 +1,19 @@
 package com.wetrack.ikongtiao.service.impl.user;
 
+import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Address;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
+import com.wetrack.ikongtiao.param.UserQueryParam;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.ikongtiao.utils.SequenceGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zhanghong on 15/12/26.
@@ -50,9 +53,10 @@ public class UserInfoServiceImpl implements UserInfoService{
             userInfo.setUpdateTime(new Date());
             userInfoRepo.update(userInfo);
         }
-        if(address != null)
+        if(address != null) {
             address.setUpdateTime(new Date());
             userInfoRepo.updateAddress(address);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -66,5 +70,21 @@ public class UserInfoServiceImpl implements UserInfoService{
             userInfoRepo.update(userInfo);
         }
         return created;
+    }
+
+    @Override
+    public PageList<UserInfoDto> listUserByQueryParam(UserQueryParam param) throws Exception {
+
+        //set total
+        PageList<UserInfoDto> page = new PageList<UserInfoDto>();
+        page.setPage(param.getPage());
+        page.setPageSize(param.getPageSize());
+        param.setStart(page.getStart());
+        page.setTotalSize(userInfoRepo.countByQueryParam(param));
+
+        List<UserInfoDto> data = userInfoRepo.listByQueryParam(param);
+
+        page.setData(data);
+        return page;
     }
 }

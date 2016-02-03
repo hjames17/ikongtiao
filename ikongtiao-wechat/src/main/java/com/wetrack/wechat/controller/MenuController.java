@@ -35,6 +35,7 @@ public class MenuController {
     static final String BASE_PATH = "/menu";
 
 //    @AjaxResponseWrapper
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST, RequestMethod.GET})
     public String create() throws Exception{
         Resource resource = ContainerContext.get().getContext().getResource("classpath:/menu.json");

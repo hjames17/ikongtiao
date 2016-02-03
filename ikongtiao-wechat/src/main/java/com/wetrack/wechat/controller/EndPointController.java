@@ -1,5 +1,6 @@
 package com.wetrack.wechat.controller;
 
+import me.chanjar.weixin.common.bean.WxJsapiSignature;
 import me.chanjar.weixin.common.util.StringUtils;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +28,7 @@ public class EndPointController {
     private static final Logger log = LoggerFactory.getLogger(EndPointController.class);
 
     private static final String WEIXIN = "/";
+    private final static String REQUEST_DEFAULT_JSSDKCONFIG_PARAMS = "/jssdkconfig";
 
     @Autowired
     protected WxMpConfigStorage weixinConfigStorage;
@@ -82,5 +86,18 @@ public class EndPointController {
         response.getWriter().println("不可识别的加密类型");
         return;
     }
+
+    @ResponseBody
+    @RequestMapping(value = REQUEST_DEFAULT_JSSDKCONFIG_PARAMS, method = RequestMethod.GET)
+    WxJsapiSignature defaultjssdkconfigparams(
+            @RequestParam(required = true, value = "url") String url,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+
+            return weixinService.createJsapiSignature(url);
+
+    }
+
+
 
 }

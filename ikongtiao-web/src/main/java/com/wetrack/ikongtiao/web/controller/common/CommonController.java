@@ -69,16 +69,19 @@ public class CommonController {
 		IGtPush push = new IGtPush(url, appKey, masterSecret);
 
 		NotificationTemplate template = linkTemplataeDemo();
+		template.setTransmissionType(1);
 		SingleMessage message = new SingleMessage();
 		message.setOffline(true);
 		//离线有效时间，单位为毫秒，可选
 		message.setOfflineExpireTime(24 * 3600 * 1000);
 		message.setData(template);
+
 		message.setPushNetWorkType(0); //可选。判断是否客户端是否wifi环境下推送，1为在WIFI环境下，0为不限制网络环境。
 		Target target = new Target();
 
 		target.setAppId(appId);
 		target.setClientId("98656af72eabc9fb2cae4510a36cb1b2");
+
 		//用户别名推送，cid和用户别名只能2者选其一
 		//String alias = "个";
 		//target.setAlias(alias);

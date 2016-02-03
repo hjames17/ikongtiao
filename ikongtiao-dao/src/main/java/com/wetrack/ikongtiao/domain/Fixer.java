@@ -38,6 +38,7 @@ public class Fixer implements Serializable {
      */
     private String phone;
 
+    @Deprecated
     /**
      * contacts:联系人
      */

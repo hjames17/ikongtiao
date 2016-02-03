@@ -31,11 +31,17 @@ public class FixerController {
     public PageList<Fixer> list(@RequestParam(required = false, value = "inService") Boolean inService,
                                 @RequestParam(required = false, value = "certificated") Boolean certificated,
                                 @RequestParam(required = false, value = "insured") Boolean insured,
+                                @RequestParam(required = false, value = "name") String name,
+                                @RequestParam(required = false, value = "phone") String phone,
+                                @RequestParam(required = false, value = "address") String address,
                                 @RequestParam(required = false, value = "page") Integer page,
                                 @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
         FixerQueryForm queryForm = new FixerQueryForm();
-        queryForm.setPage(page);
-        queryForm.setPageSize(pageSize);
+        queryForm.setPage(page == null ? 0 : page);
+        queryForm.setPageSize(pageSize == null ? 10 : pageSize);
+        queryForm.setPhone(phone);
+        queryForm.setName(name);
+        queryForm.setAddress(address);
         queryForm.setInService(inService);
         queryForm.setCertificated(certificated);
         queryForm.setInsured(insured);

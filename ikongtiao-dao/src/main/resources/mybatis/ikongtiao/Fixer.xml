@@ -343,7 +343,13 @@
         and  insurance_state = 1
       </if>
       <if test="phone != null ">
-        and  phone = #{phone}
+        and  phone LIKE #{phone}
+      </if>
+      <if test="name != null ">
+        and  name LIKE #{name}
+      </if>
+      <if test="address != null ">
+        and address LIKE #{address}
       </if>
     </where>
     limit #{start},#{pageSize}
@@ -370,7 +376,13 @@
         and  insurance_state = 1
       </if>
       <if test="phone != null ">
-        and  phone = #{phone}
+        and  phone LIKE #{phone}
+      </if>
+      <if test="name != null ">
+        and  name LIKE #{name}
+      </if>
+      <if test="address != null ">
+        and address LIKE #{address}
       </if>
     </where>
   </select>

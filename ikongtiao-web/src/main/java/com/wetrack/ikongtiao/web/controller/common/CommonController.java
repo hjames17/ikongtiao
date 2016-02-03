@@ -5,16 +5,15 @@ import com.gexin.rp.sdk.base.impl.SingleMessage;
 import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.exceptions.RequestException;
 import com.gexin.rp.sdk.http.IGtPush;
-import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.wetrack.auth.domain.User;
+import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.base.result.AjaxResult;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.FixerDevice;
 import com.wetrack.ikongtiao.service.api.fixer.PushBindService;
 import com.wetrack.ikongtiao.socket.NotificationHandler;
-import com.wetrack.ikongtiao.web.filter.SignTokenAuth;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +44,7 @@ public class CommonController {
 	public AjaxResult<String> pushBind(HttpServletRequest request, @RequestBody PushBindForm pushBindForm) {
 		FixerDevice fixerDevice = new FixerDevice();
 		User user = (User) request.getAttribute("user");
-		pushBindForm.setFixerId(Integer.valueOf(user == null ? "" : user.getId()));
+		pushBindForm.setFixerId(Integer.valueOf(user == null ? "0" : user.getId()));
 		if (pushBindForm.getFixerId() == null) {
 			throw new AjaxException("1", "参数错误");
 		}

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by zhangsong on 15/7/5.
  */
+@Deprecated
 public class SignTokenAuthInceptor extends HandlerInterceptorAdapter implements InitializingBean {
 
 

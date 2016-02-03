@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
  * @author winner
  *
  */
+@Deprecated
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SignTokenAuth {

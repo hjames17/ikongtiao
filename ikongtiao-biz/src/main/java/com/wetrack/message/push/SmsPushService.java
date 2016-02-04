@@ -1,6 +1,9 @@
 package com.wetrack.message.push;
 
 import com.wetrack.ikongtiao.sms.util.SendWeSms;
+import com.wetrack.message.MessageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -8,7 +11,12 @@ import org.springframework.stereotype.Service;
  */
 @Service("smsPushService")
 public class SmsPushService implements PushService{
-	@Override public boolean pushMessage(Object messageTo, String title, String content, String url, String... data) {
-		return SendWeSms.send(messageTo.toString(),content);
+	private Logger LOGGER = LoggerFactory.getLogger(SmsPushService.class);
+	@Override public boolean pushMessage(MessageInfo messageInfo) {
+		if(messageInfo!=null){
+			LOGGER.info("发送短信消息,手机号:{};内容:{}",messageInfo.getMessageTo(),messageInfo.getContent());
+			return SendWeSms.send(messageInfo.getMessageTo(),messageInfo.getContent());
+		}
+		return false;
 	}
 }

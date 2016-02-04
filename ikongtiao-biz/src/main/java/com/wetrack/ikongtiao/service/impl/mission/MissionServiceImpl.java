@@ -19,9 +19,9 @@ import com.wetrack.ikongtiao.repo.api.mission.MissionAddressRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
-import com.wetrack.message.push.PushData;
-import com.wetrack.message.push.PushEventType;
-import com.wetrack.message.push.PushProcess;
+import com.wetrack.message.MessageProcess;
+import com.wetrack.message.MessageSimple;
+import com.wetrack.message.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +55,7 @@ public class MissionServiceImpl implements MissionService {
 	private MachineTypeRepo machineTypeRepo;
 
 	@Resource
-	private PushProcess pushProcess;
+	private MessageProcess messageProcess;
 
 	@Resource
 	private FixerRepo fixerRepo;
@@ -167,13 +167,12 @@ public class MissionServiceImpl implements MissionService {
 		mission.setMissionState(MissionState.ACCEPT.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
-
-		//TODO 重构，数据获取提取分离出去，不要放在这里
-		PushData pushData = new PushData();
-		pushData.setUserId(mission.getUserId());
+		MessageSimple messageSimple = new MessageSimple();
+		messageSimple.setUserId(mission.getUserId());
+		messageSimple.setMissionId(missionId);
 		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-		pushData.setUrl(url);
-		pushProcess.post(PushEventType.ACCEPT_MISSION,pushData);
+		messageSimple.setUrl(url);
+		messageProcess.process(MessageType.ACCEPT_MISSION, messageSimple);
 	}
 
 	@Override
@@ -192,11 +191,11 @@ public class MissionServiceImpl implements MissionService {
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 
-		PushData pushData = new PushData();
+		MessageSimple pushData = new MessageSimple();
 		pushData.setUserId(mission.getUserId());
 		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
 		pushData.setUrl(url);
-		pushProcess.post(PushEventType.REJECT_MISSION, pushData);
+		messageProcess.process(MessageType.REJECT_MISSION, pushData);
 	}
 
 	@Override
@@ -212,12 +211,12 @@ public class MissionServiceImpl implements MissionService {
 			missionRepo.update(mission);
 		}
 
-		PushData pushData = new PushData();
+		MessageSimple pushData = new MessageSimple();
 		pushData.setUserId(mission.getUserId());
-		pushData.setFixId(fixerId);
+		pushData.setFixerId(fixerId);
 		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
 		pushData.setUrl(url);
-		pushProcess.post(PushEventType.ASSIGNED_MISSION,pushData);
+		messageProcess.process(MessageType.ASSIGNED_MISSION, pushData);
 	}
 
 

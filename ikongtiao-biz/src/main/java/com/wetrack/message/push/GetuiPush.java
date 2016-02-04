@@ -22,9 +22,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration("getuiPush")
 public class GetuiPush implements InitializingBean {
 	private final static Logger LOGGER = LoggerFactory.getLogger(GetuiPush.class);
-	@Value("${getui.host}")
+	@Value("${getui.url}")
 	private String host;
-	@Value("${getio.appId}")
+	@Value("${getui.appId}")
 	private String appId;
 	@Value("${getui.appKey}")
 	private String appKey;

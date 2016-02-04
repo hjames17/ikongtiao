@@ -14,6 +14,7 @@ import java.util.Map;
 public class HandNotificationInceptor implements HandshakeInterceptor {
 	@Override public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse,
 			WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
+
 		if(serverHttpRequest instanceof ServletServerHttpRequest){
 			ServletServerHttpRequest request = (ServletServerHttpRequest)serverHttpRequest;
 			request.getServletRequest().getSession();

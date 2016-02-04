@@ -5,13 +5,15 @@ package com.wetrack.ikongtiao.domain.admin;
  */
 public enum Role {
 
-    MISSION_LS("mission_ls"),
-    MISSION_CR("mission_cr"),
-
-    REPAIR_ORDER_LS("repair_order_ls"),
-    REPAIR_ORDER_CR("repair_order_cr"),
-
-    WEIXIN_SET("WEIXIN_SET"),
+//    MISSION_LS("mission_ls"),
+//    MISSION_CR("mission_cr"),
+//
+//    REPAIR_ORDER_LS("repair_order_ls"),
+//    REPAIR_ORDER_CR("repair_order_cr"),
+//
+//    WEIXIN_SET("WEIXIN_SET"),
+    KEFU("kefu"),
+    FINANCIAL("finacial"),
     ;
 
     String roleName;
@@ -24,16 +26,16 @@ public enum Role {
     }
 
     public static Role[] admin(){
-        Role[] roles = {MISSION_LS, MISSION_CR, REPAIR_ORDER_LS, REPAIR_ORDER_CR, WEIXIN_SET};
+        Role[] roles = {KEFU, FINANCIAL};
         return roles;
     }
     public static Role[] kefu(){
-        Role[] roles = {WEIXIN_SET};
+        Role[] roles = {KEFU};
         return roles;
     }
 
-    public static Role[] weixinAdmin(){
-        Role[] roles = {WEIXIN_SET};
+    public static Role[] financial(){
+        Role[] roles = {FINANCIAL};
         return roles;
     }
 }

@@ -6,7 +6,7 @@
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
     <result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
-    <result column="mission_state" property="missionState" jdbcType="TINYINT" />
+    <result column="mission_state" property="missionState" jdbcType="INTEGER" />
     <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
@@ -99,7 +99,7 @@
         #{missionDesc,jdbcType=VARCHAR},
       </if>
       <if test="missionState != null" >
-        #{missionState,jdbcType=TINYINT},
+        #{missionState,jdbcType=INTEGER},
       </if>
       <if test="isNeedMore != null" >
         #{isNeedMore,jdbcType=TINYINT},

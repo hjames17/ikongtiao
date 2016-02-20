@@ -11,6 +11,7 @@ public enum MissionState {
 	FIXING(3,"维修中"),
 	COMPLETED(10, "已完成"),
 	CLOSED(4, "已取消"),
+	// fixme -1 数据不支持，需修改对应的文件
 	REJECT(-1, "已拒单"),
 	;
 

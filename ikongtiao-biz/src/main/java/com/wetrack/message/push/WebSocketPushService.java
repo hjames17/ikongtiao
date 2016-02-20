@@ -21,7 +21,7 @@ import java.util.Map;
 @Service("webSocketPushService")
 public class WebSocketPushService implements PushService {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(WechatPushService.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(WebSocketPushService.class);
 	private final static String TO_ALL = "TO_ALL";
 
 	@Override public boolean pushMessage(MessageInfo messageInfo) {

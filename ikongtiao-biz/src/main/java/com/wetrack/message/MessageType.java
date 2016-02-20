@@ -29,7 +29,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("all");
+				messageInfo.setMessageTo("TO_ALL");
 				messageInfo.setTitle("有新任务啦");
 				messageInfo.setContent("有新的任务，请赶快处理");
 				break;

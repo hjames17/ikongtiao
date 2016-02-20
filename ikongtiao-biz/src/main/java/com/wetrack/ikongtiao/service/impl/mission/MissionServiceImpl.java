@@ -105,7 +105,9 @@ public class MissionServiceImpl implements MissionService {
 		missionAddress.setPhone(param.getPhone());
 		missionAddress.setId(mission.getId());
 		missionAddressRepo.save(missionAddress);
-
+		MessageSimple messageSimple = new MessageSimple();
+		messageSimple.setMissionId(mission.getId());
+		messageProcess.process(MessageType.NEW_COMMISSION,messageSimple);
 		return mission;
 	}
 
@@ -287,7 +289,10 @@ public class MissionServiceImpl implements MissionService {
 		mission.setMissionState(MissionState.COMPLETED.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
-
-		//TODO 发送消息
+		mission = missionRepo.getMissionById(missionId);
+		MessageSimple messageSimple = new MessageSimple();
+		messageSimple.setMissionId(missionId);
+		messageSimple.setFixerId(mission.getFixerId());
+		messageProcess.process(MessageType.COMPLETED_MISSION,messageSimple);
 	}
 }

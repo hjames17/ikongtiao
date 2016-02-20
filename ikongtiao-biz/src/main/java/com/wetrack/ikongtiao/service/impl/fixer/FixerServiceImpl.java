@@ -13,12 +13,16 @@ import com.wetrack.ikongtiao.repo.api.fixer.FixerInsuranceInfoRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerProfessionInfoRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
+import com.wetrack.message.MessageProcess;
+import com.wetrack.message.MessageSimple;
+import com.wetrack.message.MessageType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +42,9 @@ public class FixerServiceImpl implements FixerService {
     FixerProfessionInfoRepo professionInfoRepo;
     @Autowired
     TokenService tokenService;
+
+    @Resource
+    MessageProcess messageProcess;
 
 
     @Override
@@ -73,7 +80,9 @@ public class FixerServiceImpl implements FixerService {
         }else{
             throw new Exception("提交信息没有成功保存!");
         }
-
+        MessageSimple messageSimple = new MessageSimple();
+        messageSimple.setFixerId(certInfo.getFixerId());
+        messageProcess.process(MessageType.NEW_FIX_ORDER,messageSimple);
         //TODO 发送消息
     }
 

@@ -104,7 +104,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		Mission mission = new Mission();
 		mission.setId(order.getMissionId());
 		mission.setMissionState(MissionState.FIXING.getCode());
-
+		MessageSimple messageSimple = new MessageSimple();
+		messageSimple.setFixerId(fixerId);
+		messageSimple.setMissionId(order.getMissionId());
+		messageProcess.process(MessageType.ASSIGNED_FIXER,messageSimple);
 		//TODO 发送通知
 	}
 
@@ -138,7 +141,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setRepairOrderState((byte) 5);
 		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
-
+		repairOrder = repairOrderRepo.getById(repairOrderId);
+		MessageSimple messageSimple = new MessageSimple();
+		messageSimple.setUserId(repairOrder.getUserId());
+		messageProcess.process(MessageType.COMPLETED_FIX_ORDER,messageSimple);
 		//TODO 发送通知
 	}
 
@@ -156,6 +162,11 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
 
+		MessageSimple messageSimple = new MessageSimple();
+		if(deny)
+			messageProcess.process(MessageType.CONFIRM_FIX_ORDER,messageSimple);
+		else
+			messageProcess.process(MessageType.CANCEL_FIX_ORDER,messageSimple);
 		//TODO 发送通知
 	}
 

@@ -179,21 +179,21 @@ public enum MessageType implements MessageBuilder {
 			switch (messageChannel) {
 			case SMS:
 				messageInfo.setMessageTo(userInfo.getPhone());
-				messageInfo.setContent("你的任务已经完成了,查看详细信息,请进入微信公众号［快修点点］");
+				messageInfo.setContent(String.format("你的任务已经由维修员%s完成了,查看详细信息,请进入微信公众号［快修点点］", fixer.getName()));
 				break;
 			case WECHAT:
 				messageInfo.setMessageTo(userInfo.getWechatOpenId());
 				messageInfo.setTitle("任务已完成");
-				messageInfo.setContent("你的任务已经完成了，请点击查看详情");
+				messageInfo.setContent(String.format("你的任务已经由维修员%s完成了,请点击查看详情］", fixer.getName()));
 				// FIXME 图片地址 用静态的 还是host 可配置的
 				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
-				messageInfo.setMessageTo("all");
-				messageInfo.setTitle("有新的任务分配给你");
-				messageInfo.setContent(String.format("你有新的任务分配给你，任务地址是%s", "待填充"));
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setTitle("任务已完成");
+				messageInfo.setContent(String.format("由维修员%s维修的任务已经完成了", fixer.getName()));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -210,31 +210,20 @@ public enum MessageType implements MessageBuilder {
 
 	NEW_FIX_ORDER(100, "新建维修单", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
-			UserInfo userInfo = null;
 			Fixer fixer = null;
-			Mission mission = null;
-			FixerDevice fixerDevice = null;
 			for (Object object : args) {
-				if (object instanceof UserInfo) {
-					userInfo = (UserInfo) object;
-				} else if (object instanceof Fixer) {
+				if (object instanceof Fixer) {
 					fixer = (Fixer) object;
-				} else if (object instanceof Mission) {
-					mission = (Mission) object;
-				} else if (object instanceof FixerDevice) {
-					fixerDevice = (FixerDevice) object;
+					break;
 				}
-			}
-			if (userInfo == null) {
-				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("all");
-				messageInfo.setTitle("有新的的维修单");
-				messageInfo.setContent("有新的维修单提交");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setTitle("有新的维修单提交");
+				messageInfo.setContent(String.format("维修员%s有新的的维修单", fixer.getName()));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -243,7 +232,6 @@ public enum MessageType implements MessageBuilder {
 		}
 	},
 	WAITING_CONFIRM_FIX_ORDER(101, "通知用户确认维修单", new MessageChannel[] { MessageChannel.SMS, MessageChannel.WECHAT }) {
-		// Fixme 需对接。
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			UserInfo userInfo = null;
 			for (Object object : args) {
@@ -277,31 +265,13 @@ public enum MessageType implements MessageBuilder {
 	},
 	CONFIRM_FIX_ORDER(102, "用户确认维修单", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
-			UserInfo userInfo = null;
-			Fixer fixer = null;
-			Mission mission = null;
-			FixerDevice fixerDevice = null;
-			for (Object object : args) {
-				if (object instanceof UserInfo) {
-					userInfo = (UserInfo) object;
-				} else if (object instanceof Fixer) {
-					fixer = (Fixer) object;
-				} else if (object instanceof Mission) {
-					mission = (Mission) object;
-				} else if (object instanceof FixerDevice) {
-					fixerDevice = (FixerDevice) object;
-				}
-			}
-			if (userInfo == null) {
-				return null;
-			}
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("all");
+				messageInfo.setMessageTo("TO_ALL");
 				messageInfo.setTitle("有维修单被确认了");
 				messageInfo.setContent("有维修单被确认了");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -312,18 +282,9 @@ public enum MessageType implements MessageBuilder {
 	CANCEL_FIX_ORDER(103, "用户取消维修单", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			UserInfo userInfo = null;
-			Fixer fixer = null;
-			Mission mission = null;
-			FixerDevice fixerDevice = null;
 			for (Object object : args) {
 				if (object instanceof UserInfo) {
 					userInfo = (UserInfo) object;
-				} else if (object instanceof Fixer) {
-					fixer = (Fixer) object;
-				} else if (object instanceof Mission) {
-					mission = (Mission) object;
-				} else if (object instanceof FixerDevice) {
-					fixerDevice = (FixerDevice) object;
 				}
 			}
 			if (userInfo == null) {
@@ -332,10 +293,10 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("all");
+				messageInfo.setMessageTo("TO_ALL");
 				messageInfo.setTitle("有维修单被取消了");
-				messageInfo.setContent("有维修单被取消了");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setContent(String.format("有维修单被用户%s取消了", userInfo.getPhone()));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -355,7 +316,6 @@ public enum MessageType implements MessageBuilder {
 			UserInfo userInfo = null;
 			Fixer fixer = null;
 			Mission mission = null;
-			FixerDevice fixerDevice = null;
 			for (Object object : args) {
 				if (object instanceof UserInfo) {
 					userInfo = (UserInfo) object;
@@ -363,8 +323,6 @@ public enum MessageType implements MessageBuilder {
 					fixer = (Fixer) object;
 				} else if (object instanceof Mission) {
 					mission = (Mission) object;
-				} else if (object instanceof FixerDevice) {
-					fixerDevice = (FixerDevice) object;
 				}
 			}
 			if (userInfo == null) {
@@ -385,10 +343,10 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
-				messageInfo.setMessageTo("all");
+				messageInfo.setMessageTo("TO_ALL");
 				messageInfo.setTitle("有维修单完成了");
 				messageInfo.setContent("有维修单完成了");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -399,31 +357,13 @@ public enum MessageType implements MessageBuilder {
 
 	FIXER_SUBMIT_AUDIT(200, "维修员提交审核", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
-			UserInfo userInfo = null;
-			Fixer fixer = null;
-			Mission mission = null;
-			FixerDevice fixerDevice = null;
-			for (Object object : args) {
-				if (object instanceof UserInfo) {
-					userInfo = (UserInfo) object;
-				} else if (object instanceof Fixer) {
-					fixer = (Fixer) object;
-				} else if (object instanceof Mission) {
-					mission = (Mission) object;
-				} else if (object instanceof FixerDevice) {
-					fixerDevice = (FixerDevice) object;
-				}
-			}
-			if (userInfo == null) {
-				return null;
-			}
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("all");
+				messageInfo.setMessageTo("TO_ALL");
 				messageInfo.setTitle("维修员提交审核");
 				messageInfo.setContent("维修员提交审核");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -433,31 +373,14 @@ public enum MessageType implements MessageBuilder {
 	},
 	USER_SUBMIT_AUDIT(201, "用户提交审核", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
-			UserInfo userInfo = null;
-			Fixer fixer = null;
-			Mission mission = null;
-			FixerDevice fixerDevice = null;
-			for (Object object : args) {
-				if (object instanceof UserInfo) {
-					userInfo = (UserInfo) object;
-				} else if (object instanceof Fixer) {
-					fixer = (Fixer) object;
-				} else if (object instanceof Mission) {
-					mission = (Mission) object;
-				} else if (object instanceof FixerDevice) {
-					fixerDevice = (FixerDevice) object;
-				}
-			}
-			if (userInfo == null) {
-				return null;
-			}
+
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("all");
+				messageInfo.setMessageTo("TO_ALL");
 				messageInfo.setTitle("客户提交审核");
 				messageInfo.setContent("客户提交审核");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
 				break;
 			default:
 				break;
@@ -476,8 +399,6 @@ public enum MessageType implements MessageBuilder {
 					userInfo = (UserInfo) object;
 				} else if (object instanceof Fixer) {
 					fixer = (Fixer) object;
-				} else if (object instanceof Mission) {
-					mission = (Mission) object;
 				} else if (object instanceof FixerDevice) {
 					fixerDevice = (FixerDevice) object;
 				}
@@ -489,8 +410,8 @@ public enum MessageType implements MessageBuilder {
 			switch (messageChannel) {
 			case GE_TUI:
 				messageInfo.setMessageTo(fixerDevice.getClientId());
-				messageInfo.setTitle("有新的任务分配给你");
-				messageInfo.setContent(String.format("你有新的任务分配给你，任务地址是%s", "待填充"));
+				messageInfo.setTitle("已完成审核");
+				messageInfo.setContent("你的资料已经完成审核了");
 				// 任务id，
 				Map<String, Object> map = new HashMap<>();
 				map.put("id", fixer.getId());

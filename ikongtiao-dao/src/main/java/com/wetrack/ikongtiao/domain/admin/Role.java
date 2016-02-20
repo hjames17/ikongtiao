@@ -13,7 +13,7 @@ public enum Role {
 //
 //    WEIXIN_SET("WEIXIN_SET"),
     KEFU("kefu"),
-    FINANCIAL("finacial"),
+    FINANCIAL("financial"),
     ;
 
     String roleName;

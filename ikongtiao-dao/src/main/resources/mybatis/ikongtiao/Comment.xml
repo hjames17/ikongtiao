@@ -15,7 +15,7 @@
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into accessory (repair_order_id, comment,rate)
+    insert into comment (repair_order_id, comment,rate)
     values (#{repairOrderId,jdbcType=BIGINT}, #{comment,jdbcType=LONGVARCHAR}, #{rate,jdbcType=SMALLINT})
   </insert>
 </mapper>

@@ -19,11 +19,26 @@
     <result column="labor_cost" property="laborCost" jdbcType="FLOAT" />
     <result column="discount" property="discount" jdbcType="FLOAT" />
     <result column="payment_info_id" property="paymentInfoId" jdbcType="VARCHAR" />
+    <association property="comment" javaType="com.wetrack.ikongtiao.domain.repairOrder.Comment" column="id" select="selectComment"/>
+  </resultMap>
+  <resultMap id="CommentMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+    <result column="comment" property="comment" jdbcType="LONGVARCHAR" />
+    <result column="rate" property="rate" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
     update_time, name_plate_img, labor_cost, discount, payment_info_id, accessory_content, user_id
   </sql>
+
+  <select id="selectComment" resultMap="CommentMap" parameterType="java.lang.Long">
+    SELECT *
+    FROM comment
+    WHERE repair_order_id = #{id}
+    limit 0,1
+  </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />

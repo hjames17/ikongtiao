@@ -9,7 +9,7 @@ public class Comment {
     Long id;
     Long repairOrderId;
     Integer fixerId;
-    Date commentTime;
+    Date createTime;
     Integer rate; //0分 1分 2 3 4 5分
     String comment;
 
@@ -37,12 +37,12 @@ public class Comment {
         this.fixerId = fixerId;
     }
 
-    public Date getCommentTime() {
-        return commentTime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setCommentTime(Date commentTime) {
-        this.commentTime = commentTime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public Integer getRate() {

@@ -8,6 +8,7 @@
 package com.wetrack.ikongtiao.domain;
 
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.domain.repairOrder.Comment;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -110,6 +111,11 @@ public class RepairOrder implements Serializable {
      * 关联字段，关联支付信息表
      */
     String paymentInfoId;
+
+    /**
+     * 关联表，comment
+     */
+    Comment comment;
 
 
     /**
@@ -327,6 +333,14 @@ public class RepairOrder implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
     }
 
     /**

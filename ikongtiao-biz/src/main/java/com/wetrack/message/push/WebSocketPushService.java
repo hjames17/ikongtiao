@@ -52,6 +52,7 @@ public class WebSocketPushService implements PushService {
 							if (session != null) {
 								if (session.isOpen()) {
 									try {
+										LOGGER.info("发送websocket消息addLog，发送给adminId:{};消息内容:{};", temp.getKey(), message);
 										session.sendMessage(textMessag);
 									} catch (IOException e) {
 										LOGGER.info("发送websocket消息失败，发送给adminId:{};消息内容:{};", temp.getKey(), message);

@@ -6,9 +6,15 @@ import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.param.AdminQueryForm;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
+import com.wetrack.ikongtiao.socket.NotificationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -83,6 +89,23 @@ public class AdminController {
     @RequestMapping(value = BASE_PATH + "/delete/{id}", method = RequestMethod.DELETE)
     void delete(@PathVariable(value = "id") Integer id) throws Exception{
         adminService.delete(id);
+    }
+
+    @ResponseBody
+    @RequestMapping("/socket/test")
+    public String test(@RequestParam(value = "name")String name) throws IOException {
+        TextMessage textMessage = new TextMessage(name);
+        Iterator<WebSocketSession> iterator = NotificationHandler.sessions.iterator();
+
+        while (iterator.hasNext()){
+            WebSocketSession session = iterator.next();
+            if(session.isOpen()){
+                session.sendMessage(textMessage);
+            }else{
+                iterator.remove();
+            }
+        }
+        return "ok客户端数:" +NotificationHandler.sessions.size() ;
     }
 
     static class LoginOut {

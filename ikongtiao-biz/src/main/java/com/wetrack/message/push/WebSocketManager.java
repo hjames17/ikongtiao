@@ -28,6 +28,7 @@ public class WebSocketManager {
 				datas = new HashMap<>();
 			}
 			datas.put(adminId, session);
+			LOGGER.info("webSocketKey{};{}",adminId,role);
 			sessions.put(role, datas);
 		}
 	}

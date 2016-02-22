@@ -8,6 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,13 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketManager {
 	private final static Logger LOGGER = LoggerFactory.getLogger(WebSocketManager.class);
 
-	private static volatile Map<String, Map<String, WebSocketSession>> sessions = new ConcurrentHashMap<>();
+	private static volatile Map<String, Map<String, WebSocketSession>> sessions = new HashMap<>();
 
 	public static void put(String role, String adminId, WebSocketSession session) {
 		synchronized (WebSocketManager.class) {
 			Map<String, WebSocketSession> datas = sessions.get(role);
 			if (datas == null) {
-				datas = new ConcurrentHashMap<>();
+				datas = new HashMap<>();
 			}
 			datas.put(adminId, session);
 			sessions.put(role, datas);

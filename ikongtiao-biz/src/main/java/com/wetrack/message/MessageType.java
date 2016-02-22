@@ -5,6 +5,7 @@ import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.FixerDevice;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.admin.Role;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有新任务啦");
 				messageInfo.setContent("有新的任务，请赶快处理");
 				break;
@@ -190,7 +191,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("任务已完成");
 				messageInfo.setContent(String.format("由维修员%s维修的任务已经完成了", fixer.getName()));
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -220,7 +221,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有新的维修单提交");
 				messageInfo.setContent(String.format("维修员%s有新的的维修单", fixer.getName()));
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -268,7 +269,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有维修单被确认了");
 				messageInfo.setContent("有维修单被确认了");
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -293,7 +294,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有维修单被取消了");
 				messageInfo.setContent(String.format("有维修单被用户%s取消了", userInfo.getPhone()));
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -343,7 +344,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有维修单完成了");
 				messageInfo.setContent("有维修单完成了");
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -360,7 +361,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("维修员提交审核");
 				messageInfo.setContent("维修员提交审核");
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -377,7 +378,7 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo("TO_ALL");
+				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("客户提交审核");
 				messageInfo.setContent("客户提交审核");
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -455,6 +456,17 @@ public enum MessageType implements MessageBuilder {
 		this.code = code;
 		this.message = message;
 		this.messageChannels = messageChannels;
+	}
+
+	public static MessageType parseCode(Integer code) {
+		if (code == null)
+			return null;
+		for (MessageType value : values()) {
+			if (value.code == code) {
+				return value;
+			}
+		}
+		return null;
 	}
 
 }

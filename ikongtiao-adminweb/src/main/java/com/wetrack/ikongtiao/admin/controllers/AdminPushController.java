@@ -18,10 +18,8 @@ public class AdminPushController {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AdminPushController.class);
 
-	static final String BASE_PATH = "/admin";
-
 	@ResponseBody
-	@RequestMapping(BASE_PATH + "/socket/push")
+	@RequestMapping("/socket/push")
 	public String pushService(String messageTo, String message) throws IOException {
 		LOGGER.info("webSocket messageTo:{},message:{}",messageTo,message);
 		WebSocketManager.pushMessage(messageTo, message);

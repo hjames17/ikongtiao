@@ -76,7 +76,7 @@ public class WebSocketManager {
 	public static void pushMessage(String messageTo, String message) {
 		TextMessage textMessag = new TextMessage(message);
 		List<String> keys = new ArrayList<>();
-		if (true) {
+		if (false) {
 			Map<String, Map<String, WebSocketSession>> datas = WebSocketManager.get();
 			if (datas != null) {
 				for (Map<String, WebSocketSession> data : datas.values()) {

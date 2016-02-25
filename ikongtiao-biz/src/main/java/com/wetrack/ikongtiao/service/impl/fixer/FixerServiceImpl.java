@@ -18,7 +18,6 @@ import com.wetrack.message.MessageSimple;
 import com.wetrack.message.MessageType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +81,7 @@ public class FixerServiceImpl implements FixerService {
         }
         MessageSimple messageSimple = new MessageSimple();
         messageSimple.setFixerId(certInfo.getFixerId());
-        messageProcess.process(MessageType.NEW_FIX_ORDER,messageSimple);
+        messageProcess.process(MessageType.FIXER_SUBMIT_AUDIT,messageSimple);
         //TODO 发送消息
     }
 

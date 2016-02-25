@@ -6,16 +6,18 @@
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="roles_string" property="rolesString" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="in_service" property="inService" jdbcType="TINYINT" />
     <result column="deleted" property="deleted" jdbcType="TINYINT" />
+    <result column="disabled" property="disabled" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, name, password, avatar, phone, email, roles_string,
-    create_time, update_time, in_service, deleted
+    create_time, update_time, in_service, deleted, disabled
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -84,11 +86,14 @@
       <if test="updateTime != null" >
         dw_update_time = #{dwUpdateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="operateId != null" >
-        operate_id = #{operateId,jdbcType=INTEGER},
-      </if>
       <if test="inService != null" >
         in_service = #{inService,jdbcType=TINYINT},
+      </if>
+      <if test="deleted != null" >
+        deleted = #{deleted,jdbcType=TINYINT}
+      </if>
+      <if test="disabled != null" >
+        disabled = #{disabled,jdbcType=TINYINT}
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

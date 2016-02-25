@@ -20,6 +20,7 @@ public class User {
 
     Boolean inService;
     Boolean deleted;
+    Boolean disabled;
 
     String password; //md5 hashed
 
@@ -66,6 +67,15 @@ public class User {
 
     public Role[] getRoles() {
         return parseRolesString();
+    }
+
+    public String[] getRolesArrayString(){
+        if(rolesString == null || rolesString.isEmpty()){
+            return null;
+        }
+
+        String[] parts = rolesString.split(DELIMITER);
+        return parts;
     }
 
     public String getRolesString() {
@@ -124,7 +134,14 @@ public class User {
         this.updateTime = updateTime;
     }
 
-    //    public void setRoles(Role[] roles) {
+    public Boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+//    public void setRoles(Role[] roles) {
 //        this.roles = roles;
 //    }
 

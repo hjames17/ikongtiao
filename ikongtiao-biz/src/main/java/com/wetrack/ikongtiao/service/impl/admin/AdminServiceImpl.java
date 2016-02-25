@@ -48,7 +48,11 @@ public class AdminServiceImpl implements AdminService{
             throw new Exception("用户邮箱不存在");
         }
         if(user.getPassword().equals(password)){
-            return tokenService.login(user.getId().toString(), password);
+            com.wetrack.auth.domain.User tokenUser = new com.wetrack.auth.domain.User
+                    (user.getId().toString(), user.getPassword(), com.wetrack.auth.domain.User.NEVER_EXPIRED, user.getRolesArrayString());
+
+            return tokenService.login(tokenUser);
+//            return tokenService.login(user.getId().toString(), password);
         }
 
         throw new Exception("密码错误!");

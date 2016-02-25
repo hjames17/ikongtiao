@@ -145,7 +145,7 @@ public enum MessageType implements MessageBuilder {
 			case GE_TUI:
 				messageInfo.setMessageTo(fixerDevice.getClientId());
 				messageInfo.setTitle("有新的任务分配给你");
-				messageInfo.setContent(String.format("你有新的任务分配给你，任务地址是%s", "待填充"));
+				messageInfo.setContent(String.format("任务地址是%s,点击查看详情", fixer.getAddress()));
 				// 任务id，
 				Map<String, Object> map = new HashMap<>();
 				map.put("id", mission.getId());

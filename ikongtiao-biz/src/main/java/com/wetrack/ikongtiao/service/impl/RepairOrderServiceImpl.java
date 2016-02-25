@@ -107,6 +107,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		mission.setId(order.getMissionId());
 		mission.setMissionState(MissionState.FIXING.getCode());
 		MessageSimple messageSimple = new MessageSimple();
+		messageSimple.setUserId(order.getUserId());
 		messageSimple.setFixerId(fixerId);
 		messageSimple.setMissionId(order.getMissionId());
 		messageProcess.process(MessageType.ASSIGNED_FIXER,messageSimple);

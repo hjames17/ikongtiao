@@ -57,12 +57,13 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setAccessoryContent(accessoryContent);
 		repairOrder = repairOrderRepo.create(repairOrder);
 
-		//更新维修单状态
+		//创建维修单状态
 		mission.setMissionState(MissionState.FIXING.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 		MessageSimple messageSimple = new MessageSimple();
 		messageSimple.setFixerId(mission.getFixerId());
+		messageSimple.setRepairOrderId(repairOrder.getId());
 		messageProcess.process(MessageType.NEW_FIX_ORDER,messageSimple);
 		return repairOrder;
 	}
@@ -110,8 +111,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		messageSimple.setUserId(order.getUserId());
 		messageSimple.setFixerId(fixerId);
 		messageSimple.setMissionId(order.getMissionId());
+		messageSimple.setRepairOrderId(repairOrder.getId());
 		messageProcess.process(MessageType.ASSIGNED_FIXER,messageSimple);
-		//TODO 发送通知
 	}
 
 	@Override
@@ -137,6 +138,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	}
 
+
+	static final String ACTION_COMMENT = "comment";
 	@Override
 	public void setFinished(Long repairOrderId) throws Exception {
 		RepairOrder repairOrder = new RepairOrder();
@@ -145,10 +148,16 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
 		repairOrder = repairOrderRepo.getById(repairOrderId);
+
+
 		MessageSimple messageSimple = new MessageSimple();
 		messageSimple.setUserId(repairOrder.getUserId());
+		messageSimple.setRepairOrderId(repairOrder.getId());
+		String url = String
+				.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_COMMENT,
+						repairOrder.getUserId(), repairOrderId);
+		messageSimple.setUrl(url);
 		messageProcess.process(MessageType.COMPLETED_FIX_ORDER,messageSimple);
-		//TODO 发送通知
 	}
 
 	@Override
@@ -165,8 +174,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
 		repairOrder = repairOrderRepo.getById(repairOrderId);
+
 		MessageSimple messageSimple = new MessageSimple();
 		messageSimple.setUserId(repairOrder.getUserId());
+		messageSimple.setRepairOrderId(repairOrder.getId());
 		if(!deny)
 			messageProcess.process(MessageType.CONFIRM_FIX_ORDER,messageSimple);
 		else

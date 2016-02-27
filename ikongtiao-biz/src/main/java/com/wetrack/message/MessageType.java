@@ -1,10 +1,6 @@
 package com.wetrack.message;
 
-import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.ikongtiao.domain.Fixer;
-import com.wetrack.ikongtiao.domain.FixerDevice;
-import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.*;
 import com.wetrack.ikongtiao.domain.admin.Role;
 
 import java.util.HashMap;
@@ -28,11 +24,13 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(NEW_COMMISSION.getCode());
 			switch (messageChannel) {
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有新任务啦");
 				messageInfo.setContent("有新的任务，请赶快处理");
+				messageInfo.setData(mission);
 				break;
 			default:
 				break;
@@ -40,7 +38,7 @@ public enum MessageType implements MessageBuilder {
 			return messageInfo;
 		}
 	},
-	ACCEPT_MISSION(2, "受理任务", new MessageChannel[] { MessageChannel.SMS, MessageChannel.WECHAT }) {
+	ACCEPT_MISSION(1, "受理任务", new MessageChannel[] { MessageChannel.SMS, MessageChannel.WECHAT }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			UserInfo userInfo = null;
 			for (Object object : args) {
@@ -53,6 +51,7 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(ACCEPT_MISSION.getCode());
 			switch (messageChannel) {
 			case SMS:
 				messageInfo.setMessageTo(userInfo.getPhone());
@@ -63,7 +62,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setTitle("任务已被受理");
 				messageInfo.setContent("你的任务已经被受理了，请点击查看详情");
 				// FIXME 图片地址 用静态的 还是host 可配置的
-				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			default:
@@ -88,6 +87,7 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(REJECT_MISSION.getCode());
 			switch (messageChannel) {
 			case SMS:
 				messageInfo.setMessageTo(userInfo.getPhone());
@@ -98,7 +98,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setTitle("任务已被拒绝");
 				messageInfo.setContent("你的任务已经被拒绝了，请点击查看详情");
 				// FIXME 图片地址 用静态的 还是host 可配置的
-				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			default:
@@ -129,6 +129,7 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(ASSIGNED_MISSION.getCode());
 			switch (messageChannel) {
 			case SMS:
 				messageInfo.setMessageTo(userInfo.getPhone());
@@ -139,7 +140,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setTitle("任务被分配了");
 				messageInfo.setContent(String.format("你的任务被分配给%s维修员请等待维修员与你联系，请点击查看详情", fixer.getName()));
 				// FIXME 图片地址 用静态的 还是host 可配置的
-				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case GE_TUI:
@@ -150,7 +151,7 @@ public enum MessageType implements MessageBuilder {
 				Map<String, Object> map = new HashMap<>();
 				map.put("id", mission.getId());
 				map.put("type", "mission");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(map));
+				messageInfo.setData(map);
 				break;
 			default:
 				break;
@@ -177,6 +178,7 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(ACCEPT_MISSION.getCode());
 			switch (messageChannel) {
 			case SMS:
 				messageInfo.setMessageTo(userInfo.getPhone());
@@ -187,14 +189,14 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setTitle("任务已完成");
 				messageInfo.setContent(String.format("你的任务已经由维修员%s完成了,请点击查看详情］", fixer.getName()));
 				// FIXME 图片地址 用静态的 还是host 可配置的
-				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("任务已完成");
 				messageInfo.setContent(String.format("由维修员%s维修的任务已经完成了", fixer.getName()));
-				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setData(mission);
 				break;
 			default:
 				break;
@@ -212,22 +214,25 @@ public enum MessageType implements MessageBuilder {
 	NEW_FIX_ORDER(100, "新建维修单", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			Fixer fixer = null;
+			RepairOrder repairOrder = null;
 			for (Object object : args) {
 				if (object instanceof Fixer) {
 					fixer = (Fixer) object;
-					break;
+				}else if(object instanceof RepairOrder){
+					repairOrder = (RepairOrder)object;
 				}
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(NEW_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有新的维修单提交");
-				messageInfo.setContent(String.format("维修员%s有新的的维修单", fixer.getName()));
-				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setContent(String.format("维修员%s提交了新的维修单", fixer.getName()));
+				messageInfo.setData(repairOrder);
 				break;
-			default:
-				break;
+				default:
+					break;
 			}
 			return messageInfo;
 		}
@@ -245,6 +250,7 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(WAITING_CONFIRM_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case SMS:
 				messageInfo.setMessageTo(userInfo.getPhone());
@@ -255,7 +261,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setTitle("你有待确认的维修单");
 				messageInfo.setContent("你有待确认的维修单，请点击查看详情");
 				// FIXME 图片地址 用静态的 还是host 可配置的
-				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			default:
@@ -266,13 +272,20 @@ public enum MessageType implements MessageBuilder {
 	},
 	CONFIRM_FIX_ORDER(102, "用户确认维修单", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
+			RepairOrder repairOrder = null;
+			for (Object object : args) {
+				if(object instanceof RepairOrder){
+					repairOrder = (RepairOrder)object;
+				}
+			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(CONFIRM_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有维修单被确认了");
-				messageInfo.setContent("有维修单被确认了");
-				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setContent(String.format("维修单%d已被客户确认", repairOrder.getId()));
+				messageInfo.setData(repairOrder);
 				break;
 			default:
 				break;
@@ -283,21 +296,27 @@ public enum MessageType implements MessageBuilder {
 	CANCEL_FIX_ORDER(103, "用户取消维修单", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			UserInfo userInfo = null;
+			RepairOrder repairOrder = null;
 			for (Object object : args) {
 				if (object instanceof UserInfo) {
 					userInfo = (UserInfo) object;
 				}
+				if (object instanceof RepairOrder) {
+					repairOrder = (RepairOrder) object;
+				}
+
 			}
 			if (userInfo == null) {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(CANCEL_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有维修单被取消了");
-				messageInfo.setContent(String.format("有维修单被用户%s取消了", userInfo.getPhone()));
-				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setContent(String.format("维修单%d被用户%s取消了", repairOrder.getId(), userInfo.getPhone()));
+				messageInfo.setData(repairOrder);
 				break;
 			default:
 				break;
@@ -317,6 +336,7 @@ public enum MessageType implements MessageBuilder {
 			UserInfo userInfo = null;
 			Fixer fixer = null;
 			Mission mission = null;
+			RepairOrder repairOrder = null;
 			for (Object object : args) {
 				if (object instanceof UserInfo) {
 					userInfo = (UserInfo) object;
@@ -324,15 +344,19 @@ public enum MessageType implements MessageBuilder {
 					fixer = (Fixer) object;
 				} else if (object instanceof Mission) {
 					mission = (Mission) object;
+				} else if(object instanceof  RepairOrder){
+					repairOrder = (RepairOrder)object;
 				}
+
 			}
 			if (userInfo == null) {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(COMPLETED_FIX_ORDER.getCode());
 			switch (messageChannel) {
-			case SMS:
-				messageInfo.setMessageTo(userInfo.getPhone());
+				case SMS:
+					messageInfo.setMessageTo(userInfo.getPhone());
 				messageInfo.setContent("你的维修单已经完成了,查看详细信息,请进入微信公众号［快修点点］");
 				break;
 			case WECHAT:
@@ -340,17 +364,17 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setTitle("维修单已完成");
 				messageInfo.setContent("你的维修单已经完成了，请点击查看详情");
 				// FIXME 图片地址 用静态的 还是host 可配置的
-				messageInfo.setPicUrl("http://static.ikongtiao.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
 				messageInfo.setTitle("有维修单完成了");
-				messageInfo.setContent("有维修单完成了");
-				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
+				messageInfo.setContent(String.format("维修单%d已完成", repairOrder.getId()));
+				messageInfo.setData(repairOrder);
 				break;
-			default:
-				break;
+				default:
+					break;
 			}
 			return messageInfo;
 		}
@@ -359,6 +383,7 @@ public enum MessageType implements MessageBuilder {
 	FIXER_SUBMIT_AUDIT(200, "维修员提交审核", new MessageChannel[] { MessageChannel.WEB }) {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(FIXER_SUBMIT_AUDIT.getCode());
 			switch (messageChannel) {
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
@@ -376,6 +401,7 @@ public enum MessageType implements MessageBuilder {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(USER_SUBMIT_AUDIT.getCode());
 			switch (messageChannel) {
 			case WEB:
 				messageInfo.setMessageTo(Role.KEFU.toString());
@@ -408,6 +434,7 @@ public enum MessageType implements MessageBuilder {
 				return null;
 			}
 			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(SUCCESS_AUDIT.getCode());
 			switch (messageChannel) {
 			case GE_TUI:
 				messageInfo.setMessageTo(fixerDevice.getClientId());
@@ -417,7 +444,7 @@ public enum MessageType implements MessageBuilder {
 				Map<String, Object> map = new HashMap<>();
 				map.put("id", fixer.getId());
 				map.put("type", "certificate");
-				messageInfo.setData(Jackson.mobile().writeValueAsString(map));
+				messageInfo.setData(map);
 				break;
 			default:
 				break;

@@ -7,10 +7,7 @@ import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,5 +32,12 @@ public class FixerMissionController {
 		User user = (User)request.getAttribute("user");
 		param.setFixerId(Integer.valueOf(user.getId()));
 		return missionService.ListFixerMissionByParam(param);
+	}
+
+
+	@ResponseBody
+	@RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
+	public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
+		return missionService.getMissionDto(id);
 	}
 }

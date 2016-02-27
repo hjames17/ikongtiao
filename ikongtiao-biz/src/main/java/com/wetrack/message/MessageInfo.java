@@ -7,17 +7,19 @@ import java.io.Serializable;
  */
 public class MessageInfo implements Serializable{
 
+	private Integer id; //messageId from MessageType
+
 	private String messageTo;
 
-	private String title;
+	private String title; //web, 个推，微信
 
-	private String content;
+	private String content; //web, 个推, 微信，sms
 
-	private String url;
+	private String url; //微信, sms
 
-	private String picUrl;
+	private String picUrl; //微信
 
-	private String data;
+	private Object data;
 
 	private String[] args;
 
@@ -61,11 +63,11 @@ public class MessageInfo implements Serializable{
 		this.picUrl = picUrl;
 	}
 
-	public String getData() {
+	public Object getData() {
 		return data;
 	}
 
-	public void setData(String data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 
@@ -75,5 +77,13 @@ public class MessageInfo implements Serializable{
 
 	public void setArgs(String[] args) {
 		this.args = args;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 }

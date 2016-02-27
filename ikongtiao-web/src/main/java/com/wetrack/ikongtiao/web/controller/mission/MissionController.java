@@ -11,10 +11,7 @@ import com.wetrack.ikongtiao.param.MissionSubmitParam;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -48,6 +45,13 @@ public class MissionController {
 			throw new AjaxException(MissionErrorMessage.MISSION_LIST_PARAM_ERROR);
 		}
 		return missionService.listMissionByAppQueryParam(param);
+	}
+
+
+	@ResponseBody
+	@RequestMapping(value = "/mission/{id}" , method = {RequestMethod.GET})
+	public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
+		return missionService.getMissionDto(id);
 	}
 
 	@RequestMapping("/mission/finish")

@@ -216,6 +216,7 @@ public class MissionServiceImpl implements MissionService {
 		MessageSimple pushData = new MessageSimple();
 		pushData.setUserId(mission.getUserId());
 		pushData.setFixerId(fixerId);
+		pushData.setMissionId(missionId);
 		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
 		pushData.setUrl(url);
 		messageProcess.process(MessageType.ASSIGNED_MISSION, pushData);

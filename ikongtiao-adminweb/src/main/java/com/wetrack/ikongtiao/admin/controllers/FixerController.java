@@ -48,6 +48,12 @@ public class FixerController {
         return fixerService.listWithParams(queryForm);
     }
 
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
+    public Fixer get(@PathVariable(value = "id") Integer id) throws Exception{
+        return fixerService.getFixer(id);
+    }
+
 //    @ResponseBody
 //    @RequestMapping(value = BASE_PATH + "search", method = {RequestMethod.GET})
 //    public PageList<Fixer> search() throws Exception{

@@ -31,6 +31,11 @@ public class RepairOrderController {
         return repairOrderService.listForMission(missionId);
     }
 
+    @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
+    public RepairOrder getRepairOrder(@PathVariable(value = "id") long id) throws Exception{
+        return repairOrderService.getById(id, false);
+    }
+
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form) throws Exception{
         RepairOrder repairOrder = repairOrderService.create(null, form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
@@ -46,22 +51,20 @@ public class RepairOrderController {
         return created.getId().toString();
     }
     @RequestMapping(value = BASE_PATH + "/accessory/update" , method = {RequestMethod.POST})
-    public String updateAccessory(@RequestBody Accessory form) throws Exception{
+    public void updateAccessory(@RequestBody Accessory form) throws Exception{
         if(form.getId() == null){
             throw new Exception("未指定配件id");
         }
         repairOrderService.updateAccessory(form);
-        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/accessory/delete" , method = {RequestMethod.GET})
-    public String deleteAccessory(@RequestParam(value = "accessoryId") Long id) throws Exception{
+    public void deleteAccessory(@RequestParam(value = "accessoryId") Long id) throws Exception{
         repairOrderService.deleteAccessory(id);
-        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/cost/create" , method = {RequestMethod.POST})
-    public String createCost(@RequestBody CreateCostForm form) throws Exception{
+    public void createCost(@RequestBody CreateCostForm form) throws Exception{
         RepairOrder repairOrder = repairOrderService.getById(form.getRepairOrderId(), false);
         if(repairOrder == null){
             throw new Exception("没有该维修单");
@@ -73,31 +76,27 @@ public class RepairOrderController {
             }
         }
         repairOrderService.addCost(form.getRepairOrderId(), form.getAccessoryList(), form.getLaborCost(), form.isFinishCost());
-        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.POST})
-    public String dispatchOrder(@RequestBody OperationForm form) throws Exception{
+    public void dispatchOrder(@RequestBody OperationForm form) throws Exception{
 
         if(form.getFixerId() == null){
             throw new Exception("没有指定维修员id");
         }
 
         repairOrderService.dispatchRepairOrder(form.getAdminUserId(), form.getRepairOrderId(), form.getFixerId());
-        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/cost/finish" , method = {RequestMethod.POST})
-    public String costFinish(@RequestBody OperationForm form) throws Exception {
+    public void costFinish(@RequestBody OperationForm form) throws Exception {
 
         repairOrderService.setCostFinished(form.getAdminUserId(), form.getRepairOrderId());
-        return "ok";
     }
 
     @RequestMapping(value = BASE_PATH + "/prepared" , method = {RequestMethod.POST})
-    public String prepared(@RequestBody OperationForm form) throws Exception {
+    public void prepared(@RequestBody OperationForm form) throws Exception {
         repairOrderService.setPrepared(form.getAdminUserId(), form.getRepairOrderId());
-        return "ok";
     }
 
 

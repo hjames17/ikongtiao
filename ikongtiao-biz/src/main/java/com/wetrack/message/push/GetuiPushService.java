@@ -23,7 +23,7 @@ public class GetuiPushService implements PushService {
 		LOGGER.info("个推发送消息，消息内容为:{}", Jackson.base().writeValueAsString(messageInfo));
 		boolean flag = getuiPush
 				.pushNotification(messageInfo.getMessageTo(), messageInfo.getTitle(), messageInfo.getContent(),
-						messageInfo.getData());
+						Jackson.mobile().writeValueAsString(messageInfo.getData()));
 		return flag;
 	}
 }

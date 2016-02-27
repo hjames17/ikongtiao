@@ -3,13 +3,11 @@ package com.wetrack.message;
 import com.wetrack.base.utils.Utils;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.base.utils.thread.ThreadExecutor;
-import com.wetrack.ikongtiao.domain.Fixer;
-import com.wetrack.ikongtiao.domain.FixerDevice;
-import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.*;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerDeviceRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
+import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.message.push.*;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +48,9 @@ public class MessageProcess {
 	@Resource
 	private FixerDeviceRepo fixerDeviceRepo;
 
+	@Resource
+	private RepairOrderRepo repairOrderRepo;
+
 	public boolean process(MessageType messageType, MessageSimple baseInfo) {
 		LOGGER.info("messageType:{};消息内容:{}", messageType.toString(), Jackson.base().writeValueAsString(baseInfo));
 		Utils.get(ThreadExecutor.class).execute(new ThreadExecutor.Executor() {
@@ -59,6 +60,7 @@ public class MessageProcess {
 					Fixer fixer = null;
 					Mission mission = null;
 					FixerDevice fixerDevice = null;
+					RepairOrder repairOrder = null;
 					if (!StringUtils.isEmpty(baseInfo.getUserId())) {
 						userInfo = userInfoRepo.getById(baseInfo.getUserId());
 					}
@@ -69,12 +71,19 @@ public class MessageProcess {
 					if (baseInfo.getMissionId() != null) {
 						mission = missionRepo.getMissionById(baseInfo.getMissionId());
 					}
+					if(baseInfo.getRepairOrderId() != null){
+						try {
+							repairOrder = repairOrderRepo.getById(baseInfo.getRepairOrderId());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 					MessageChannel[] messageChannels = messageType.getMessageChannels();
 					if (messageChannels != null) {
 						for (MessageChannel messageChannel : messageChannels) {
 							try {
 								MessageInfo messageInfo = messageType
-										.build(messageChannel, baseInfo, userInfo, fixer, fixerDevice, mission);
+										.build(messageChannel, baseInfo, userInfo, fixer, fixerDevice, mission, repairOrder);
 								if (messageInfo != null) {
 									PushService pushService = buildPushService(messageChannel);
 									if (pushService != null) {

@@ -154,7 +154,11 @@ public class User {
         String[] parts = rolesString.split(DELIMITER);
         Role[] roles = new Role[parts.length];
         for(int i = 0; i < parts.length; i++){
-            roles[i] = Role.valueOf(parts[i]);
+            try {
+                roles[i] = Role.valueOf(parts[i]);
+            }catch (Exception e){
+                //skip error role
+            }
         }
 
         return roles;

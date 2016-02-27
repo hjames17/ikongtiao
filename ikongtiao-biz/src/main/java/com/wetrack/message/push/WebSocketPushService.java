@@ -29,13 +29,14 @@ public class WebSocketPushService implements PushService {
 		// 根据 角色的key 确定怎么发
 		// 发全部是一个，角色发是一个 ，根据id 发是一个
 		Map<String, Object> map = new HashMap<>();
+		map.put("id" , messageInfo.getId());
 		if (!StringUtils.isEmpty(messageInfo.getTitle())) {
 			map.put("title", messageInfo.getTitle());
 		}
 		if (!StringUtils.isEmpty(messageInfo.getContent())) {
 			map.put("content", messageInfo.getContent());
 		}
-		if (!StringUtils.isEmpty(messageInfo.getData())) {
+		if (messageInfo.getData() != null) {
 			map.put("data", messageInfo.getData());
 		}
 		String message = Jackson.mobile().writeValueAsString(map);

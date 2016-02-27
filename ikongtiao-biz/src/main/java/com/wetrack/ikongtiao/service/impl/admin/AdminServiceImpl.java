@@ -47,6 +47,12 @@ public class AdminServiceImpl implements AdminService{
         if(user == null){
             throw new Exception("用户邮箱不存在");
         }
+        if(user.isDeleted()){
+            throw new Exception("用户不存在");
+        }
+        if(user.isDisabled()){
+            throw new Exception("用户已禁用");
+        }
         if(user.getPassword().equals(password)){
             com.wetrack.auth.domain.User tokenUser = new com.wetrack.auth.domain.User
                     (user.getId().toString(), user.getPassword(), com.wetrack.auth.domain.User.NEVER_EXPIRED, user.getRolesArrayString());

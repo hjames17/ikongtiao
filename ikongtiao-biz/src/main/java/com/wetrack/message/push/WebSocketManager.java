@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by zhangsong on 16/2/4.
@@ -78,32 +77,34 @@ public class WebSocketManager {
 	public static void pushMessage(String messageTo, String message) {
 		TextMessage textMessag = new TextMessage(message);
 		List<String> keys = new ArrayList<>();
-		if (false) {
-			Map<String, Map<String, WebSocketSession>> datas = WebSocketManager.get();
-			if (datas != null) {
-				for (Map<String, WebSocketSession> data : datas.values()) {
-					if (data != null) {
-						for (Map.Entry<String, WebSocketSession> temp : data.entrySet()) {
-							WebSocketSession session = temp.getValue();
-							if (session != null) {
-								if (session.isOpen()) {
-									try {
-										LOGGER.info("发送websocket消息addLog，发送给adminId:{};消息内容:{};", temp.getKey(),
-												message);
-										session.sendMessage(textMessag);
-									} catch (IOException e) {
-										LOGGER.info("发送websocket消息失败，发送给adminId:{};消息内容:{};", temp.getKey(), message);
-									}
-								} else {
-									// 清除无效的链接
-									keys.add(temp.getKey());
-								}
-							}
-						}
-					}
-				}
-			}
-		} else if (messageTo.equals(Role.KEFU.toString().equals(messageTo))) {
+//		if (false) {
+//			Map<String, Map<String, WebSocketSession>> datas = WebSocketManager.get();
+//			if (datas != null) {
+//				for (Map<String, WebSocketSession> data : datas.values()) {
+//					if (data != null) {
+//						for (Map.Entry<String, WebSocketSession> temp : data.entrySet()) {
+//							WebSocketSession session = temp.getValue();
+//							if (session != null) {
+//								if (session.isOpen()) {
+//									try {
+//
+//										session.sendMessage(textMessag);
+//										LOGGER.info("发送websocket消息addLog，发送给adminId:{};消息内容:{};", temp.getKey(),
+//												message);
+//									} catch (IOException e) {
+//										LOGGER.info("发送websocket消息失败，发送给adminId:{};消息内容:{};", temp.getKey(), message);
+//									}
+//								} else {
+//									// 清除无效的链接
+//									keys.add(temp.getKey());
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//		} else
+		if (Role.KEFU.toString().equals(messageTo)) {
 			Map<String, WebSocketSession> datas = WebSocketManager.get(messageTo);
 			if (datas != null) {
 				for (Map.Entry<String, WebSocketSession> temp : datas.entrySet()) {
@@ -112,8 +113,10 @@ public class WebSocketManager {
 						if (session.isOpen()) {
 							try {
 								session.sendMessage(textMessag);
+								LOGGER.info("发送websocket消息addLog，发送给Role:{};消息内容:{};", messageTo,
+										message);
 							} catch (IOException e) {
-								LOGGER.info("发送websocket消息失败，发送给adminId:{};消息内容:{};", temp.getKey(), message);
+								LOGGER.info("发送websocket消息失败，发送给Role:{};消息内容:{};", messageTo, message);
 							}
 						} else {
 							// 清除无效的链接
@@ -139,6 +142,8 @@ public class WebSocketManager {
 				if (session.isOpen()) {
 					try {
 						session.sendMessage(textMessag);
+						LOGGER.info("发送websocket消息addLog，发送给adminId:{};消息内容:{};", messageTo,
+								message);
 					} catch (IOException e) {
 						LOGGER.info("发送websocket消息失败，发送给adminId:{};消息内容:{};", messageTo, message);
 					}

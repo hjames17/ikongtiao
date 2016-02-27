@@ -13,6 +13,8 @@ public class MessageSimple {
 
 	private Integer missionId;
 
+	private Long repairOrderId;
+
 	private String url;
 
 	public String getUserId() {
@@ -53,5 +55,13 @@ public class MessageSimple {
 
 	public void setMissionId(Integer missionId) {
 		this.missionId = missionId;
+	}
+
+	public Long getRepairOrderId() {
+		return repairOrderId;
+	}
+
+	public void setRepairOrderId(Long repairOrderId) {
+		this.repairOrderId = repairOrderId;
 	}
 }

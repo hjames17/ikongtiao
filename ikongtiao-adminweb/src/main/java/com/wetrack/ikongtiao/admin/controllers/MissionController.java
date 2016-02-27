@@ -33,6 +33,12 @@ public class MissionController {
     }
 
     @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
+    public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
+        return missionService.getMissionDto(id);
+    }
+
+    @ResponseBody
     @RequestMapping(value = BASE_PATH + "/deny" , method = {RequestMethod.POST})
     public void denyMission(@RequestBody DenyForm denyForm) throws Exception{
 

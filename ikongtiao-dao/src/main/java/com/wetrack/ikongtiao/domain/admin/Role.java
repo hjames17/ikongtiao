@@ -21,9 +21,9 @@ public enum Role {
         this.roleName = name;
     }
 
-    public String toString(){
-        return this.roleName;
-    }
+//    public String toString(){
+//        return this.roleName;
+//    }
 
     public static Role[] admin(){
         Role[] roles = {KEFU, FINANCIAL};

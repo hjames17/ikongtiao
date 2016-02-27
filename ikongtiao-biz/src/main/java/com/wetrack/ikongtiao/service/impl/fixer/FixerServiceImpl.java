@@ -82,7 +82,6 @@ public class FixerServiceImpl implements FixerService {
         MessageSimple messageSimple = new MessageSimple();
         messageSimple.setFixerId(certInfo.getFixerId());
         messageProcess.process(MessageType.FIXER_SUBMIT_AUDIT,messageSimple);
-        //TODO 发送消息
     }
 
     @Transactional(rollbackFor = Exception.class)

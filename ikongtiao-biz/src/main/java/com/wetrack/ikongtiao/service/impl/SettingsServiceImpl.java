@@ -4,8 +4,6 @@ import com.wetrack.ikongtiao.domain.BusinessSettings;
 import com.wetrack.ikongtiao.repo.api.BusinessSettingsRepo;
 import com.wetrack.ikongtiao.service.api.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,13 +16,13 @@ public class SettingsServiceImpl implements SettingsService {
     BusinessSettingsRepo businessSettingsRepo;
 
 
-    @Cacheable(key = "businessSettings")
+//    @Cacheable(key = "businessSettings")
     @Override
     public BusinessSettings getBusinessSettings() {
         return businessSettingsRepo.getTheOne();
     }
 
-    @CacheEvict(key = "businessSettings")
+//    @CacheEvict(key = "businessSettings")
     @Override
     public void updateBusinessSettings(BusinessSettings businessSettings) throws Exception {
         businessSettingsRepo.update(businessSettings);

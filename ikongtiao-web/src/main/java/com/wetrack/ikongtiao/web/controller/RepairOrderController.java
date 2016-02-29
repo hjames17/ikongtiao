@@ -40,7 +40,7 @@ public class RepairOrderController {
 
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
     public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
-        return repairOrderService.listForMission(missionId);
+        return repairOrderService.listForMission(missionId, false);
     }
 
     @RequestMapping(value = BASE_PATH , method = {RequestMethod.GET})

@@ -20,6 +20,7 @@
     <result column="discount" property="discount" jdbcType="FLOAT" />
     <result column="payment_info_id" property="paymentInfoId" jdbcType="VARCHAR" />
     <association property="comment" javaType="com.wetrack.ikongtiao.domain.repairOrder.Comment" column="id" select="selectComment"/>
+    <association property="auditInfo" javaType="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" column="id" select="selectAuditInfo"/>
   </resultMap>
   <resultMap id="CommentMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment">
     <id column="id" property="id" jdbcType="BIGINT" />
@@ -27,6 +28,14 @@
     <result column="comment" property="comment" jdbcType="LONGVARCHAR" />
     <result column="rate" property="rate" jdbcType="SMALLINT" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="AuditMap" type="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="pass" property="pass" jdbcType="TINYINT" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
@@ -37,6 +46,13 @@
     SELECT *
     FROM comment
     WHERE repair_order_id = #{id}
+    limit 0,1
+  </select>
+  <select id="selectAuditInfo" resultMap="AuditMap" parameterType="java.lang.Long">
+    SELECT *
+    FROM repair_order_audit_info
+    WHERE repair_order_id = #{id}
+    ORDER BY audit_time DESC
     limit 0,1
   </select>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >

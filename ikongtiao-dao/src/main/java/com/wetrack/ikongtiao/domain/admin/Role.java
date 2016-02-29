@@ -12,8 +12,9 @@ public enum Role {
 //    REPAIR_ORDER_CR("repair_order_cr"),
 //
 //    WEIXIN_SET("WEIXIN_SET"),
-    KEFU("kefu"),
-    FINANCIAL("financial"),
+    KEFU("kefu"),//客服
+    FINANCIAL("financial"), //财务审核
+    AUDITOR("auditor"), //业务审核
     ;
 
     String roleName;
@@ -26,7 +27,11 @@ public enum Role {
 //    }
 
     public static Role[] admin(){
-        Role[] roles = {KEFU, FINANCIAL};
+        Role[] roles = {KEFU, FINANCIAL, AUDITOR};
+        return roles;
+    }
+    public static Role[] auditor(){
+        Role[] roles = {AUDITOR};
         return roles;
     }
     public static Role[] kefu(){

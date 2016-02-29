@@ -1,13 +1,17 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
+import com.wetrack.auth.domain.User;
+import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -28,7 +32,7 @@ public class RepairOrderController {
 
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
     public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
-        return repairOrderService.listForMission(missionId);
+        return repairOrderService.listForMission(missionId, true);
     }
 
     @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
@@ -97,6 +101,46 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/prepared" , method = {RequestMethod.POST})
     public void prepared(@RequestBody OperationForm form) throws Exception {
         repairOrderService.setPrepared(form.getAdminUserId(), form.getRepairOrderId());
+    }
+
+    @SignTokenAuth(roleNameRequired = "AUDITOR")
+    @RequestMapping(value = BASE_PATH + "/audit" , method = {RequestMethod.POST})
+    public void audit(@RequestBody AuditForm form, HttpServletRequest request) throws Exception {
+        User user = (User)request.getAttribute("user");
+        if(!form.isPass() && StringUtils.isEmpty(form.getReason())){
+            throw new Exception("审核不通过的原因没有填");
+        }
+        repairOrderService.audit(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.isPass(), form.getReason());
+    }
+
+    public static class AuditForm{
+        Long repairOrderId;
+        Boolean pass;
+        String reason;
+
+        public Long getRepairOrderId() {
+            return repairOrderId;
+        }
+
+        public void setRepairOrderId(Long repairOrderId) {
+            this.repairOrderId = repairOrderId;
+        }
+
+        public Boolean isPass() {
+            return pass;
+        }
+
+        public void setPass(Boolean pass) {
+            this.pass = pass;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public void setReason(String reason) {
+            this.reason = reason;
+        }
     }
 
 

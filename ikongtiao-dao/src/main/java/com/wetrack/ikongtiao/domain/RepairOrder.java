@@ -8,6 +8,7 @@
 package com.wetrack.ikongtiao.domain;
 
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
 
 import java.io.Serializable;
@@ -46,7 +47,7 @@ public class RepairOrder implements Serializable {
     private String repairOrderDesc;
 
     /**
-     * repair_order_state:维修单状态:0－待报价；1－待确认；2－已确认/等待配件；3－等待指派；4－维修中；5－完成；-1－已关闭；
+     * repair_order_state:维修单状态:0－待报价；1-待审核；2－待确认；3－已确认/等待配件；4－等待指派；5－维修中；6－完成；-1－已关闭；
      */
     private Byte repairOrderState;
 
@@ -116,6 +117,11 @@ public class RepairOrder implements Serializable {
      * 关联表，comment
      */
     Comment comment;
+
+    /**
+     * 关联表，repair_order_audit_info
+     */
+    AuditInfo auditInfo;
 
 
     /**
@@ -341,6 +347,14 @@ public class RepairOrder implements Serializable {
 
     public void setComment(Comment comment) {
         this.comment = comment;
+    }
+
+    public AuditInfo getAuditInfo() {
+        return auditInfo;
+    }
+
+    public void setAuditInfo(AuditInfo auditInfo) {
+        this.auditInfo = auditInfo;
     }
 
     /**

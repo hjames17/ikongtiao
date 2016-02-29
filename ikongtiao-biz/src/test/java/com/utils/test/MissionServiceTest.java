@@ -1,15 +1,5 @@
 package com.utils.test;
 
-import com.gexin.rp.sdk.base.IPushResult;
-import com.gexin.rp.sdk.base.impl.AppMessage;
-import com.gexin.rp.sdk.base.impl.SingleMessage;
-import com.gexin.rp.sdk.base.impl.Target;
-import com.gexin.rp.sdk.exceptions.RequestException;
-import com.gexin.rp.sdk.http.IGtPush;
-import com.gexin.rp.sdk.template.LinkTemplate;
-import com.gexin.rp.sdk.template.NotificationTemplate;
-import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.ikongtiao.domain.FixerDevice;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -21,9 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

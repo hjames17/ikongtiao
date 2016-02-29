@@ -7,10 +7,7 @@ import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhanghong on 16/1/7.
@@ -58,6 +55,7 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
 
     @Override
     public void update(RepairOrder repairOrder) throws Exception {
+        repairOrder.setUpdateTime(new Date());
         commonDao.mapper(RepairOrder.class).sql("updateByPrimaryKeySelective").session().update(repairOrder);
     }
 

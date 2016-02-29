@@ -1,15 +1,19 @@
 package com.wetrack.ikongtiao.service.impl;
 
 import com.wetrack.ikongtiao.constant.MissionState;
+import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.AccessoryRepo;
+import com.wetrack.ikongtiao.repo.api.repairOrder.AuditInfoRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.CommentRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
+import com.wetrack.ikongtiao.service.api.SettingsService;
 import com.wetrack.message.MessageProcess;
 import com.wetrack.message.MessageSimple;
 import com.wetrack.message.MessageType;
@@ -37,9 +41,19 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	@Autowired
 	CommentRepo commentRepo;
 
+	@Autowired
+	SettingsService settingsService;
+
 	@Override
-	public List<RepairOrder> listForMission(Integer missionId) throws Exception {
-		return repairOrderRepo.listForMission(missionId);
+	public List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception {
+		List<RepairOrder> list = repairOrderRepo.listForMission(missionId);
+
+		if(!includesAuditInfo && list != null){
+			for(RepairOrder order : list){
+				order.setAuditInfo(null);
+			}
+		}
+		return list;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -82,8 +96,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			repairOrder.setId(repairOrderId);
 			repairOrder.setLaborCost(laborCost);
 			if (finishCost != null && finishCost == true) {
-				repairOrder.setRepairOrderState((byte) 1);
-				sendCostFinishEvent(repairOrderId);
+				handleCostFinished(repairOrder);
 			}
 			repairOrderRepo.update(repairOrder);
 		}
@@ -101,7 +114,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setFixerId(fixerId);
 		repairOrder.setId(repairOrderId);
 		repairOrder.setAdminUserId(adminUserId);
-		repairOrder.setRepairOrderState((byte) 4);
+		repairOrder.setRepairOrderState(RepairOrderState.FIXING.getCode());
 		repairOrderRepo.update(repairOrder);
 
 		Mission mission = new Mission();
@@ -120,11 +133,26 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = new RepairOrder();
 		repairOrder.setId(repairOrderId);
 		repairOrder.setAdminUserId(adminUserId);
-		repairOrder.setRepairOrderState((byte) 1);
-		repairOrder.setUpdateTime(new Date());
+		handleCostFinished(repairOrder);
+	}
+
+	private void handleCostFinished(RepairOrder repairOrder) throws Exception{
+		boolean autoAudit = false;
+		if(settingsService.getBusinessSettings().isRepairOrderAutoAudit()){
+			autoAudit = true;
+		}
+
+		if(autoAudit){
+			repairOrder.setRepairOrderState(RepairOrderState.AUDIT_READY.getCode());
+		}else{
+			repairOrder.setRepairOrderState(RepairOrderState.COST_READY.getCode());
+		}
 		repairOrderRepo.update(repairOrder);
 
-		sendCostFinishEvent(repairOrderId);
+		if(autoAudit){
+			//通知
+			sendCostFinishEvent(repairOrder.getId());
+		}
 	}
 
 	@Override
@@ -132,8 +160,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = new RepairOrder();
 		repairOrder.setId(repairOrderId);
 		repairOrder.setAdminUserId(adminUserId);
-		repairOrder.setRepairOrderState((byte) 3);
-		repairOrder.setUpdateTime(new Date());
+		repairOrder.setRepairOrderState(RepairOrderState.PREPARED.getCode());
 		repairOrderRepo.update(repairOrder);
 
 	}
@@ -144,8 +171,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	public void setFinished(Long repairOrderId) throws Exception {
 		RepairOrder repairOrder = new RepairOrder();
 		repairOrder.setId(repairOrderId);
-		repairOrder.setRepairOrderState((byte) 5);
-		repairOrder.setUpdateTime(new Date());
+		repairOrder.setRepairOrderState(RepairOrderState.COMPLETED.getCode());
 		repairOrderRepo.update(repairOrder);
 		repairOrder = repairOrderRepo.getById(repairOrderId);
 
@@ -166,12 +192,11 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = new RepairOrder();
 		repairOrder.setId(repairOrderId);
 		if (deny) {
-			repairOrder.setRepairOrderState((byte) -1);
+			repairOrder.setRepairOrderState(RepairOrderState.CLOSED.getCode());
 		} else {
-			repairOrder.setRepairOrderState((byte) 2);
+			repairOrder.setRepairOrderState(RepairOrderState.CONFIRMED.getCode());
 		}
 		repairOrder.setPayment(payment);
-		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
 		repairOrder = repairOrderRepo.getById(repairOrderId);
 
@@ -182,6 +207,40 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			messageProcess.process(MessageType.CONFIRM_FIX_ORDER,messageSimple);
 		else
 			messageProcess.process(MessageType.CANCEL_FIX_ORDER,messageSimple);
+	}
+
+	@Autowired
+	AuditInfoRepo auditInfoRepo;
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception {
+		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+		if(repairOrder == null){
+			throw new Exception("无效的维修单");
+		}
+		if(!repairOrder.getRepairOrderState().equals(RepairOrderState.COST_READY.getCode())){
+			throw new Exception("该维修单不处于待审核状态");
+		}
+
+		AuditInfo auditInfo = new AuditInfo();
+		auditInfo.setRepairOrderId(repairOrderId);
+		auditInfo.setPass(pass);
+		auditInfo.setReason(reason);
+		auditInfo.setAdminId(adminId);
+
+		auditInfoRepo.create(auditInfo);
+
+		if(pass){
+			repairOrder.setRepairOrderState(RepairOrderState.AUDIT_READY.getCode());
+			repairOrderRepo.update(repairOrder);
+
+			//通知
+			sendCostFinishEvent(repairOrder.getId());
+		}else{
+			repairOrder.setRepairOrderState(RepairOrderState.NEW.getCode());
+			repairOrderRepo.update(repairOrder);
+			//TODO 通知有被驳回的待审核维修单
+		}
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by zhanghong on 16/1/7.
  */
 public interface RepairOrderService {
-    List<RepairOrder> listForMission(Integer missionId) throws Exception;
+    List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception;
 
     RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception;
 
@@ -32,4 +32,6 @@ public interface RepairOrderService {
     boolean deleteAccessory(Long accessoryId) throws Exception;
 
     void confirm(Long repairOrderId, boolean deny, Integer payment) throws Exception;
+
+    void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception;
 }

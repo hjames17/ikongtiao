@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="admin_id" property="adminId" jdbcType="INTEGER" />
+    <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+    <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="pass" property="pass" jdbcType="TINYINT" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, admin_id, repair_order_id, pass, audit_time, reason
+  </sql>
+
+  <select id="selectLatestByRepairOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    SELECT *
+    FROM repair_order_audit_info
+    WHERE repair_order_id = #{id}
+    ORDER BY audit_time DESC
+    limit 0,1
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select *
+    from repair_order_audit_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into repair_order_audit_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      repair_order_id, admin_id, pass,
+      <if test="reason != null" >
+        reason,
+      </if>
+  </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{repairOrderId,jdbcType=BIGINT},
+        #{adminId,jdbcType=INTEGER},
+        #{pass,jdbcType=TINYINT},
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+</mapper>

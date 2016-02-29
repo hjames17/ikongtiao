@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.BusinessSettings" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.BusinessSettings" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="repair_order_auto_audit" property="repairOrderAutoAudit" jdbcType="TINYINT" />
+  </resultMap>
+  <select id="select" resultMap="BaseResultMap">
+    select *
+    from business_settings
+    where id = 1
+  </select>
+  <update id="updateSelective" parameterType="com.wetrack.ikongtiao.domain.BusinessSettings">
+    update business_settings
+    <set >
+      <if test="repairOrderAutoAudit != null" >
+        repair_order_auto_audit = #{repairOrderAutoAudit,jdbcType=TINYINT}
+      </if>
+    </set>
+    where id = 1
+  </update>
+</mapper>

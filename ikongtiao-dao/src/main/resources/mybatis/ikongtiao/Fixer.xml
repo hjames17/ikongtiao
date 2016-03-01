@@ -322,6 +322,12 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="listByQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.FixerQueryForm" >
+    <if test="longitude!=null and latitude!=null">
+      set @lon1 = #{longitude} - #{distance} / abs(cos(radians(#{latitude})) * 111);
+      set @lon2 = #{longitude} + #{distance} / abs(cos(radians(#{latitude})) * 111);
+      set @lat1 = #{latitude} - (#{distance} / 111);
+      set @lat2 = #{latitude} + (#{distance} / 111);
+    </if>
     select
     <include refid="Base_Column_List" />
     from fixer
@@ -350,11 +356,23 @@
       <if test="address != null ">
         and address LIKE #{address}
       </if>
+      <if test="longitude!=null and latitude!=null">
+        and longitude between @lon1 and @lon2
+        and latitude between @lat1 and @lat2
+      </if>
     </where>
+    ORDER BY id
     limit #{start},#{pageSize}
   </select>
 
   <select id="countByQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.FixerQueryForm" >
+    <if test="longitude!=null and latitude!=null">
+
+      set @lon1 = #{longitude} - #{distance} / abs(cos(radians(#{latitude})) * 111);
+      set @lon2 = #{longitude} + #{distance} / abs(cos(radians(#{latitude})) * 111);
+      set @lat1 = #{latitude} - (#{distance} / 111);
+      set @lat2 = #{latitude} + (#{distance} / 111);
+    </if>
     select
     count(*) as totalSize
     from fixer
@@ -383,6 +401,11 @@
       <if test="address != null ">
         and address LIKE #{address}
       </if>
+      <if test="longitude!=null and latitude!=null">
+        and longitude between @lon1 and @lon2
+        and latitude between @lat1 and @lat2
+      </if>
     </where>
   </select>
+
 </mapper>

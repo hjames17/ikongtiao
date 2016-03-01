@@ -13,6 +13,9 @@ public class FixerQueryForm extends BaseCondition {
     String phone;
     String name;
     String address;
+    Double longitude;
+    Double latitude;
+    Float distance; //范围，公里
 
     public Boolean isInsured() {
         return insured;
@@ -60,5 +63,30 @@ public class FixerQueryForm extends BaseCondition {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Float distance) {
+        this.distance = distance;
     }
 }

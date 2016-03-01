@@ -1,5 +1,8 @@
 package com.wetrack.ikongtiao.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class RegExUtil {
 
 	//用于匹配手机号码
@@ -11,7 +14,14 @@ public class RegExUtil {
 	//用于匹配固定电话号码
 	private final static String REGEX_EMAIL = "^[A-Za-z0-9+_.-]+@(.+)$";
 
-
+	/**
+	 * @author zhaoying 检查正则表达式
+	 * */
+	public static boolean regexCheck(String regex, String paramter) {
+		Pattern p = Pattern.compile(regex);
+		Matcher matcher = p.matcher(paramter);
+		return matcher.matches();
+	}
 
 	public static boolean isMobilePhone(String phone){
 		return (phone != null) && (phone.matches(REGEX_MOBILEPHONE));

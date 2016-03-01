@@ -65,6 +65,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setCreatorFixerId(creatorId);
 		repairOrder.setUserId(mission.getUserId());
 		repairOrder.setMissionId(missionId);
+		repairOrder.setAdminUserId(mission.getAdminUserId());
 		repairOrder.setNamePlateImg(namePlateImg);
 		repairOrder.setMakeOrderNum(makeOrderNum);
 		repairOrder.setRepairOrderDesc(repairOrderDesc);
@@ -75,10 +76,16 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		mission.setMissionState(MissionState.FIXING.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
-		MessageSimple messageSimple = new MessageSimple();
-		messageSimple.setFixerId(mission.getFixerId());
-		messageSimple.setRepairOrderId(repairOrder.getId());
-		messageProcess.process(MessageType.NEW_FIX_ORDER,messageSimple);
+
+		//发送消息
+		try {
+			MessageSimple messageSimple = new MessageSimple();
+			messageSimple.setFixerId(mission.getFixerId());
+			messageSimple.setRepairOrderId(repairOrder.getId());
+			messageProcess.process(MessageType.NEW_FIX_ORDER, messageSimple);
+		}catch (Exception e){
+			//ignore
+		}
 		return repairOrder;
 	}
 

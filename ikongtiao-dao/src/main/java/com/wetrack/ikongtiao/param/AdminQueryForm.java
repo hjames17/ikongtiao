@@ -52,4 +52,5 @@ public class AdminQueryForm extends BaseCondition {
     public void setRole(String role) {
         this.role = role;
     }
+
 }

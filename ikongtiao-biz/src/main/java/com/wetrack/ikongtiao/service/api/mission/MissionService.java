@@ -36,7 +36,7 @@ public interface MissionService {
 	void acceptMission(Integer missionId, Integer adminUserId) throws Exception;
 	void denyMission(Integer missionId, Integer adminUser, String reason) throws Exception;
 	void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception;
-	void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address, Double longitude, Double latitude) throws Exception;
+	void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception;
 
 	MissionDto getMissionDto(Integer id) throws Exception;
 	Mission getMission(Integer id) throws Exception;

@@ -255,6 +255,15 @@ public class FixerServiceImpl implements FixerService {
 
     @Override
     public void updateInfo(Fixer fixer) throws Exception {
+//        if(fixer.getAddress() != null){
+//            GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(fixer.getAddress());
+//            if(geoLocation == null){
+//                throw new Exception("该地址无法获取经纬度，需要重新填写!");
+//            }else{
+//                fixer.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
+//                fixer.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
+//            }
+//        }
         fixerRepo.update(fixer);
     }
 

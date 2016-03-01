@@ -29,6 +29,9 @@ public class FixerController {
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.GET})
     public PageList<Fixer> list(@RequestParam(required = false, value = "inService") Boolean inService,
+                                @RequestParam(required = false, value = "longitude") Double longitude,
+                                @RequestParam(required = false, value = "latitude") Double latitude,
+                                @RequestParam(required = false, value = "distance") Float distance,
                                 @RequestParam(required = false, value = "certificated") Boolean certificated,
                                 @RequestParam(required = false, value = "insured") Boolean insured,
                                 @RequestParam(required = false, value = "name") String name,
@@ -45,6 +48,14 @@ public class FixerController {
         queryForm.setInService(inService);
         queryForm.setCertificated(certificated);
         queryForm.setInsured(insured);
+        queryForm.setLongitude(longitude);
+        queryForm.setLatitude(latitude);
+        queryForm.setDistance(distance);
+        if(queryForm.getLongitude() != null || queryForm.getLatitude() != null){
+            if(queryForm.getLongitude() == null || queryForm.getLatitude() == null || queryForm.getDistance() == null){
+                throw new Exception("地理位置查询参数缺失");
+            }
+        }
         return fixerService.listWithParams(queryForm);
     }
 

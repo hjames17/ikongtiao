@@ -10,6 +10,8 @@ import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
+import com.wetrack.ikongtiao.geo.GeoLocation;
+import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
@@ -224,7 +226,7 @@ public class MissionServiceImpl implements MissionService {
 
 
 	@Override
-	public void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address, Double longitude, Double latitude) throws Exception {
+	public void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception {
 		Mission mission = missionRepo.getMissionById(id);
 		if(mission == null){
 			throw new Exception("不存在该任务");
@@ -252,16 +254,23 @@ public class MissionServiceImpl implements MissionService {
 		}
 		if(address != null) {
 			missionAddress.setAddress(address);
+			GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(missionAddress.getAddress());
+			if(geoLocation == null){
+				throw new Exception("该地址无法获取经纬度，需要重新填写!");
+			}else{
+				missionAddress.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
+				missionAddress.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
+			}
 			addressChanged = true;
 		}
-		if(latitude != null) {
-			missionAddress.setLatitude(BigDecimal.valueOf(latitude));
-			addressChanged = true;
-		}
-		if(longitude != null) {
-			missionAddress.setLongitude(BigDecimal.valueOf(longitude));
-			addressChanged = true;
-		}
+//		if(latitude != null) {
+//			missionAddress.setLatitude(BigDecimal.valueOf(latitude));
+//			addressChanged = true;
+//		}
+//		if(longitude != null) {
+//			missionAddress.setLongitude(BigDecimal.valueOf(longitude));
+//			addressChanged = true;
+//		}
 		if(addressChanged) {
 			missionAddressRepo.update(missionAddress);
 		}

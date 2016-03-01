@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -90,5 +91,11 @@ public class AdminPushController {
 			throws Exception {
 		imMessageService.save(imMessage);
 		return "ok";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/message/listByAdminId") List<ImMessage> listByParam(Integer adminId)
+			throws Exception {
+		return imMessageService.listImMessageByAminId(adminId);
 	}
 }

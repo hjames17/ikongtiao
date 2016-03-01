@@ -13,4 +13,6 @@ public interface ImMessageRepo {
 	List<ImMessage> listMessageByParam(ImMessageQueryParam param);
 
 	int countMessageByParam(ImMessageQueryParam param);
+
+	List<ImMessage> listMessageByAdminId(String adminId);
 }

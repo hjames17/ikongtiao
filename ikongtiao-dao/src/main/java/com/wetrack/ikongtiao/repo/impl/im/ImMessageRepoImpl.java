@@ -35,4 +35,8 @@ public class ImMessageRepoImpl implements ImMessageRepo {
 		}
 		return result.getTotalSize() == null ? 0 : result.getTotalSize();
 	}
+
+	@Override public List<ImMessage> listMessageByAdminId(String adminId) {
+		return commonDao.mapper(ImMessage.class).sql("listImMessageByAdminId").session().selectList(adminId);
+	}
 }

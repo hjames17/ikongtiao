@@ -5,16 +5,33 @@ package com.wetrack.message;
  */
 public class MessageSimple {
 
+	/**
+	 * 用户id，微信推送，sms推送需要
+	 */
 	private String userId;
 
+	/**
+	 * 个推推送需要
+	 */
 	private Integer fixerId;
 
+	/**
+	 * webSocket 推送需要
+	 */
 	private Object adminUserId;
 
+	/**
+	 * 任务ID根据组装数据需求传入
+	 */
 	private Integer missionId;
 
+	/**
+	 * 维修单ID根据组装数据需求传入
+	 */
 	private Long repairOrderId;
-
+	/**
+	 * 点击跳转url地址
+	 */
 	private String url;
 
 	public String getUserId() {

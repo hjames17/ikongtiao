@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.ImMessage">
+    <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.ImMessage">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>
+        <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
+        <result column="message_type" property="messageType" jdbcType="INTEGER"/>
+        <result column="message_content" property="messageContent" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, message_to, message_from, message_content, create_time,message_type
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from im_message
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="listImMessageByParam" resultMap="BaseResultMap"
+            parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from im_message where message_to = #{userId} or message_from = #{userId}
+        order by id desc limit #{start},#{pageSize}
+    </select>
+
+    <select id="countImMessageByParam" resultType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam"
+            parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
+        select
+        count(*) as totalSize
+        from im_message where message_to = #{userId} or message_from = #{userId}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from im_message
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into im_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="messageTo != null">
+                message_to,
+            </if>
+            <if test="messageFrom != null">
+                message_from,
+            </if>
+            <if test="messageType != null">
+                message_type,
+            </if>
+            <if test="messageContent != null">
+                message_content,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="messageTo != null">
+                #{messageTo,jdbcType=VARCHAR},
+            </if>
+            <if test="messageFrom != null">
+                #{messageFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="messageType != null">
+                #{messageType,jdbcType=INTEGER},
+            </if>
+            <if test="messageContent != null">
+                #{messageContent,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+        update im_message
+        <set>
+            <if test="messageTo != null">
+                message_to = #{messageTo,jdbcType=VARCHAR},
+            </if>
+            <if test="messageType != null">
+                message_type = #{messageType,jdbcType=INTEGER},
+            </if>
+            <if test="messageFrom != null">
+                message_from = #{messageFrom,jdbcType=VARCHAR},
+            </if>
+            <if test="messageContent != null">
+                message_content = #{messageContent,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+    update im_message
+    set message_to = #{messageTo,jdbcType=VARCHAR},
+      message_from = #{messageFrom,jdbcType=VARCHAR},
+      message_content = #{messageContent,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

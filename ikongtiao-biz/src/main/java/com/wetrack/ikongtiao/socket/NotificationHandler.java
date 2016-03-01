@@ -43,8 +43,8 @@ public class NotificationHandler implements WebSocketHandler {
 					}
 				}
 			}
-			TextMessage textMessage = new TextMessage("注册成功");
-			webSocketSession.sendMessage(textMessage);
+			/*TextMessage textMessage = new TextMessage("注册成功");
+			webSocketSession.sendMessage(textMessage);*/
 		} else {
 			LOGGER.info("client发送的数据不是token");
 		}

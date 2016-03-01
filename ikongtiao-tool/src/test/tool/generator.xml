@@ -97,7 +97,12 @@
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>-->
 
-		<table tableName="fixer_device" domainObjectName="FixerDevice"
+		<table tableName="im_token" domainObjectName="ImToken"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+		<table tableName="im_message" domainObjectName="ImMessage"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />

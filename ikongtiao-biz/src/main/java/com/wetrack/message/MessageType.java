@@ -218,8 +218,8 @@ public enum MessageType implements MessageBuilder {
 			for (Object object : args) {
 				if (object instanceof Fixer) {
 					fixer = (Fixer) object;
-				}else if(object instanceof RepairOrder){
-					repairOrder = (RepairOrder)object;
+				} else if (object instanceof RepairOrder) {
+					repairOrder = (RepairOrder) object;
 				}
 			}
 			MessageInfo messageInfo = new MessageInfo();
@@ -231,8 +231,8 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setContent(String.format("维修员%s提交了新的维修单", fixer.getName()));
 				messageInfo.setData(repairOrder);
 				break;
-				default:
-					break;
+			default:
+				break;
 			}
 			return messageInfo;
 		}
@@ -274,8 +274,8 @@ public enum MessageType implements MessageBuilder {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			RepairOrder repairOrder = null;
 			for (Object object : args) {
-				if(object instanceof RepairOrder){
-					repairOrder = (RepairOrder)object;
+				if (object instanceof RepairOrder) {
+					repairOrder = (RepairOrder) object;
 				}
 			}
 			MessageInfo messageInfo = new MessageInfo();
@@ -344,8 +344,8 @@ public enum MessageType implements MessageBuilder {
 					fixer = (Fixer) object;
 				} else if (object instanceof Mission) {
 					mission = (Mission) object;
-				} else if(object instanceof  RepairOrder){
-					repairOrder = (RepairOrder)object;
+				} else if (object instanceof RepairOrder) {
+					repairOrder = (RepairOrder) object;
 				}
 
 			}
@@ -355,8 +355,8 @@ public enum MessageType implements MessageBuilder {
 			MessageInfo messageInfo = new MessageInfo();
 			messageInfo.setId(COMPLETED_FIX_ORDER.getCode());
 			switch (messageChannel) {
-				case SMS:
-					messageInfo.setMessageTo(userInfo.getPhone());
+			case SMS:
+				messageInfo.setMessageTo(userInfo.getPhone());
 				messageInfo.setContent("你的维修单已经完成了,查看详细信息,请进入微信公众号［快修点点］");
 				break;
 			case WECHAT:
@@ -373,8 +373,8 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setContent(String.format("维修单%d已完成", repairOrder.getId()));
 				messageInfo.setData(repairOrder);
 				break;
-				default:
-					break;
+			default:
+				break;
 			}
 			return messageInfo;
 		}
@@ -456,23 +456,96 @@ public enum MessageType implements MessageBuilder {
 		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
 			return null;
 		}
+	},
+	KEFU_NOTIFY_WECHAT(301, "客服联系微信用户", new MessageChannel[] { MessageChannel.WECHAT }) {
+		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
+			UserInfo userInfo = null;
+			for (Object object : args) {
+				if (object instanceof UserInfo) {
+					userInfo = (UserInfo) object;
+				}
+			}
+			if (userInfo == null) {
+				return null;
+			}
+			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(KEFU_NOTIFY_WECHAT.getCode());
+			switch (messageChannel) {
+			case WECHAT:
+				messageInfo.setMessageTo(userInfo.getWechatOpenId());
+				messageInfo.setTitle("你有新的消息");
+				messageInfo.setContent("你有新的客服消息，请点击查看");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setUrl(messageSimple.getUrl());
+				break;
+			default:
+				break;
+			}
+			return messageInfo;
+		}
+	},
+
+	FIXER_NOTIFY_WECHAT(302, "维修员联系微信用户", new MessageChannel[] { MessageChannel.WECHAT }) {
+		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
+			UserInfo userInfo = null;
+			for (Object object : args) {
+				if (object instanceof UserInfo) {
+					userInfo = (UserInfo) object;
+				}
+			}
+			if (userInfo == null) {
+				return null;
+			}
+			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(FIXER_NOTIFY_WECHAT.getCode());
+			switch (messageChannel) {
+			case WECHAT:
+				messageInfo.setMessageTo(userInfo.getWechatOpenId());
+				messageInfo.setTitle("你有新的消息");
+				messageInfo.setContent("你有新的维修员消息，请点击查看");
+				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+				messageInfo.setUrl(messageSimple.getUrl());
+				break;
+			default:
+				break;
+			}
+			return messageInfo;
+		}
+	},
+	KEFU_NOTIFY_FIXER(303, "客服通知维修员", new MessageChannel[] { MessageChannel.GE_TUI }) {
+		@Override public MessageInfo build(MessageChannel messageChannel, MessageSimple messageSimple, Object... args) {
+			Fixer fixer = null;
+			FixerDevice fixerDevice = null;
+			for (Object object : args) {
+				if (object instanceof Fixer) {
+					fixer = (Fixer) object;
+				} else if (object instanceof FixerDevice) {
+					fixerDevice = (FixerDevice) object;
+				}
+			}
+			MessageInfo messageInfo = new MessageInfo();
+			messageInfo.setId(KEFU_NOTIFY_FIXER.getCode());
+			switch (messageChannel) {
+			case GE_TUI:
+				messageInfo.setMessageTo(fixerDevice.getClientId());
+				messageInfo.setTitle("你有新的客服消息");
+				messageInfo.setContent("你有新的客服消息，请点击查看");
+				// 任务id，
+				Map<String, Object> map = new HashMap<>();
+				map.put("id", fixer.getId());
+				map.put("type", "message");
+				messageInfo.setData(map);
+				break;
+			default:
+				break;
+			}
+			return messageInfo;
+		}
 	},;
 
 	private Integer code;
 	private String message;
 	private MessageChannel[] messageChannels;
-
-	public Integer getCode() {
-		return code;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public MessageChannel[] getMessageChannels() {
-		return messageChannels;
-	}
 
 	MessageType(Integer code, String message) {
 		this.code = code;
@@ -494,6 +567,18 @@ public enum MessageType implements MessageBuilder {
 			}
 		}
 		return null;
+	}
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public MessageChannel[] getMessageChannels() {
+		return messageChannels;
 	}
 
 }

@@ -19,4 +19,7 @@ public interface AdminService {
     void update(User form) throws Exception;
 
     void delete(Integer id) throws Exception;
+
+    int getAvailableAdminId();
+
 }

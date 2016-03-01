@@ -101,4 +101,10 @@ public class AdminServiceImpl implements AdminService{
         user.setDeleted(true);
         adminRepo.update(user);
     }
+
+    @Override public int getAvailableAdminId() {
+        // TODO
+        // 每个客服 正在谈话的数量 可以放在redis中，然后从redis中获取对应的空闲的客服
+        return 1;
+    }
 }

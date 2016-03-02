@@ -18,6 +18,12 @@
         from im_message
         where id = #{id,jdbcType=BIGINT}
     </select>
+    <select id="listImMessageByAdminId" resultMap="BaseResultMap">
+        select
+        DISTINCT message_from
+        from im_message where message_to = #{adminId}
+        order by id desc limit 20;
+    </select>
     <select id="listImMessageByParam" resultMap="BaseResultMap"
             parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
         select

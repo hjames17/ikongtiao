@@ -37,4 +37,9 @@ public class ImMessageServiceImpl implements ImMessageService {
 		page.setData(imMessages);
 		return page;
 	}
+
+	@Override public List<ImMessage> listImMessageByAminId(Integer adminId) {
+		String targetId = "kefu_" + adminId;
+		return imMessageRepo.listMessageByAdminId(targetId);
+	}
 }

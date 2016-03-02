@@ -9,14 +9,27 @@ public class MessageInfo implements Serializable{
 
 	private Integer id; //messageId from MessageType
 
+	/**
+	 * 发送消息给谁
+	 */
 	private String messageTo;
-
+	/**
+	 * 消息的标题
+	 */
 	private String title; //web, 个推，微信
-
+	/**
+	 * 消息的内容
+	 */
 	private String content; //web, 个推, 微信，sms
 
+	/**
+	 * 点击消息跳转的地址
+	 */
 	private String url; //微信, sms
 
+	/**
+	 * 消息需要图片时，图片的地址
+	 */
 	private String picUrl; //微信
 
 	private Object data;

@@ -65,7 +65,11 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			String repairOrderDesc, String accessoryContent) throws Exception {
 		Mission mission = missionRepo.getMissionById(missionId);
 		RepairOrder repairOrder = new RepairOrder();
-		repairOrder.setCreatorFixerId(creatorId);
+		if(creatorId == null) {
+			repairOrder.setCreatorFixerId(mission.getFixerId());
+		}else{
+			repairOrder.setCreatorFixerId(creatorId);
+		}
 		repairOrder.setUserId(mission.getUserId());
 		repairOrder.setMissionId(missionId);
 		repairOrder.setAdminUserId(mission.getAdminUserId());

@@ -139,7 +139,9 @@ public class WebNotificationMessageChannel extends MessageChannel {
         WebNotificationMessage webMessage = (WebNotificationMessage)message;
         LOGGER.info("websocketPush,发送给:{};对应的消息内容为:{}", webMessage.getReceiver(), webMessage.getData());
         String result = Utils.get(HttpExecutor.class).post(hostAdmin + "/admin/socket/push")
-                .addFormParam("messageTo", webMessage.getReceiver()).addFormParam("message", Jackson.mobile().writeValueAsString(webMessage.getData())).executeAsString();
+                .addFormParam("messageTo", webMessage.getReceiver())
+                .addFormParam("type", String.valueOf(webMessage.getType()))
+                .addFormParam("message", Jackson.mobile().writeValueAsString(message)).executeAsString();
         LOGGER.info("websocketPush,发送给{},内容:{},结果:{}", webMessage.getReceiver(), message, result);
     }
 }

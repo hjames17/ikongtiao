@@ -19,6 +19,7 @@ import java.util.List;
  */
 @ResponseBody
 @Controller
+@SignTokenAuth(roleNameRequired = "KEFU")
 public class RepairOrderController {
 
     static final String BASE_PATH = "/repairOrder";
@@ -83,24 +84,27 @@ public class RepairOrderController {
     }
 
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.POST})
-    public void dispatchOrder(@RequestBody OperationForm form) throws Exception{
-
+    public void dispatchOrder(@RequestBody OperationForm form, HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
         if(form.getFixerId() == null){
             throw new Exception("没有指定维修员id");
         }
 
-        repairOrderService.dispatchRepairOrder(form.getAdminUserId(), form.getRepairOrderId(), form.getFixerId());
+        repairOrderService.dispatchRepairOrder(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.getFixerId());
     }
 
     @RequestMapping(value = BASE_PATH + "/cost/finish" , method = {RequestMethod.POST})
-    public void costFinish(@RequestBody OperationForm form) throws Exception {
+    public void costFinish(@RequestBody OperationForm form, HttpServletRequest request) throws Exception {
+        User user = (User)request.getAttribute("user");
 
-        repairOrderService.setCostFinished(form.getAdminUserId(), form.getRepairOrderId());
+        repairOrderService.setCostFinished(Integer.valueOf(user.getId()), form.getRepairOrderId());
     }
 
     @RequestMapping(value = BASE_PATH + "/prepared" , method = {RequestMethod.POST})
-    public void prepared(@RequestBody OperationForm form) throws Exception {
-        repairOrderService.setPrepared(form.getAdminUserId(), form.getRepairOrderId());
+    public void prepared(@RequestBody OperationForm form, HttpServletRequest request) throws Exception {
+        User user = (User)request.getAttribute("user");
+
+        repairOrderService.setPrepared(Integer.valueOf(user.getId()), form.getRepairOrderId());
     }
 
     @SignTokenAuth(roleNameRequired = "AUDITOR")
@@ -145,17 +149,8 @@ public class RepairOrderController {
 
 
     public static class OperationForm {
-        Integer adminUserId;
         Long repairOrderId;
         Integer fixerId;
-
-        public Integer getAdminUserId() {
-            return adminUserId;
-        }
-
-        public void setAdminUserId(Integer adminUserId) {
-            this.adminUserId = adminUserId;
-        }
 
         public Long getRepairOrderId() {
             return repairOrderId;

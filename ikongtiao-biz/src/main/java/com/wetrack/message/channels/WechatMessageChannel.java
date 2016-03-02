@@ -35,6 +35,10 @@ public class WechatMessageChannel extends MessageChannel {
     String weixinPageHost;
     @Value("${weixin.page.mission}")
     String weixinMissionPage;
+    @Value("${weixin.page.im}")
+    String weixinImPage;
+    @Value("${host.static}")
+    String staticHost;
     static final String ACTION_DETAIL = "detail";
     static final String ACTION_CONFIRMATION = "repairOderId";
     static final String ACTION_COMMENT = "comment";
@@ -48,8 +52,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务已被受理");
                 message.setContent("你的任务已经被受理了，请点击查看详情");
-                // TODO 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, userInfo.getId(), params.get("missionId"));
                 message.setUrl(url);
@@ -64,8 +68,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务已被拒绝");
                 message.setContent("你的任务已经被拒绝了，请点击查看详情");
-                //TODO 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
                 message.setUrl(url);
@@ -81,8 +85,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务被分配了");
                 message.setContent(String.format("你的任务被分配给%s维修员请等待维修员与你联系，请点击查看详情", fixer.getName()));
-                // FIXME 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
                 message.setUrl(url);
@@ -98,8 +102,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("维修单被分配了");
                 message.setContent(String.format("你的维修单被分配给%s维修员请等待维修员与你联系，请点击查看详情", fixer.getName()));
-                // FIXME 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 message.setUrl((String)params.get("url"));
                 return message;
             }
@@ -114,9 +118,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务已完成");
                 message.setContent(String.format("你的任务已经由维修员%s完成了,请点击查看详情］", fixer.getName()));
-                // FIXME 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
-                //TODO 点击查看任务详情？
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
                 message.setUrl(url);
@@ -132,8 +135,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("你有待确认的维修单");
                 message.setContent("你有待确认的维修单，请点击查看详情");
-                // FIXME 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String
                         .format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_CONFIRMATION,
                                 params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
@@ -150,8 +153,8 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("维修单已完成");
                 message.setContent("你的维修单已经完成了，请点击查看详情");
-                // FIXME 图片地址 用静态的 还是host 可配置的
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String
                         .format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_COMMENT,
                                 params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
@@ -167,13 +170,14 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("你有新的消息");
                 message.setContent("你有新的维修员消息，请点击查看");
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
-                //TODO url 未设置
-                message.setUrl("");
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                String url = String.format("%s%s?uid=%s&type=%d",
+                        weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 1);
+                message.setUrl(url);
                 return message;
             }
         });
-        registerAssembler(MessageId.FIXER_NOTIFY_WECHAT, new MessageAdapter() {
+        registerAssembler(MessageId.KEFU_NOTIFY_WECHAT, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
@@ -181,9 +185,10 @@ public class WechatMessageChannel extends MessageChannel {
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("你有新的消息");
                 message.setContent("你有新的客服消息，请点击查看");
-                message.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
-                //TODO url 未设置
-                message.setUrl("");
+                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                String url = String.format("%s%s?uid=%s&type=%d",
+                        weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 0);
+                message.setUrl(url);
                 return message;
             }
         });

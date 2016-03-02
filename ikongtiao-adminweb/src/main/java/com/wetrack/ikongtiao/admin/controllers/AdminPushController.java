@@ -46,9 +46,9 @@ public class AdminPushController {
 
 	@ResponseBody
 	@RequestMapping("/socket/push")
-	public String pushService(String messageTo, String message) throws IOException {
+	public String pushService(String messageTo, Integer type, String message) throws IOException {
 		LOGGER.info("webSocket messageTo:{},message:{}", messageTo, message);
-		WebSocketManager.pushMessage(messageTo, message);
+		WebSocketManager.pushMessage(messageTo, type, message);
 		return "ok";
 	}
 

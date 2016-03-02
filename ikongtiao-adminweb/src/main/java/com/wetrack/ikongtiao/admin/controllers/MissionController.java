@@ -1,5 +1,7 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
+import com.wetrack.auth.domain.User;
+import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.dto.MissionDto;
@@ -11,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created by zhanghong on 15/12/28.
  */
 @Controller
+@SignTokenAuth(roleNameRequired = "KEFU")
 public class MissionController {
 
     static final String BASE_PATH = "/mission";
@@ -40,8 +45,9 @@ public class MissionController {
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/deny" , method = {RequestMethod.POST})
-    public void denyMission(@RequestBody DenyForm denyForm) throws Exception{
-
+    public void denyMission(@RequestBody DenyForm denyForm, HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        denyForm.setAdminUserId(Integer.valueOf(user.getId()));
         checkValid(denyForm.getMissionId(), denyForm.getAdminUserId());
         if(StringUtils.isEmpty(denyForm.getReason())){
             throw new Exception("拒绝原因不能为空");
@@ -52,31 +58,31 @@ public class MissionController {
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/accept" , method = {RequestMethod.GET})
-    public void acceptMission(@RequestParam(value = "adminUserId") Integer adminUserId,
-                                @RequestParam(value = "missionId") Integer missionId) throws Exception{
+    public void acceptMission(@RequestParam(value = "missionId") Integer missionId, HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        checkValid(missionId, Integer.valueOf(user.getId()));
 
-        checkValid(missionId, adminUserId);
-
-        missionService.acceptMission(missionId, adminUserId);
+        missionService.acceptMission(missionId, Integer.valueOf(user.getId()));
 
     }
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.GET})
-    public void dispatchMission(@RequestParam(value = "adminUserId") Integer adminUserId,
-                                  @RequestParam(value = "missionId") Integer missionId,
-                                  @RequestParam(value = "fixerId") Integer fixerId) throws Exception{
-
-        checkValid(missionId, adminUserId);
+    public void dispatchMission(@RequestParam(value = "missionId") Integer missionId,
+                                  @RequestParam(value = "fixerId") Integer fixerId, HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        checkValid(missionId, Integer.valueOf(user.getId()));
         if(fixerId == null){
             throw new Exception("没有指定诊断员id");
         }
 
-        missionService.dispatchMission(missionId, fixerId, adminUserId);
+        missionService.dispatchMission(missionId, fixerId, Integer.valueOf(user.getId()));
     }
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/describe" , method = {RequestMethod.POST})
-    public void describeMission(@RequestBody DescribeForm form) throws Exception {
+    public void describeMission(@RequestBody DescribeForm form, HttpServletRequest request) throws Exception {
+        User user = (User)request.getAttribute("user");
+        form.setAdminUserId(Integer.valueOf(user.getId()));
         checkValid(form.getMissionId(), form.getAdminUserId());
 //        if(StringUtils.isEmpty(form.getDescription())){
 //            throw new Exception("描述为空");

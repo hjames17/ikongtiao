@@ -1,6 +1,6 @@
 package com.wetrack.message;
 
-import com.wetrack.ikongtiao.domain.admin.Role;
+import com.wetrack.message.messages.WebNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
@@ -74,7 +74,7 @@ public class WebSocketManager {
 		}
 		return null;
 	}
-	public static void pushMessage(String messageTo, String message) {
+	public static void pushMessage(String messageTo, Integer type, String message) {
 		TextMessage textMessag = new TextMessage(message);
 		List<String> keys = new ArrayList<>();
 //		if (false) {
@@ -104,7 +104,8 @@ public class WebSocketManager {
 //				}
 //			}
 //		} else
-		if (Role.KEFU.toString().equals(messageTo)) {
+		if(type != null && type.equals(WebNotificationMessage.RECEIVER_TYPE_ROLE)){
+		//if (Role.KEFU.toString().equals(messageTo)) {
 			Map<String, WebSocketSession> datas = WebSocketManager.get(messageTo);
 			if (datas != null) {
 				for (Map.Entry<String, WebSocketSession> temp : datas.entrySet()) {
@@ -125,7 +126,7 @@ public class WebSocketManager {
 					}
 				}
 			}
-		} else {
+		} else if(type.equals(WebNotificationMessage.RECEIVER_TYPE_ID)){
 			/*String[] args = null;
 			String role = null;
 			if (args != null && args.length > 0) {

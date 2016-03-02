@@ -1,7 +1,7 @@
-package com.wetrack.message.push;
+package com.wetrack.message.deprecated.push;
 
 import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.message.MessageInfo;
+import com.wetrack.message.deprecated.MessageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.WxMpCustomMessage;

@@ -13,9 +13,9 @@ import com.wetrack.ikongtiao.repo.api.fixer.FixerInsuranceInfoRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerProfessionInfoRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
-import com.wetrack.message.MessageProcess;
-import com.wetrack.message.MessageSimple;
-import com.wetrack.message.MessageType;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/30.
@@ -42,8 +44,10 @@ public class FixerServiceImpl implements FixerService {
     @Autowired
     TokenService tokenService;
 
+//    @Resource
+//    MessageProcess messageProcess;
     @Resource
-    MessageProcess messageProcess;
+    MessageService messageService;
 
 
     @Override
@@ -79,9 +83,15 @@ public class FixerServiceImpl implements FixerService {
         }else{
             throw new Exception("提交信息没有成功保存!");
         }
-        MessageSimple messageSimple = new MessageSimple();
-        messageSimple.setFixerId(certInfo.getFixerId());
-        messageProcess.process(MessageType.FIXER_SUBMIT_AUDIT,messageSimple);
+
+//        MessageSimple messageSimple = new MessageSimple();
+//        messageSimple.setFixerId(certInfo.getFixerId());
+//        messageProcess.process(MessageType.FIXER_SUBMIT_AUDIT, messageSimple);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.FIXER_ID, certInfo.getFixerId());
+        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, certInfo.getId());
+        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_CERT);
+        messageService.send(MessageId.FIXER_SUBMIT_AUDIT, params);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -102,7 +112,13 @@ public class FixerServiceImpl implements FixerService {
         }else{
             throw new Exception("提交信息没有成功保存!");
         }
-        //TODO 发送消息
+
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.FIXER_ID, insuranceInfo.getFixerId());
+        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, insuranceInfo.getId());
+        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_INSURANCE);
+        messageService.send(MessageId.FIXER_SUBMIT_AUDIT, params);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -128,7 +144,16 @@ public class FixerServiceImpl implements FixerService {
         }else{
             throw new Exception("提交信息没有成功保存!");
         }
-        //TODO 发送消息
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.FIXER_ID, professionInfo.getFixerId());
+        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, professionInfo.getId());
+        if(professionInfo.getProfessType() == 0) {
+            params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_ELECTRICIAN);
+        }else{
+            params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_WELDER);
+        }
+        messageService.send(MessageId.FIXER_SUBMIT_AUDIT, params);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -162,7 +187,17 @@ public class FixerServiceImpl implements FixerService {
 //        fixer.setCertInfoId(fixerCertInfo.getId());
         fixerRepo.update(fixer);
 
-        //TODO 发送消息
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.FIXER_ID, fixerId);
+        params.put(MessageParamKey.ADMIN_ID, adminUserId);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, fixerCertInfo.getId());
+        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_CERT);
+        if(fixerCertInfo.getCheckState() == -1) {
+            messageService.send(MessageId.FIXER_FAILED_AUDIT, params);
+        }else if(fixerCertInfo.getCheckState() == 2){
+            messageService.send(MessageId.FIXER_SUCCESS_AUDIT, params);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -196,7 +231,16 @@ public class FixerServiceImpl implements FixerService {
 //        fixer.setInsuranceInfoId(insuranceInfo.getId());
         fixerRepo.update(fixer);
 
-        //TODO 发送消息
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.FIXER_ID, fixerId);
+        params.put(MessageParamKey.ADMIN_ID, adminUserId);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, insuranceInfo.getId());
+        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_INSURANCE);
+        if(insuranceInfo.getCheckState() == -1) {
+            messageService.send(MessageId.FIXER_FAILED_AUDIT, params);
+        }else if(insuranceInfo.getCheckState() == 2){
+            messageService.send(MessageId.FIXER_SUCCESS_AUDIT, params);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -235,7 +279,16 @@ public class FixerServiceImpl implements FixerService {
         }
         fixerRepo.update(fixer);
 
-        //TODO 发送消息
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.FIXER_ID, fixerId);
+        params.put(MessageParamKey.ADMIN_ID, adminUserId);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, professionInfo.getId());
+        params.put(MessageParamKey.FIXER_AUDIT_TYPE, type == 0 ? MessageId.FIXER_AUDIT_TYPE_ELECTRICIAN : MessageId.FIXER_AUDIT_TYPE_WELDER);
+        if(professionInfo.getCheckState() == -1) {
+            messageService.send(MessageId.FIXER_FAILED_AUDIT, params);
+        }else if(professionInfo.getCheckState() == 2){
+            messageService.send(MessageId.FIXER_SUCCESS_AUDIT, params);
+        }
     }
 
     @Override

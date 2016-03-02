@@ -1,7 +1,7 @@
-package com.wetrack.message.push;
+package com.wetrack.message.deprecated.push;
 
 import com.wetrack.ikongtiao.sms.util.SendWeSms;
-import com.wetrack.message.MessageInfo;
+import com.wetrack.message.deprecated.MessageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

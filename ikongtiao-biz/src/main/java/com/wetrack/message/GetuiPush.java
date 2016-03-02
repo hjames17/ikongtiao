@@ -1,4 +1,4 @@
-package com.wetrack.message.push;
+package com.wetrack.message;
 
 import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.ITemplate;

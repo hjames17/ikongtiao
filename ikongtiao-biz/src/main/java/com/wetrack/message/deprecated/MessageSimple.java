@@ -1,9 +1,11 @@
-package com.wetrack.message;
+package com.wetrack.message.deprecated;
 
 /**
  * Created by zhangsong on 16/2/3.
  */
 public class MessageSimple {
+
+	private int id;
 
 	private String userId;
 
@@ -63,5 +65,13 @@ public class MessageSimple {
 
 	public void setRepairOrderId(Long repairOrderId) {
 		this.repairOrderId = repairOrderId;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

@@ -1,4 +1,4 @@
-package com.wetrack.message;
+package com.wetrack.message.deprecated;
 
 import com.wetrack.ikongtiao.domain.*;
 import com.wetrack.ikongtiao.domain.admin.Role;
@@ -61,7 +61,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setMessageTo(userInfo.getWechatOpenId());
 				messageInfo.setTitle("任务已被受理");
 				messageInfo.setContent("你的任务已经被受理了，请点击查看详情");
-				// FIXME 图片地址 用静态的 还是host 可配置的
+				// TODO 图片地址 用静态的 还是host 可配置的
 				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
@@ -97,7 +97,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setMessageTo(userInfo.getWechatOpenId());
 				messageInfo.setTitle("任务已被拒绝");
 				messageInfo.setContent("你的任务已经被拒绝了，请点击查看详情");
-				// FIXME 图片地址 用静态的 还是host 可配置的
+				//TODO 图片地址 用静态的 还是host 可配置的
 				messageInfo.setPicUrl("http://static.wetrack.studio/images/ikongtiao/2.png");
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;

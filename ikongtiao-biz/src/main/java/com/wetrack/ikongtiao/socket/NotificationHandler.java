@@ -4,7 +4,7 @@ import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.container.ContainerContext;
-import com.wetrack.message.push.WebSocketManager;
+import com.wetrack.message.WebSocketManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;

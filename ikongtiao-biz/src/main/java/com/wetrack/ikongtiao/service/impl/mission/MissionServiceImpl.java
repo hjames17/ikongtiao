@@ -15,18 +15,16 @@ import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
-import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionAddressRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
-import com.wetrack.message.MessageProcess;
-import com.wetrack.message.MessageSimple;
-import com.wetrack.message.MessageType;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -34,7 +32,9 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhangsong on 15/12/15.
@@ -57,16 +57,21 @@ public class MissionServiceImpl implements MissionService {
 	private MachineTypeRepo machineTypeRepo;
 
 	@Resource
-	private MessageProcess messageProcess;
+	MessageService messageService;
 
-	@Resource
-	private FixerRepo fixerRepo;
+//	@Resource
+//	private MessageProcess messageProcess;
 
-	@Value("${weixin.page.host}")
-	String weixinPageHost;
-	@Value("${weixin.page.mission}")
-	String weixinMissionPage;
-	static final String ACTION_DETAIL = "detail";
+//	@Resource
+//	private FixerRepo fixerRepo;
+
+//	@Value("${weixin.page.host}")
+//	String weixinPageHost;
+//	@Value("${weixin.page.mission}")
+//	String weixinMissionPage;
+//	static final String ACTION_DETAIL = "detail";
+
+
 
 	@Transactional
 	@Override public Mission saveMission(MissionSubmitParam param) {
@@ -107,9 +112,15 @@ public class MissionServiceImpl implements MissionService {
 		missionAddress.setPhone(param.getPhone());
 		missionAddress.setId(mission.getId());
 		missionAddressRepo.save(missionAddress);
-		MessageSimple messageSimple = new MessageSimple();
-		messageSimple.setMissionId(mission.getId());
-		messageProcess.process(MessageType.NEW_COMMISSION,messageSimple);
+
+		//发送消息
+//		MessageSimple messageSimple = new MessageSimple();
+//		messageSimple.setMissionId(mission.getId());
+//		messageProcess.process(MessageType.NEW_COMMISSION,messageSimple);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, mission.getId());
+		params.put(MessageParamKey.USER_ID, mission.getUserId());
+		messageService.send(MessageId.NEW_COMMISSION, params);
 		return mission;
 	}
 
@@ -171,12 +182,19 @@ public class MissionServiceImpl implements MissionService {
 		mission.setMissionState(MissionState.ACCEPT.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
-		MessageSimple messageSimple = new MessageSimple();
-		messageSimple.setUserId(mission.getUserId());
-		messageSimple.setMissionId(missionId);
-		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-		messageSimple.setUrl(url);
-		messageProcess.process(MessageType.ACCEPT_MISSION, messageSimple);
+
+		//发送消息
+//		MessageSimple messageSimple = new MessageSimple();
+//		messageSimple.setUserId(mission.getUserId());
+//		messageSimple.setMissionId(missionId);
+//		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
+//		messageSimple.setUrl(url);
+//		messageProcess.process(MessageType.ACCEPT_MISSION, messageSimple);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.USER_ID, mission.getUserId());
+		params.put(MessageParamKey.ADMIN_ID, adminUserId);
+		messageService.send(MessageId.ACCEPT_MISSION, params);
 	}
 
 	@Override
@@ -195,11 +213,17 @@ public class MissionServiceImpl implements MissionService {
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 
-		MessageSimple pushData = new MessageSimple();
-		pushData.setUserId(mission.getUserId());
-		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-		pushData.setUrl(url);
-		messageProcess.process(MessageType.REJECT_MISSION, pushData);
+		//发送消息
+//		MessageSimple pushData = new MessageSimple();
+//		pushData.setUserId(mission.getUserId());
+//		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
+//		pushData.setUrl(url);
+//		messageProcess.process(MessageType.REJECT_MISSION, pushData);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.USER_ID, mission.getUserId());
+		params.put(MessageParamKey.ADMIN_ID, adminUserId);
+		messageService.send(MessageId.REJECT_MISSION, params);
 	}
 
 	@Override
@@ -215,13 +239,20 @@ public class MissionServiceImpl implements MissionService {
 			missionRepo.update(mission);
 		}
 
-		MessageSimple pushData = new MessageSimple();
-		pushData.setUserId(mission.getUserId());
-		pushData.setFixerId(fixerId);
-		pushData.setMissionId(missionId);
-		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-		pushData.setUrl(url);
-		messageProcess.process(MessageType.ASSIGNED_MISSION, pushData);
+		//发送消息
+//		MessageSimple pushData = new MessageSimple();
+//		pushData.setUserId(mission.getUserId());
+//		pushData.setFixerId(fixerId);
+//		pushData.setMissionId(missionId);
+//		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
+//		pushData.setUrl(url);
+//		messageProcess.process(MessageType.ASSIGNED_MISSION, pushData);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.USER_ID, mission.getUserId());
+		params.put(MessageParamKey.FIXER_ID, fixerId);
+		params.put(MessageParamKey.ADMIN_ID, adminUserId);
+		messageService.send(MessageId.ASSIGNED_MISSION, params);
 	}
 
 
@@ -299,10 +330,19 @@ public class MissionServiceImpl implements MissionService {
 		mission.setMissionState(MissionState.COMPLETED.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
-		mission = missionRepo.getMissionById(missionId);
-		MessageSimple messageSimple = new MessageSimple();
-		messageSimple.setMissionId(missionId);
-		messageSimple.setFixerId(mission.getFixerId());
-		messageProcess.process(MessageType.COMPLETED_MISSION,messageSimple);
+
+		//发送消息
+//		mission = missionRepo.getMissionById(missionId);
+//		MessageSimple messageSimple = new MessageSimple();
+//		messageSimple.setMissionId(missionId);
+//		messageSimple.setFixerId(mission.getFixerId());
+//		messageProcess.process(MessageType.COMPLETED_MISSION, messageSimple);
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.USER_ID, mission.getUserId());
+		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
+		params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
+		messageService.send(MessageId.COMPLETED_MISSION, params);
 	}
 }

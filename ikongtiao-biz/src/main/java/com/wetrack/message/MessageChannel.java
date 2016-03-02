@@ -1,37 +1,63 @@
 package com.wetrack.message;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Created by zhangsong on 16/2/3.
+ * Created by zhanghong on 16/3/1.
  */
-public enum MessageChannel {
+public abstract class MessageChannel {
+    Map<Integer, MessageAdapter> adapterMap;
+    List<MessageRaw> bufList;
 
-	WECHAT(0, "微信通道"),
-	SMS(1, "短信通道"),
-	GE_TUI(2, "个推通道"),
-	WEB(3, "浏览器推送"),;
+    static class MessageRaw{
+        int id;
+        Map<String, Object> params;
 
-	private Integer code;
-	private String message;
+        MessageRaw(int id , Map<String, Object> params){
+            this.id = id;
+            this.params = params;
+        }
+    }
 
-	MessageChannel(Integer code, String message) {
-		this.code = code;
-		this.message = message;
-	}
+    public MessageChannel(){
+        adapterMap = new HashMap<Integer, MessageAdapter>();
+        bufList = new ArrayList<MessageRaw>();
+    }
 
-	public Integer getCode() {
-		return code;
-	}
+    public void registerAssembler(int messageId, MessageAdapter assembler){
+        adapterMap.put(messageId, assembler);
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public void sendMessage(int messageId, Map<String, Object> params){
+        MessageRaw messageRaw = new MessageRaw(messageId, params);
+        bufList.add(messageRaw);
+        callSend();
+    }
 
-	public static MessageChannel parseCode(String code) {
-		for (MessageChannel value : values()) {
-			if (String.valueOf(value.code).equals(code)) {
-				return value;
-			}
-		}
-		return null;
-	}
+    private void callSend(){
+        while(bufList.size() > 0){
+            MessageRaw messageRaw = bufList.remove(0);
+            if(adapterMap.get(messageRaw.id) == null)
+                continue;
+
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    doSend(adapterMap.get(messageRaw.id).build(messageRaw.id, messageRaw.params));
+                }
+            });
+            t.run();
+//            Utils.get(ThreadExecutor.class).execute(new ThreadExecutor.Executor() {
+//                @Override
+//                public void execute() {
+//                    doSend(adapterMap.get(messageRaw.id).build(messageRaw.id, messageRaw.params));
+//                }
+//            });
+        }
+    }
+
+    protected abstract void doSend(Message message);
 }

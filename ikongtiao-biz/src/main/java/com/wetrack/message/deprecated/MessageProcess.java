@@ -1,4 +1,4 @@
-package com.wetrack.message;
+package com.wetrack.message.deprecated;
 
 import com.wetrack.base.utils.Utils;
 import com.wetrack.base.utils.jackson.Jackson;
@@ -9,18 +9,17 @@ import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
-import com.wetrack.message.push.*;
+import com.wetrack.message.deprecated.push.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 /**
  * Created by zhangsong on 16/2/3.
  */
-@Service
+//@Service
 public class MessageProcess {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(MessageProcess.class);

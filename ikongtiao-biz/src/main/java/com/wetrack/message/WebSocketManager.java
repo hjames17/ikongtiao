@@ -1,4 +1,4 @@
-package com.wetrack.message.push;
+package com.wetrack.message;
 
 import com.wetrack.ikongtiao.domain.admin.Role;
 import org.slf4j.Logger;

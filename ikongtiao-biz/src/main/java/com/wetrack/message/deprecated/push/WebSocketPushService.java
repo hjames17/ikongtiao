@@ -1,9 +1,9 @@
-package com.wetrack.message.push;
+package com.wetrack.message.deprecated.push;
 
 import com.wetrack.base.utils.Utils;
 import com.wetrack.base.utils.http.HttpExecutor;
 import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.message.MessageInfo;
+import com.wetrack.message.deprecated.MessageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

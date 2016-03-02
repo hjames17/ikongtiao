@@ -1,11 +1,9 @@
-package com.wetrack.message.push;
-
-import org.springframework.stereotype.Service;
+package com.wetrack.message.deprecated.push;
 
 /**
  * Created by zhangsong on 16/2/4.
  */
-@Service
+//@Service
 public class WebSocketPush {
 
 	public boolean push(){

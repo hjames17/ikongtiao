@@ -1,6 +1,6 @@
-package com.wetrack.message.push;
+package com.wetrack.message.deprecated.push;
 
-import com.wetrack.message.MessageInfo;
+import com.wetrack.message.deprecated.MessageInfo;
 
 /**
  * Created by zhangsong on 16/1/14.

@@ -1,4 +1,4 @@
-package com.wetrack.message;
+package com.wetrack.message.deprecated;
 
 import java.io.Serializable;
 

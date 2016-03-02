@@ -65,19 +65,21 @@ public class GeoUtil {
     }
 
     public static GeoLocation getGeoLocationFromAddress(String address) throws UnsupportedEncodingException {
-        GaoDeLocation result=GeoUtil.generaterLocationFromGaoDe(address, 0);
-        if (result == null || (!result.getStatus().equals("E0"))
-                || result.getList()== null||result.getList().size()==0) {
-            BaiduLocatonResult baiDuResult = GeoUtil.generaterLocationFromBaidu(address);
-            if(baiDuResult==null||baiDuResult.getStatus()!=0||baiDuResult.getResult().getConfidence()<50){
-                return new GeoLocation(baiDuResult.getResult().getLocation().getLng()
-                                    ,baiDuResult.getResult().getLocation().getLat());
-            }else{
+        BaiduLocatonResult baiDuResult = GeoUtil.generaterLocationFromBaidu(address);
+        if(baiDuResult==null||baiDuResult.getStatus()!=0||baiDuResult.getResult().getConfidence()<50){
+            //百度地址不可用，尝试高德
+            GaoDeLocation result=GeoUtil.generaterLocationFromGaoDe(address, 0);
+            if (result == null || (!result.getStatus().equals("E0")) || result.getList()== null||result.getList().size()==0) {
                 return null;
+            }else{
+                GaoDeLocation.GaoDeResult l=result.getList().get(0);
+                return new GeoLocation(l.getX(), l.getY());
             }
+
         }else{
-            GaoDeLocation.GaoDeResult l=result.getList().get(0);
-            return new GeoLocation(l.getX(), l.getY());
+            return new GeoLocation(baiDuResult.getResult().getLocation().getLng()
+                    ,baiDuResult.getResult().getLocation().getLat());
+
         }
     }
 

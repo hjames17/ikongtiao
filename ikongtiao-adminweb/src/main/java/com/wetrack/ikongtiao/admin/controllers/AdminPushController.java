@@ -7,12 +7,13 @@ import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
 import com.wetrack.ikongtiao.service.api.im.ImMessageService;
 import com.wetrack.ikongtiao.service.api.im.ImTokenDto;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
-import com.wetrack.message.MessageProcess;
-import com.wetrack.message.MessageSimple;
-import com.wetrack.message.MessageType;
-import com.wetrack.message.push.WebSocketManager;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
+import com.wetrack.message.WebSocketManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -31,13 +34,15 @@ public class AdminPushController {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AdminPushController.class);
 
-	@Resource
-	private MessageProcess messageProcess;
+//	@Resource
+//	private MessageProcess messageProcess;
 	@Resource
 	private ImTokenService imTokenService;
 
 	@Resource
 	private ImMessageService imMessageService;
+	@Autowired
+	MessageService messageService;
 
 	@ResponseBody
 	@RequestMapping("/socket/push")
@@ -50,20 +55,27 @@ public class AdminPushController {
 	@ResponseBody
 	@RequestMapping("/push/notifyUser")
 	public String pushToWechatUserByKefu(String userId) throws IOException {
-		MessageSimple messageSimple = new MessageSimple();
-		messageSimple.setUserId(userId);
-		// FIXME 设置 客服 给微信用户发送消息的url地址
-		messageSimple.setUrl("");
-		messageProcess.process(MessageType.KEFU_NOTIFY_WECHAT, messageSimple);
+//		MessageSimple messageSimple = new MessageSimple();
+//		messageSimple.setUserId(userId);
+//		messageSimple.setUrl("");
+//		messageProcess.process(MessageType.KEFU_NOTIFY_WECHAT, messageSimple);
+		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.ADMIN_ID, );
+		params.put(MessageParamKey.USER_ID, userId);
+		messageService.send(MessageId.KEFU_NOTIFY_WECHAT, params);
 		return "ok";
 	}
 
 	@ResponseBody
 	@RequestMapping("/push/notifyFixer")
 	public String pushToWechatUserByFixer(Integer fixerId) throws IOException {
-		MessageSimple messageSimple = new MessageSimple();
-		messageSimple.setFixerId(fixerId);
-		messageProcess.process(MessageType.KEFU_NOTIFY_FIXER, messageSimple);
+//		MessageSimple messageSimple = new MessageSimple();
+//		messageSimple.setFixerId(fixerId);
+//		messageProcess.process(MessageType.KEFU_NOTIFY_FIXER, messageSimple);
+		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.ADMIN_ID, );
+		params.put(MessageParamKey.FIXER_ID, fixerId);
+		messageService.send(MessageId.KEFU_NOTIFY_FIXER, params);
 		return "ok";
 	}
 

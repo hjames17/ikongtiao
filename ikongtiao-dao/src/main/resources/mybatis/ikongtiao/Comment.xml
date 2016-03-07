@@ -4,18 +4,78 @@
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+    <result column="mission_id" property="missionId" jdbcType="INTEGER" />
+    <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="comment" property="comment" jdbcType="LONGVARCHAR" />
     <result column="rate" property="rate" jdbcType="SMALLINT" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, repair_order_id, create_time, comment, rate
+    comment.id, repair_order_id, comment.fixer_id, comment.mission_id, comment.create_time, comment, rate
   </sql>
   <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.repairOrder.Comment" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into comment (repair_order_id, comment,rate)
-    values (#{repairOrderId,jdbcType=BIGINT}, #{comment,jdbcType=LONGVARCHAR}, #{rate,jdbcType=SMALLINT})
+    insert into comment (repair_order_id, mission_id, fixer_id, comment,rate)
+    values (#{repairOrderId,jdbcType=BIGINT}, #{missionId,jdbcType=INTEGER}, #{fixerId,jdbcType=INTEGER}, #{comment,jdbcType=LONGVARCHAR}, #{rate,jdbcType=SMALLINT})
   </insert>
+
+  <select id="query" parameterType="com.wetrack.ikongtiao.param.CommentQueryParam" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM comment
+    <if test="fixerId!=null or userId!=null">
+      LEFT OUTER JOIN repair_order
+      ON comment.repair_order_id = repair_order.id
+    </if>
+    <where>
+      <if test="fixerId!=null">
+        repair_order.fixer_id=#{fixerId}
+      </if>
+      <if test="userId!=null">
+        and repair_order.user_id=#{userId}
+      </if>
+      <if test="missionId!=null">
+        and mission_id=#{missionId}
+      </if>
+      <if test="repairOrderId!=null">
+        and repair_order_id=#{repairOrderId}
+      </if>
+      <if test="rateStart!=null and rateEnd!=null">
+        and rate BETWEEN #{rateStart} and #{rateEnd}
+      </if>
+      <if test="createTimeStart!=null and createTimeEnd!=null">
+        and comment.create_time BETWEEN #{createTimeStart} and #{createTimeEnd}
+      </if>
+    </where>
+    ORDER BY comment.create_time DESC
+  </select>
+  <select id="count" parameterType="com.wetrack.ikongtiao.param.CommentQueryParam" resultType="com.wetrack.base.page.BaseCondition">
+    SELECT count(*) as totalSize
+    FROM comment
+    <if test="fixerId!=null or userId!=null">
+      LEFT OUTER JOIN repair_order
+      ON comment.repair_order_id = repair_order.id
+    </if>
+    <where>
+      <if test="fixerId!=null">
+        repair_order.fixer_id=#{fixerId}
+      </if>
+      <if test="userId!=null">
+        and repair_order.user_id=#{userId}
+      </if>
+      <if test="missionId!=null">
+        and comment.mission_id=#{missionId}
+      </if>
+      <if test="repairOrderId!=null">
+        and repair_order_id=#{repairOrderId}
+      </if>
+      <if test="rateStart!=null and rateEnd!=null">
+        and rate BETWEEN #{rateStart} and #{rateEnd}
+      </if>
+      <if test="createTimeStart!=null and createTimeEnd!=null">
+        and comment.create_time BETWEEN #{createTimeStart} and #{createTimeEnd}
+      </if>
+    </where>
+  </select>
 </mapper>

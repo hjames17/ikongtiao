@@ -26,7 +26,7 @@ import java.util.Map;
  * Created by zhanghong on 16/3/1.
  */
 @Service
-public class WebNotificationMessageChannel extends MessageChannel {
+public class WebNotificationMessageChannel extends AbstractMessageChannel {
     private Logger LOGGER = LoggerFactory.getLogger(WebNotificationMessageChannel.class);
 
     @Autowired
@@ -42,11 +42,12 @@ public class WebNotificationMessageChannel extends MessageChannel {
     RepairOrderRepo repairOrderRepo;
 
     WebNotificationMessageChannel(){
-        registerAssembler(MessageId.NEW_COMMISSION, new MessageAdapter() {
+        registerAdapter(MessageId.NEW_COMMISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
-                Mission mission = missionRepo.getMissionById((Integer)params.get(MessageParamKey.MISSION_ID));
+                Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
+                message.setId(messageId);
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
                 message.setReceiver(Role.KEFU.toString());
                 message.setTitle("有新任务啦");
@@ -55,12 +56,13 @@ public class WebNotificationMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.COMPLETED_MISSION, new MessageAdapter() {
+        registerAdapter(MessageId.COMPLETED_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
-                Mission mission = missionRepo.getMissionById((Integer)params.get(MessageParamKey.MISSION_ID));
-                Fixer fixer = fixerRepo.getFixerById((Integer)params.get(MessageParamKey.FIXER_ID));
+                Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
+                Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
+                message.setId(messageId);
                 message.setReceiver(mission.getAdminUserId().toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("任务已完成");
@@ -69,18 +71,19 @@ public class WebNotificationMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.NEW_FIX_ORDER, new MessageAdapter() {
+        registerAdapter(MessageId.NEW_FIX_ORDER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
-                Fixer fixer = fixerRepo.getFixerById((Integer)params.get(MessageParamKey.FIXER_ID));
+                Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 RepairOrder repairOrder = null;
                 try {
-                    repairOrder = repairOrderRepo.getById((Long)params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                 } catch (Exception e) {
-                    LOGGER.error("repair order not exist, id %d", (Long)params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    LOGGER.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                     return null;
                 }
+                message.setId(messageId);
                 message.setReceiver(repairOrder.getAdminUserId().toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有新的维修单提交");
@@ -89,17 +92,18 @@ public class WebNotificationMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.CONFIRM_FIX_ORDER, new MessageAdapter() {
+        registerAdapter(MessageId.CONFIRM_FIX_ORDER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
                 RepairOrder repairOrder = null;
                 try {
-                    repairOrder = repairOrderRepo.getById((Long)params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                 } catch (Exception e) {
-                    LOGGER.error("repair order not exist, id %d", (Long)params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    LOGGER.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                     return null;
                 }
+                message.setId(messageId);
                 message.setReceiver(repairOrder.getAdminUserId().toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有维修单被确认了");
@@ -109,18 +113,19 @@ public class WebNotificationMessageChannel extends MessageChannel {
             }
         });
 
-        registerAssembler(MessageId.CANCEL_FIX_ORDER, new MessageAdapter() {
+        registerAdapter(MessageId.CANCEL_FIX_ORDER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
-                UserInfo userInfo = userInfoRepo.getById((String)params.get(MessageParamKey.USER_ID));
+                UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 RepairOrder repairOrder = null;
                 try {
-                    repairOrder = repairOrderRepo.getById((Long)params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                 } catch (Exception e) {
-                    LOGGER.error("repair order not exist, id %d", (Long)params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    LOGGER.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                     return null;
                 }
+                message.setId(messageId);
                 message.setReceiver(repairOrder.getAdminUserId().toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有维修单被取消了");
@@ -129,6 +134,39 @@ public class WebNotificationMessageChannel extends MessageChannel {
                 return message;
             }
         });
+
+        MessageAdapter fixerAuditMessageAdapter = new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                WebNotificationMessage message = new WebNotificationMessage();
+                message.setId(messageId);
+                message.setReceiver(Role.KEFU.toString());
+                message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
+                String auditText;
+                switch (messageId){
+                    case MessageId.FIXER_SUBMIT_CERT_AUDIT:
+                        auditText = "实名";
+                        break;
+                    case MessageId.FIXER_SUBMIT_INSURANCE_AUDIT:
+                        auditText = "保险";
+                        break;
+                    case MessageId.FIXER_SUBMIT_PROFESS_AUDIT:
+                        auditText = "技能";
+                        break;
+                    default:
+                        auditText = "";
+                        break;
+                }
+                message.setTitle(String.format("维修员%s认证申请", auditText));
+                message.setContent(String.format("维修员%d提交了实名认证申请", params.get(MessageParamKey.FIXER_ID)));
+                message.setData(params.get(MessageParamKey.FIXER_AUDIT_INFO));
+                return message;
+            }
+        };
+
+        registerAdapter(MessageId.FIXER_SUBMIT_CERT_AUDIT, fixerAuditMessageAdapter);
+        registerAdapter(MessageId.FIXER_SUBMIT_INSURANCE_AUDIT, fixerAuditMessageAdapter);
+        registerAdapter(MessageId.FIXER_SUBMIT_PROFESS_AUDIT, fixerAuditMessageAdapter);
     }
 
     @Value("${host.admin}")

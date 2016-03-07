@@ -3,9 +3,8 @@ package com.wetrack.ikongtiao.admin.controllers;
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
-import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.dto.MissionDto;
-import com.wetrack.ikongtiao.error.MissionErrorMessage;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.apache.commons.lang3.StringUtils;
@@ -30,9 +29,9 @@ public class MissionController {
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.POST})
-    public PageList<MissionDto> listMission(@RequestBody AppMissionQueryParam param) {
+    public PageList<MissionDto> listMission(@RequestBody AppMissionQueryParam param) throws Exception{
         if (param == null) {
-            throw new AjaxException(MissionErrorMessage.MISSION_LIST_PARAM_ERROR);
+            throw new BusinessException("查询任务参数为空");
         }
         return missionService.listMissionByAppQueryParam(param);
     }
@@ -50,7 +49,7 @@ public class MissionController {
         denyForm.setAdminUserId(Integer.valueOf(user.getId()));
         checkValid(denyForm.getMissionId(), denyForm.getAdminUserId());
         if(StringUtils.isEmpty(denyForm.getReason())){
-            throw new Exception("拒绝原因不能为空");
+            throw new BusinessException("拒绝原因不能为空");
         }
 
         missionService.denyMission(denyForm.getMissionId(), denyForm.getAdminUserId(), denyForm.getReason());
@@ -73,7 +72,7 @@ public class MissionController {
         User user = (User)request.getAttribute("user");
         checkValid(missionId, Integer.valueOf(user.getId()));
         if(fixerId == null){
-            throw new Exception("没有指定诊断员id");
+            throw new BusinessException("没有指定诊断员id");
         }
 
         missionService.dispatchMission(missionId, fixerId, Integer.valueOf(user.getId()));
@@ -93,10 +92,10 @@ public class MissionController {
 
     void checkValid(Integer missionId, Integer adminUserId) throws Exception{
         if(adminUserId == null){
-            throw new Exception("没有处理人的id");
+            throw new BusinessException("没有处理人的id");
         }
         if(missionId == null){
-            throw new Exception("没有目标任务id");
+            throw new BusinessException("没有目标任务id");
         }
     }
 

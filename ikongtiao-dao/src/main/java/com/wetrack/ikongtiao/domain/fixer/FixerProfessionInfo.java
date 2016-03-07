@@ -39,7 +39,7 @@ public class FixerProfessionInfo {
         this.fixerId = fixerId;
     }
 
-    public int getProfessType() {
+    public Integer getProfessType() {
         return professType;
     }
 

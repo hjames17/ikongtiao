@@ -2,8 +2,10 @@ package com.wetrack.message.channels;
 
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.Fixer;
+import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
+import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.message.*;
 import com.wetrack.message.messages.WechatMessage;
@@ -22,7 +24,7 @@ import java.util.Map;
  * Created by zhanghong on 16/3/1.
  */
 @Service
-public class WechatMessageChannel extends MessageChannel {
+public class WechatMessageChannel extends AbstractMessageChannel {
     private Logger LOGGER = LoggerFactory.getLogger(WechatMessageChannel.class);
 
     @Autowired
@@ -30,6 +32,8 @@ public class WechatMessageChannel extends MessageChannel {
 
     @Autowired
     FixerRepo fixerRepo;
+    @Autowired
+    RepairOrderRepo repairOrderRepo;
 
     @Value("${weixin.page.host}")
     String weixinPageHost;
@@ -40,121 +44,124 @@ public class WechatMessageChannel extends MessageChannel {
     @Value("${host.static}")
     String staticHost;
     static final String ACTION_DETAIL = "detail";
-    static final String ACTION_CONFIRMATION = "repairOderId";
+    static final String ACTION_REPAIRORDER = "repairOderId";
     static final String ACTION_COMMENT = "comment";
 
     WechatMessageChannel(){
-        registerAssembler(MessageId.ACCEPT_MISSION, new MessageAdapter() {
+        registerAdapter(MessageId.ACCEPT_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
-                UserInfo userInfo = userInfoRepo.getById((String)params.get(MessageParamKey.USER_ID));
+                UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务已被受理");
-                message.setContent("你的任务已经被受理了，请点击查看详情");
+                message.setContent("您的任务已经被受理了!点击查看详情");
                 //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, userInfo.getId(), params.get("missionId"));
                 message.setUrl(url);
                 return message;
             }
         });
-        registerAssembler(MessageId.REJECT_MISSION, new MessageAdapter() {
+        registerAdapter(MessageId.REJECT_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务已被拒绝");
-                message.setContent("你的任务已经被拒绝了，请点击查看详情");
+                message.setContent("您的任务已经被拒绝了，请点击查看原因");
                 //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
                 message.setUrl(url);
                 return message;
             }
         });
-        registerAssembler(MessageId.ASSIGNED_MISSION, new MessageAdapter() {
+        registerAdapter(MessageId.ASSIGNED_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
-                UserInfo userInfo = userInfoRepo.getById((String)params.get(MessageParamKey.USER_ID));
+                UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("任务被分配了");
-                message.setContent(String.format("你的任务被分配给%s维修员请等待维修员与你联系，请点击查看详情", fixer.getName()));
+                message.setContent(String.format("维修员%s将前往诊断您的故障!点击查看详情", fixer.getName()));
                 //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
                 String url = String.format("%s%s?action=%s&uid=%s&id=%s",
                         weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
                 message.setUrl(url);
                 return message;
             }
         });
-        registerAssembler(MessageId.ASSIGNED_FIXER, new MessageAdapter() {
+        registerAdapter(MessageId.ASSIGNED_FIXER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
-                UserInfo userInfo = userInfoRepo.getById((String)params.get(MessageParamKey.USER_ID));
-                Fixer fixer = fixerRepo.getFixerById((Integer)params.get(MessageParamKey.FIXER_ID));
-                message.setReceiver(userInfo.getWechatOpenId());
-                message.setTitle("维修单被分配了");
-                message.setContent(String.format("你的维修单被分配给%s维修员请等待维修员与你联系，请点击查看详情", fixer.getName()));
-                //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
-                message.setUrl((String)params.get("url"));
-                return message;
-            }
-        });
-        registerAssembler(MessageId.COMPLETED_MISSION, new MessageAdapter() {
-            @Override
-            public Message build(int messageId, Map<String, Object> params) {
-                WechatMessage message = new WechatMessage();
-                UserInfo userInfo = userInfoRepo.getById((String)params.get(MessageParamKey.USER_ID));
+                RepairOrder repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
+                UserInfo userInfo = userInfoRepo.getById(repairOrder.getUserId());
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
-
                 message.setReceiver(userInfo.getWechatOpenId());
-                message.setTitle("任务已完成");
-                message.setContent(String.format("你的任务已经由维修员%s完成了,请点击查看详情］", fixer.getName()));
+                message.setTitle("维修单已分配");
+                message.setContent(String.format("维修员%s将为您维修故障!点击查看详情", fixer.getName()));
                 //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
-                String url = String.format("%s%s?action=%s&uid=%s&id=%s",
-                        weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
+                String url = String
+                        .format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
+                                repairOrder.getUserId(), params.get(MessageParamKey.REPAIR_ORDER_ID));
                 message.setUrl(url);
                 return message;
             }
         });
-
-        registerAssembler(MessageId.WAITING_CONFIRM_FIX_ORDER, new MessageAdapter() {
+        registerAdapter(MessageId.COMPLETED_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
-                message.setTitle("你有待确认的维修单");
-                message.setContent("你有待确认的维修单，请点击查看详情");
+                message.setTitle("任务已完成");
+                message.setContent(String.format("您的任务%d已经完成维修!点击查看详情", params.get(MessageParamKey.MISSION_ID)));
                 //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
+                String url = String.format("%s%s?action=%s&uid=%s&id=%s",
+                        weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.MISSION_ID));
+                message.setUrl(url);
+                return message;
+            }
+        });
+
+        registerAdapter(MessageId.WAITING_CONFIRM_FIX_ORDER, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                WechatMessage message = new WechatMessage();
+                UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
+                Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
+                message.setReceiver(userInfo.getWechatOpenId());
+                message.setTitle("您有待确认的维修单");
+                message.setContent(String.format("维修单%d已经生成，请点击进行确认", fixer.getId()));
+                //TODO 图片地址可配置
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
                 String url = String
-                        .format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_CONFIRMATION,
+                        .format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
                                 params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
 
                 message.setUrl(url);
                 return message;
             }
         });
-        registerAssembler(MessageId.COMPLETED_FIX_ORDER, new MessageAdapter() {
+        registerAdapter(MessageId.COMPLETED_FIX_ORDER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
-                UserInfo userInfo = userInfoRepo.getById((String)params.get(MessageParamKey.USER_ID));
+                UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
                 message.setTitle("维修单已完成");
-                message.setContent("你的维修单已经完成了，请点击查看详情");
+                message.setContent(String.format("你的维修单%d已经完成了，请点击评价本次服务", params.get(MessageParamKey.REPAIR_ORDER_ID)));
                 //TODO 图片地址可配置
-                message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
+                message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
                 String url = String
                         .format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_COMMENT,
                                 params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
@@ -162,14 +169,14 @@ public class WechatMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.FIXER_NOTIFY_WECHAT, new MessageAdapter() {
+        registerAdapter(MessageId.FIXER_NOTIFY_WECHAT, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
-                message.setTitle("你有新的消息");
-                message.setContent("你有新的维修员消息，请点击查看");
+                message.setTitle("您有新的消息");
+                message.setContent("维修员给您发来消息，请点击查看");
                 message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String.format("%s%s?uid=%s&type=%d",
                         weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 1);
@@ -177,14 +184,14 @@ public class WechatMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.KEFU_NOTIFY_WECHAT, new MessageAdapter() {
+        registerAdapter(MessageId.KEFU_NOTIFY_WECHAT, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WechatMessage message = new WechatMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getWechatOpenId());
-                message.setTitle("你有新的消息");
-                message.setContent("你有新的客服消息，请点击查看");
+                message.setTitle("您有新的消息");
+                message.setContent("维大师客服给您消息，请点击查看");
                 message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
                 String url = String.format("%s%s?uid=%s&type=%d",
                         weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 0);

@@ -24,8 +24,8 @@
         </property>
     </bean>
     <context:component-scan base-package="com.wetrack.ikongtiao.web.controller"/>
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
-          p:defaultEncoding="UTF-8"></bean>
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"-->
+          <!--p:defaultEncoding="UTF-8"></bean>-->
     <!-- 启用spring mvc 注解 -->
     <mvc:annotation-driven>
         <mvc:message-converters>
@@ -58,39 +58,42 @@
     <!-- InternalResourceViewResolver 和 TilesViewResolver 共存，且以TilesViewResolver
         为首要匹配，通过 p:order 来控制级别。数字越大，级别越低 -->
     <!-- ViewResolver配置：TilesViewResolver -->
-    <bean id="viewResolver"
-          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix">
-            <value>/WEB-INF/jsp/</value>
-        </property>
-        <property name="suffix">
-            <value>.jsp</value>
-        </property>
-    </bean>
+    <!--<bean id="viewResolver"-->
+          <!--class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+        <!--<property name="prefix">-->
+            <!--<value>/WEB-INF/jsp/</value>-->
+        <!--</property>-->
+        <!--<property name="suffix">-->
+            <!--<value>.jsp</value>-->
+        <!--</property>-->
+    <!--</bean>-->
 
-    <bean id="ajaxExceptionHandler" class="com.wetrack.base.exception.AjaxExceptionHandler"/>
-    <!-- 全局异常处理类 -->
-    <bean id="globalExceptionHandler" p:errorPage="errors/exception"
-          class="com.wetrack.base.exception.GlobalExceptionHandler">
-    </bean>
+    <!--<bean id="ajaxExceptionHandler" class="com.wetrack.base.exception.AjaxExceptionHandler"/>-->
+    <!--<bean id="businessExceptionHandler" class="com.wetrack.ikongtiao.exception.BusinessExceptionHandler"/>-->
+    <!--&lt;!&ndash; 全局异常处理类 &ndash;&gt;-->
+    <!--<bean id="globalExceptionHandler" p:errorPage="errors/exception" p:debug="${debug}"-->
+          <!--class="com.wetrack.base.exception.GlobalExceptionHandler">-->
+    <!--</bean>-->
 
-    <!-- 全局异常处理 -->
-    <bean id="exceptionResolver" p:defaultStatusCode="503"
-          class="com.wetrack.base.exception.HandlerMappingExceptionResolver">
-        <property name="exceptionMappings">
-            <props>
-                <!-- 遇到AjaxException异常时，采用 ajaxExceptionHandler 处理 -->
-                <prop key="com.wetrack.base.result.AjaxException">handler:ajaxExceptionHandler</prop>
-            </props>
-        </property>
-        <!-- 全局异常：在exceptionMappings里面找不到对应的异常时，采用 globalExceptionHandler 处理 -->
-        <property name="defaultErrorView" value="handler:globalExceptionHandler"/>
-        <!-- 定义在发生异常时视图跟返回码的对应关系 -->
-        <property name="statusCodes">
-            <props>
-                <!-- 发生AjaxException时对应视图handler:ajaxExceptionHandler，返回状态码200 -->
-                <prop key="handler:ajaxExceptionHandler">200</prop>
-            </props>
-        </property>
-    </bean>
+    <!--&lt;!&ndash; 全局异常处理 &ndash;&gt;-->
+    <!--<bean id="exceptionResolver" p:defaultStatusCode="503"-->
+          <!--class="com.wetrack.base.exception.HandlerMappingExceptionResolver">-->
+        <!--<property name="exceptionMappings">-->
+            <!--<props>-->
+                <!--&lt;!&ndash; 遇到AjaxException异常时，采用 ajaxExceptionHandler 处理 &ndash;&gt;-->
+                <!--<prop key="com.wetrack.base.result.AjaxException">handler:ajaxExceptionHandler</prop>-->
+                <!--<prop key="com.wetrack.base.result.BusinessExceptionHandler">handler:businessExceptionHandler</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+        <!--&lt;!&ndash; 全局异常：在exceptionMappings里面找不到对应的异常时，采用 globalExceptionHandler 处理 &ndash;&gt;-->
+        <!--<property name="defaultErrorView" value="handler:globalExceptionHandler"/>-->
+        <!--&lt;!&ndash; 定义在发生异常时视图跟返回码的对应关系 &ndash;&gt;-->
+        <!--<property name="statusCodes">-->
+            <!--<props>-->
+                <!--&lt;!&ndash; 发生AjaxException时对应视图handler:ajaxExceptionHandler，返回状态码200 &ndash;&gt;-->
+                <!--<prop key="handler:ajaxExceptionHandler">200</prop>-->
+                <!--<prop key="handler:businessExceptionHandler">500</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
 </beans>

@@ -60,7 +60,7 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     }
 
     @Override
-    public RepairOrder getById(Long id) throws Exception {
+    public RepairOrder getById(Long id){
         return commonDao.mapper(RepairOrder.class).sql("selectByPrimaryKey").session().selectOne(id);
     }
 }

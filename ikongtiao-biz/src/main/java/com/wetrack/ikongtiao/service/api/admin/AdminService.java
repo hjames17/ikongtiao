@@ -22,4 +22,5 @@ public interface AdminService {
 
     int getAvailableAdminId();
 
+    void dutyOn(Integer id, boolean on) throws Exception;
 }

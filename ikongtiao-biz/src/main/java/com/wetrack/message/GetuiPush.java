@@ -52,7 +52,7 @@ public class GetuiPush implements InitializingBean {
 			e.printStackTrace();
 			ret = iGtPush.pushMessageToSingle(message, target, e.getRequestId());
 		}
-		LOGGER.info("个推，推送clientId:{};推送内容:{};推送结果:{}", clientId, Jackson.base().writeValueAsString(message),
+		LOGGER.info("个推，推送clientId:{};推送标题:{}, 推送内容:{} 推送数据:{};推送结果:{}", clientId, title, content, data,
 				Jackson.base().writeValueAsString(ret));
 		if (ret == null) {
 			return false;

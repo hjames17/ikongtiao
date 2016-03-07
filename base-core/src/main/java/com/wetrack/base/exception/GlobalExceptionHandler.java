@@ -30,7 +30,7 @@ public class GlobalExceptionHandler extends AbstractExceptionHandler implements 
     }
 
     public ModelAndView getModelAndView(Exception ex, HttpServletRequest request, HandlerMethod handler) {
-        logger.error("全局异常处理: ", ex);
+        logger.error("全局异常: ", ex);
         return this.createJsonView(DEFAULT_CODE, ex.getMessage(), ex, request);
     }
 

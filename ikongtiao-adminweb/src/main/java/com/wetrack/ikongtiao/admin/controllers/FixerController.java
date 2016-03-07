@@ -1,23 +1,27 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
+import com.wetrack.auth.domain.User;
+import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/28.
  */
-//TODO 权限控制
+@SignTokenAuth
 @Controller
 public class FixerController {
 
@@ -53,7 +57,7 @@ public class FixerController {
         queryForm.setDistance(distance);
         if(queryForm.getLongitude() != null || queryForm.getLatitude() != null){
             if(queryForm.getLongitude() == null || queryForm.getLatitude() == null || queryForm.getDistance() == null){
-                throw new Exception("地理位置查询参数缺失");
+                throw new BusinessException("地理位置查询参数缺失");
             }
         }
         return fixerService.listWithParams(queryForm);
@@ -94,7 +98,9 @@ public class FixerController {
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/check", method = {RequestMethod.POST})
-    public void check(@RequestBody CheckForm form) throws Exception{
+    public void check(@RequestBody CheckForm form, HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        form.setAdminUserId(Integer.valueOf(user.getId()));
         int state = form.isPass() ? 2 : -1;
         switch (form.getType()){
             case 0: //实名

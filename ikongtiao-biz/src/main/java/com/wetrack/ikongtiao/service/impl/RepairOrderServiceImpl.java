@@ -6,7 +6,7 @@ import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
-import com.wetrack.ikongtiao.domain.repairOrder.Comment;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.AccessoryRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.AuditInfoRepo;
@@ -17,6 +17,8 @@ import com.wetrack.ikongtiao.service.api.SettingsService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,8 @@ import java.util.Map;
  */
 @Service
 public class RepairOrderServiceImpl implements RepairOrderService {
+
+	private final static Logger logger = LoggerFactory.getLogger(RepairOrderServiceImpl.class);
 
 	@Autowired
 	RepairOrderRepo repairOrderRepo;
@@ -128,7 +132,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	public void dispatchRepairOrder(Integer adminUserId, Long repairOrderId, Integer fixerId) throws Exception {
 		RepairOrder order = repairOrderRepo.getById(repairOrderId);
 		if (order == null) {
-			throw new Exception("不存在的维修单");
+			throw new BusinessException("不存在的维修单"+repairOrderId);
 		}
 
 		RepairOrder repairOrder = new RepairOrder();
@@ -152,9 +156,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, mission.getId());
-		params.put(MessageParamKey.USER_ID, mission.getUserId());
-		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
+		params.put(MessageParamKey.FIXER_ID, fixerId);
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
 		messageService.send(MessageId.ASSIGNED_FIXER, params);
 	}
@@ -264,10 +266,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	public void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception {
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		if(repairOrder == null){
-			throw new Exception("无效的维修单");
+			throw new BusinessException("不存在的维修单"+repairOrderId);
 		}
 		if(!repairOrder.getRepairOrderState().equals(RepairOrderState.COST_READY.getCode())){
-			throw new Exception("该维修单不处于待审核状态");
+			throw new BusinessException("维修单"+repairOrderId+"不处于待审核状态");
 		}
 
 		AuditInfo auditInfo = new AuditInfo();
@@ -300,16 +302,21 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		return repairOrder;
 	}
 
-	@Override
-	public void comment(Long repairOrderId, Integer rate, String commentString) throws Exception {
-		Comment comment = new Comment();
-		comment.setRepairOrderId(repairOrderId);
-		comment.setRate(rate);
-		comment.setComment(commentString);
-		commentRepo.create(comment);
-
-		//TODO 发送通知
-	}
+//	@Override
+//	public void comment(Long repairOrderId, Integer rate, String commentString) throws Exception {
+//		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+//		if(repairOrder == null){
+//			throw new BusinessException("维修单"+repairOrderId+"不存在");
+//		}
+//		Comment comment = new Comment();
+//		comment.setRepairOrderId(repairOrderId);
+//		comment.setMissionId(repairOrder.getMissionId());
+//		comment.setRate(rate);
+//		comment.setComment(commentString);
+//		commentRepo.create(comment);
+//
+//		//TODO 发送通知
+//	}
 
 	@Override
 	public Accessory createAccessory(Long repairOrderId, String name, Integer count, Float price) throws Exception {
@@ -361,7 +368,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
 			messageService.send(MessageId.WAITING_CONFIRM_FIX_ORDER, params);
 		} catch (Exception e) {
-			//TODO 报警
+			logger.error("发送报价完成消息失败"+e.getMessage());
 		}
 	}
 }

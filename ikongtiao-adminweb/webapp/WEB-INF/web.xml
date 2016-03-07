@@ -71,6 +71,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>WEB-INF/mvc-dispatcher-servlet.xml</param-value>
+        <!--<param-value>classpath*:/spring/service.xml</param-value>-->
     </context-param>
 
     <!-- Creates the Spring Container shared by all Servlets and Filters -->

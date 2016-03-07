@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by zhangsong on 15/7/5.
  */
 public abstract class AbstractExceptionHandler  implements ExceptionHandler {
+    boolean debug = true;
     public AbstractExceptionHandler() {
     }
 
@@ -19,7 +20,9 @@ public abstract class AbstractExceptionHandler  implements ExceptionHandler {
         jsonView.addStaticAttribute("code", code);
         jsonView.addStaticAttribute("success", Boolean.valueOf(false));
         jsonView.addStaticAttribute("message", message);
-        jsonView.addStaticAttribute("data", ExceptionUtils.getStackTrace(ex));
+        if(isDebug()) {
+            jsonView.addStaticAttribute("data", ExceptionUtils.getStackTrace(ex));
+        }
         mav.setView(jsonView);
         return mav;
     }
@@ -28,7 +31,17 @@ public abstract class AbstractExceptionHandler  implements ExceptionHandler {
         ModelAndView mv = new ModelAndView();
         mv.addObject("code", code);
         mv.addObject("message", message);
-        mv.addObject("exception", ExceptionUtils.getStackTrace(ex));
+        if(isDebug()) {
+            mv.addObject("exception", ExceptionUtils.getStackTrace(ex));
+        }
         return mv;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

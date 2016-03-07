@@ -55,7 +55,7 @@ public class SignTokenAuthInterceptor extends HandlerInterceptorAdapter{
                 throw new TokenAuthorizationException("token无效");
             }else{
                 if(token.isExpired()){
-                    throw new TokenAuthorizationException("token已经过期");
+                    throw new TokenAuthorizationException("登录已经过期");
                 }
                 request.setAttribute("user", token.getUser());
             }

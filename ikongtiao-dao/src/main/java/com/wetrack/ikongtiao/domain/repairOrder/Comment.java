@@ -8,6 +8,8 @@ import java.util.Date;
 public class Comment {
     Long id;
     Long repairOrderId;
+    Integer missionId;
+
     Integer fixerId;
     Date createTime;
     Integer rate; //0分 1分 2 3 4 5分
@@ -59,5 +61,15 @@ public class Comment {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+
+
+    public Integer getMissionId() {
+        return missionId;
+    }
+
+    public void setMissionId(Integer missionId) {
+        this.missionId = missionId;
     }
 }

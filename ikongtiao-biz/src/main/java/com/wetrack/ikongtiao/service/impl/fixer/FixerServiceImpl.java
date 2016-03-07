@@ -7,6 +7,7 @@ import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerCertInfoRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerInsuranceInfoRepo;
@@ -78,20 +79,19 @@ public class FixerServiceImpl implements FixerService {
             fixer.setCertificateState(certInfo.getCheckState());
             int i = fixerRepo.update(fixer);
             if(i != 1){
-                throw new Exception("更新维修员表纪录" + i +"条, 错误!");
+                throw new BusinessException("更新维修员表纪录" + i +"条, 错误!");
             }
         }else{
-            throw new Exception("提交信息没有成功保存!");
+            throw new BusinessException("提交实名认证信息没有成功保存!");
         }
 
 //        MessageSimple messageSimple = new MessageSimple();
 //        messageSimple.setFixerId(certInfo.getFixerId());
-//        messageProcess.process(MessageType.FIXER_SUBMIT_AUDIT, messageSimple);
+//        messageProcess.process(MessageType.FIXER_SUBMIT_CERT_AUDIT, messageSimple);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, certInfo.getFixerId());
-        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, certInfo.getId());
-        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_CERT);
-        messageService.send(MessageId.FIXER_SUBMIT_AUDIT, params);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO, certInfo);
+        messageService.send(MessageId.FIXER_SUBMIT_CERT_AUDIT, params);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -107,18 +107,17 @@ public class FixerServiceImpl implements FixerService {
             fixer.setInsuranceState(insuranceInfo.getCheckState());
             int i = fixerRepo.update(fixer);
             if(i != 1){
-                throw new Exception("更新维修员表纪录错误!" + i +"条");
+                throw new BusinessException("更新维修员表纪录错误!" + i +"条");
             }
         }else{
-            throw new Exception("提交信息没有成功保存!");
+            throw new BusinessException("提交保险信息没有成功保存!");
         }
 
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, insuranceInfo.getFixerId());
-        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, insuranceInfo.getId());
-        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_INSURANCE);
-        messageService.send(MessageId.FIXER_SUBMIT_AUDIT, params);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO, insuranceInfo);
+        messageService.send(MessageId.FIXER_SUBMIT_INSURANCE_AUDIT, params);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -139,37 +138,32 @@ public class FixerServiceImpl implements FixerService {
             }
             int i = fixerRepo.update(fixer);
             if(i != 1){
-                throw new Exception("更新维修员表纪录错误!" + i +"条");
+                throw new BusinessException("更新维修员表纪录错误!" + i +"条");
             }
         }else{
-            throw new Exception("提交信息没有成功保存!");
+            throw new BusinessException("提交技能信息没有成功保存!");
         }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, professionInfo.getFixerId());
-        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, professionInfo.getId());
-        if(professionInfo.getProfessType() == 0) {
-            params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_ELECTRICIAN);
-        }else{
-            params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_WELDER);
-        }
-        messageService.send(MessageId.FIXER_SUBMIT_AUDIT, params);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO, professionInfo);
+        messageService.send(MessageId.FIXER_SUBMIT_PROFESS_AUDIT, params);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void checkCertInfo(Integer fixerId, int checkState, String denyReason, Integer adminUserId) throws Exception {
         if(adminUserId == null){
-            throw new Exception("审核人为空!");
+            throw new BusinessException("审核人为空!");
         }
         FixerCertInfo fixerCertInfo = certInfoRepo.findLatestForFixer(fixerId);
         if(fixerCertInfo == null){
-            throw new Exception("维修员没有待审核认证!");
+            throw new BusinessException("维修员"+fixerId+"没有待审核的实名认证!");
         }else if(fixerCertInfo.getCheckState() == checkState){
-            throw new Exception("重复操作!");
+            throw new BusinessException("重复操作!");
         }
         if(checkState < 0 && StringUtils.isEmpty(denyReason)){
-            throw new Exception("驳回原因未填写");
+            throw new BusinessException("驳回实名认证原因未填写");
         }
 
         //update cert info
@@ -191,12 +185,11 @@ public class FixerServiceImpl implements FixerService {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, fixerId);
         params.put(MessageParamKey.ADMIN_ID, adminUserId);
-        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, fixerCertInfo.getId());
-        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_CERT);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO, fixerCertInfo);
         if(fixerCertInfo.getCheckState() == -1) {
-            messageService.send(MessageId.FIXER_FAILED_AUDIT, params);
+            messageService.send(MessageId.FIXER_CERT_AUDIT_DENY, params);
         }else if(fixerCertInfo.getCheckState() == 2){
-            messageService.send(MessageId.FIXER_SUCCESS_AUDIT, params);
+            messageService.send(MessageId.FIXER_CERT_AUDIT_PASS, params);
         }
     }
 
@@ -204,16 +197,16 @@ public class FixerServiceImpl implements FixerService {
     @Override
     public void checkInsuranceInfo(Integer fixerId, int checkState, String denyReason, Integer adminUserId) throws Exception {
         if(adminUserId == null){
-            throw new Exception("审核人为空!");
+            throw new BusinessException("审核人为空!");
         }
         FixerInsuranceInfo insuranceInfo = insuranceInfoRepo.findLatestForFixer(fixerId);
         if(insuranceInfo == null){
-            throw new Exception("维修员没有待审核认证!");
+            throw new BusinessException("维修员"+fixerId+"没有待审核的保险认证!");
         }else if(insuranceInfo.getCheckState() == checkState){
-            throw new Exception("重复操作!");
+            throw new BusinessException("重复操作!");
         }
         if(checkState < 0 && StringUtils.isEmpty(denyReason)){
-            throw new Exception("驳回原因未填写");
+            throw new BusinessException("驳回保险认证申请原因未填写");
         }
 
         //update cert info
@@ -234,12 +227,11 @@ public class FixerServiceImpl implements FixerService {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, fixerId);
         params.put(MessageParamKey.ADMIN_ID, adminUserId);
-        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, insuranceInfo.getId());
-        params.put(MessageParamKey.FIXER_AUDIT_TYPE, MessageId.FIXER_AUDIT_TYPE_INSURANCE);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO, insuranceInfo);
         if(insuranceInfo.getCheckState() == -1) {
-            messageService.send(MessageId.FIXER_FAILED_AUDIT, params);
+            messageService.send(MessageId.FIXER_INSURANCE_AUDIT_DENY, params);
         }else if(insuranceInfo.getCheckState() == 2){
-            messageService.send(MessageId.FIXER_SUCCESS_AUDIT, params);
+            messageService.send(MessageId.FIXER_INSURANCE_AUDIT_PASS, params);
         }
     }
 
@@ -247,16 +239,16 @@ public class FixerServiceImpl implements FixerService {
     @Override
     public void checkProfessInfo(int type, Integer fixerId, int checkState, String denyReason, Integer adminUserId) throws Exception {
         if(adminUserId == null){
-            throw new Exception("审核人为空!");
+            throw new BusinessException("审核人为空!");
         }
         FixerProfessionInfo professionInfo = professionInfoRepo.findLatestForFixerIdAndType(fixerId, type);
         if(professionInfo == null){
-            throw new Exception("维修员没有待审核认证!");
+            throw new BusinessException("维修员"+fixerId+"没有待审核的技能认证!");
         }else if(professionInfo.getCheckState() == checkState){
-            throw new Exception("重复操作!");
+            throw new BusinessException("重复操作!");
         }
         if(checkState < 0 && StringUtils.isEmpty(denyReason)){
-            throw new Exception("驳回原因未填写");
+            throw new BusinessException("驳回技能申请原因未填写");
         }
 
         //update cert info
@@ -282,12 +274,11 @@ public class FixerServiceImpl implements FixerService {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, fixerId);
         params.put(MessageParamKey.ADMIN_ID, adminUserId);
-        params.put(MessageParamKey.FIXER_AUDIT_INFO_ID, professionInfo.getId());
-        params.put(MessageParamKey.FIXER_AUDIT_TYPE, type == 0 ? MessageId.FIXER_AUDIT_TYPE_ELECTRICIAN : MessageId.FIXER_AUDIT_TYPE_WELDER);
+        params.put(MessageParamKey.FIXER_AUDIT_INFO, professionInfo);
         if(professionInfo.getCheckState() == -1) {
-            messageService.send(MessageId.FIXER_FAILED_AUDIT, params);
+            messageService.send(MessageId.FIXER_PROFESS_AUDIT_DENY, params);
         }else if(professionInfo.getCheckState() == 2){
-            messageService.send(MessageId.FIXER_SUCCESS_AUDIT, params);
+            messageService.send(MessageId.FIXER_PROFESS_AUDIT_PASS, params);
         }
     }
 
@@ -329,7 +320,7 @@ public class FixerServiceImpl implements FixerService {
     public void changePassword(Integer id, String oldPass, String newPass) throws Exception {
         Fixer fixer = fixerRepo.getFixerById(id);
         if(!fixer.getPassword().equals(oldPass)){
-            throw new Exception("原密码不对");
+            throw new BusinessException("原密码不对");
         }
         fixer.setPassword(newPass);
         fixerRepo.update(fixer);
@@ -354,7 +345,7 @@ public class FixerServiceImpl implements FixerService {
         query.setPhone(phone);
         int count = fixerRepo.countFixerByQueryParam(query);
         if(count > 0){
-            throw new Exception("该号码已经被注册");
+            throw new BusinessException("该号码"+phone+"已经被注册");
         }
         Fixer fixer = new Fixer();
         fixer.setPhone(phone);
@@ -373,10 +364,10 @@ public class FixerServiceImpl implements FixerService {
             if(found.getPassword().equals(password)){
                 return tokenService.login(found.getId().toString(), password);
             }else{
-                throw new Exception("密码错误");
+                throw new BusinessException("密码错误");
             }
         }else{
-            throw new Exception("不存在的用户");
+            throw new BusinessException("不存在的用户");
         }
     }
 }

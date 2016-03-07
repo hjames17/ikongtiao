@@ -14,5 +14,5 @@ public interface RepairOrderRepo {
 
     void update(RepairOrder repairOrder) throws Exception;
 
-    RepairOrder getById(Long id) throws Exception;
+    RepairOrder getById(Long id);
 }

@@ -4,6 +4,7 @@ import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,7 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/accessory/create" , method = {RequestMethod.POST})
     public String createAccessory(@RequestBody Accessory form) throws Exception{
         if(form.getRepairOrderId() == null){
-            throw new Exception("未指定维修单id");
+            throw new BusinessException("未指定维修单id");
         }
         Accessory created = repairOrderService.createAccessory(form.getRepairOrderId(), form.getName(), form.getCount(), form.getPrice());
         return created.getId().toString();
@@ -58,7 +59,7 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/accessory/update" , method = {RequestMethod.POST})
     public void updateAccessory(@RequestBody Accessory form) throws Exception{
         if(form.getId() == null){
-            throw new Exception("未指定配件id");
+            throw new BusinessException("未指定配件id");
         }
         repairOrderService.updateAccessory(form);
     }
@@ -72,7 +73,7 @@ public class RepairOrderController {
     public void createCost(@RequestBody CreateCostForm form) throws Exception{
         RepairOrder repairOrder = repairOrderService.getById(form.getRepairOrderId(), false);
         if(repairOrder == null){
-            throw new Exception("没有该维修单");
+            throw new BusinessException("没有该维修单");
         }
         if(form.getAccessoryList() != null && form.getAccessoryList().size() > 0) {
             for (Accessory accessory : form.getAccessoryList()) {
@@ -87,7 +88,7 @@ public class RepairOrderController {
     public void dispatchOrder(@RequestBody OperationForm form, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
         if(form.getFixerId() == null){
-            throw new Exception("没有指定维修员id");
+            throw new BusinessException("没有指定维修员id");
         }
 
         repairOrderService.dispatchRepairOrder(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.getFixerId());
@@ -112,7 +113,7 @@ public class RepairOrderController {
     public void audit(@RequestBody AuditForm form, HttpServletRequest request) throws Exception {
         User user = (User)request.getAttribute("user");
         if(!form.isPass() && StringUtils.isEmpty(form.getReason())){
-            throw new Exception("审核不通过的原因没有填");
+            throw new BusinessException("审核不通过的原因没有填");
         }
         repairOrderService.audit(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.isPass(), form.getReason());
     }

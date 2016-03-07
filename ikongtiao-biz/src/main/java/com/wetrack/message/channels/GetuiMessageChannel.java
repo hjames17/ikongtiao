@@ -1,10 +1,13 @@
 package com.wetrack.message.channels;
 
 import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.FixerDevice;
+import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
+import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
+import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerDeviceRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
+import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.message.*;
 import com.wetrack.message.messages.GetuiMessage;
 import org.slf4j.Logger;
@@ -21,7 +24,7 @@ import java.util.Map;
  * Created by zhanghong on 16/3/1.
  */
 @Service
-public class GetuiMessageChannel extends MessageChannel {
+public class GetuiMessageChannel extends AbstractMessageChannel {
     private Logger LOGGER = LoggerFactory.getLogger(GetuiMessageChannel.class);
 
 
@@ -31,16 +34,18 @@ public class GetuiMessageChannel extends MessageChannel {
     @Autowired
     FixerDeviceRepo fixerDeviceRepo;
 
+    @Autowired
+    MissionRepo missionRepo;
+
     GetuiMessageChannel(){
-        registerAssembler(MessageId.ASSIGNED_MISSION, new MessageAdapter() {
+        registerAdapter(MessageId.ASSIGNED_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                Fixer fixer = fixerRepo.getFixerById((Integer)params.get(MessageParamKey.FIXER_ID));
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer)params.get(MessageParamKey.FIXER_ID));
+                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixerDevice.getClientId());
                 message.setTitle("有新的任务分配给你");
-                message.setContent(String.format("任务地址是%s,点击查看详情", fixer.getAddress()));
+                message.setContent(String.format("任务号是%d,点击查看详情", params.get(MessageParamKey.MISSION_ID)));
                 // 任务id，
                 Map<String, Object> map = new HashMap<>();
                 map.put("id", params.get(MessageParamKey.MISSION_ID));
@@ -49,15 +54,14 @@ public class GetuiMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.ASSIGNED_FIXER, new MessageAdapter() {
+        registerAdapter(MessageId.ASSIGNED_FIXER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                Fixer fixer = fixerRepo.getFixerById((Integer)params.get(MessageParamKey.FIXER_ID));
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer)params.get(MessageParamKey.FIXER_ID));
+                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixerDevice.getClientId());
                 message.setTitle("有新的维修单分配给你");
-                message.setContent(String.format("地址是%s,点击查看详情", fixer.getAddress()));
+                message.setContent(String.format("维修单号是%d,点击查看详情", params.get(MessageParamKey.MISSION_ID)));
                 // 任务id，
                 Map<String, Object> map = new HashMap<>();
                 map.put("id", params.get(MessageParamKey.MISSION_ID));
@@ -66,43 +70,78 @@ public class GetuiMessageChannel extends MessageChannel {
                 return message;
             }
         });
-        registerAssembler(MessageId.FIXER_SUCCESS_AUDIT, new MessageAdapter() {
+
+        MessageAdapter auditResultMessageAdapter = new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer)params.get(MessageParamKey.FIXER_ID));
+                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixerDevice.getClientId());
-                message.setTitle("已完成审核");
-                message.setContent("你的资料已经完成审核了");
+                String auditText , resultText, content = "点击查看详情";
+                Object auditInfo = params.get(MessageParamKey.FIXER_AUDIT_INFO);
+                switch (messageId){
+                    case MessageId.FIXER_CERT_AUDIT_PASS:
+                        auditText = "实名";
+                        resultText = "已通过";
+                        break;
+                    case MessageId.FIXER_CERT_AUDIT_DENY:
+                        auditText = "实名";
+                        resultText = "被驳回";
+                        FixerCertInfo certInfo = (FixerCertInfo)auditInfo;
+                        content = certInfo.getDenyReason();
+                        break;
+                    case MessageId.FIXER_INSURANCE_AUDIT_PASS:
+                        auditText = "保险";
+                        resultText = "已通过";
+                        break;
+                    case MessageId.FIXER_INSURANCE_AUDIT_DENY:
+                        auditText = "保险";
+                        resultText = "被驳回";
+                        FixerInsuranceInfo insuranceInfo = (FixerInsuranceInfo)auditInfo;
+                        content = insuranceInfo.getDenyReason();
+                        break;
+                    case MessageId.FIXER_PROFESS_AUDIT_PASS:
+                        auditText = "技能";
+                        resultText = "已通过";
+                        break;
+                    case MessageId.FIXER_PROFESS_AUDIT_DENY:
+                        auditText = "技能";
+                        resultText = "被驳回";
+                        FixerProfessionInfo professionInfo = (FixerProfessionInfo)auditInfo;
+                        content = professionInfo.getDenyReason();
+                        break;
+                    default:
+                        auditText = "";
+                        resultText = "";
+                        break;
+
+                }
+                message.setTitle(String.format("您的%s认证%s", auditText, resultText));
+                message.setContent(content);
                 // 任务id，
                 Map<String, Object> map = new HashMap<>();
                 map.put("id", params.get(MessageParamKey.FIXER_ID));
                 map.put("type", "certificate");
+                map.put("auditType", messageId%10);
+                map.put("auditInfo", auditInfo);
                 message.setData(map);
                 return message;
             }
-        });
-        registerAssembler(MessageId.FIXER_FAILED_AUDIT, new MessageAdapter() {
+        };
+
+        registerAdapter(MessageId.FIXER_CERT_AUDIT_PASS, auditResultMessageAdapter);
+        registerAdapter(MessageId.FIXER_CERT_AUDIT_DENY, auditResultMessageAdapter);
+        registerAdapter(MessageId.FIXER_INSURANCE_AUDIT_PASS, auditResultMessageAdapter);
+        registerAdapter(MessageId.FIXER_INSURANCE_AUDIT_DENY, auditResultMessageAdapter);
+        registerAdapter(MessageId.FIXER_PROFESS_AUDIT_PASS, auditResultMessageAdapter);
+        registerAdapter(MessageId.FIXER_PROFESS_AUDIT_DENY, auditResultMessageAdapter);
+
+
+        registerAdapter(MessageId.KEFU_NOTIFY_FIXER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer)params.get(MessageParamKey.FIXER_ID));
-                message.setReceiver(fixerDevice.getClientId());
-                message.setTitle("认证失败");
-                message.setContent("你的实名认证被驳回");
-                // 任务id，
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.FIXER_ID));
-                map.put("type", "certificate");
-                message.setData(map);
-                return message;
-            }
-        });
-        registerAssembler(MessageId.KEFU_NOTIFY_FIXER, new MessageAdapter() {
-            @Override
-            public Message build(int messageId, Map<String, Object> params) {
-                GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer)params.get(MessageParamKey.FIXER_ID));
+                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixerDevice.getClientId());
                 message.setTitle("你有新的客服消息");
                 message.setContent("你有新的客服消息，请点击查看");
@@ -110,6 +149,24 @@ public class GetuiMessageChannel extends MessageChannel {
                 Map<String, Object> map = new HashMap<>();
                 map.put("id", params.get(MessageParamKey.FIXER_ID));
                 map.put("type", "message");
+                message.setData(map);
+                return message;
+            }
+        });
+        registerAdapter(MessageId.COMMENT_REPAIR_ORDER, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                GetuiMessage message = new GetuiMessage();
+                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
+                message.setReceiver(fixerDevice.getClientId());
+                message.setTitle("您的维修服务已经被评价");
+                message.setContent(String.format("你的维修单%d获得了%d星评价，请点击查看",
+                        params.get(MessageParamKey.REPAIR_ORDER_ID), params.get(MessageParamKey.REPAIR_ORDER_COMMENT_RATE)));
+                // 任务id，
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", params.get(MessageParamKey.FIXER_ID));
+                map.put("type", "comment");
+                map.put(MessageParamKey.REPAIR_ORDER_COMMENT_ID, params.get(MessageParamKey.REPAIR_ORDER_COMMENT_ID));
                 message.setData(map);
                 return message;
             }

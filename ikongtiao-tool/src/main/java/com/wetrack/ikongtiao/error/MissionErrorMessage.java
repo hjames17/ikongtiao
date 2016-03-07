@@ -10,8 +10,6 @@ public enum MissionErrorMessage implements ErrorMessage {
 	MISSION_SUBMIT_PARAM_ERROR("任务提交参数有误"),
 
 	MISSION_LIST_PARAM_ERROR("获取任务列表参数有误"),
-
-
 	;
 
 	private String message;

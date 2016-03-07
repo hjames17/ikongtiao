@@ -23,7 +23,7 @@ public interface RepairOrderService {
     void setFinished(Long repairOrderId) throws Exception;
     RepairOrder getById(Long id, boolean brief) throws Exception;
 
-    void comment(Long repairOrderId, Integer rate, String comment) throws Exception;
+//    void comment(Long repairOrderId, Integer rate, String comment) throws Exception;
 
     Accessory createAccessory(Long repairOrderId, String name, Integer count, Float price) throws Exception;
 

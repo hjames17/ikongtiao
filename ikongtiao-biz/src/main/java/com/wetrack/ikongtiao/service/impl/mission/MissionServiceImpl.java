@@ -10,6 +10,7 @@ import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.geo.GeoLocation;
 import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
@@ -173,10 +174,10 @@ public class MissionServiceImpl implements MissionService {
 		//先读取任务状态，防止多人抢单，导致最后一个来的抢成功了
 		Mission mission = missionRepo.getMissionById(missionId);
 		if(mission == null){
-			throw new Exception("任务不存在");
+			throw new BusinessException("任务不存在");
 		}
 		if(mission.getMissionState() > MissionState.NEW.getCode()){
-			throw new Exception("任务已经被受理");
+			throw new BusinessException("任务已经被受理");
 		}
 		//修改状态
 		mission.setMissionState(MissionState.ACCEPT.getCode());
@@ -203,10 +204,10 @@ public class MissionServiceImpl implements MissionService {
 		//先读取任务状态，不能拒绝已经被处理的订单
 		Mission mission = missionRepo.getMissionById(missionId);
 		if(mission == null){
-			throw new Exception("任务不存在");
+			throw new BusinessException("不存在任务" + missionId);
 		}
 		if(mission.getMissionState() > MissionState.NEW.getCode()){
-			throw new Exception("任务已经被受理,不能拒绝");
+			throw new BusinessException("任务"+missionId+"已经被受理,不能拒绝");
 		}
 		//修改状态
 		mission.setMissionState(MissionState.REJECT.getCode());
@@ -260,7 +261,7 @@ public class MissionServiceImpl implements MissionService {
 	public void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception {
 		Mission mission = missionRepo.getMissionById(id);
 		if(mission == null){
-			throw new Exception("不存在该任务");
+			throw new BusinessException("不存在任务" + id);
 		}
 
 //		MissionAddress missionAddress = new MissionAddress();
@@ -287,7 +288,7 @@ public class MissionServiceImpl implements MissionService {
 			missionAddress.setAddress(address);
 			GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(missionAddress.getAddress());
 			if(geoLocation == null){
-				throw new Exception("该地址无法获取经纬度，需要重新填写!");
+				throw new BusinessException(String.format("任务%d地址:%s无法获取经纬度，需要重新填写!", id, address));
 			}else{
 				missionAddress.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
 				missionAddress.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));

@@ -11,6 +11,9 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../ikongtiao-pom/pom.xml</relativePath>
     </parent>
+    <properties>
+        <app.log.name>ikt-admin</app.log.name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.wetrack.ikongtiao</groupId>

@@ -6,6 +6,7 @@ import com.wetrack.base.result.AjaxResult;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.MissionErrorMessage;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -59,7 +60,7 @@ public class MissionController {
 	public void finishMission(@RequestBody UpdateForm form) throws Exception{
 		Mission mission = missionService.getMission(form.getMissionId());
 		if(!mission.getUserId().equals(form.getUserId())){
-			throw new Exception("不是您的任务!");
+			throw new BusinessException("不是您的任务!");
 		}
 		missionService.finishMission(form.getMissionId());
 	}

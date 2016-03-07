@@ -10,16 +10,16 @@
 	http://www.springframework.org/schema/context/spring-context.xsd
 	">
     <!--<context:component-scan base-package="com.xiawechat"/>-->
-    <bean id="config"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <!-- 是否忽略不可解析的 -->
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
-        <!-- 多个locations， 单个location <value> -->
-        <property name="locations">
-            <list>
-                <value>classpath*:/conf/*.properties</value>
-                <value>classpath*:/conf/*</value>
-            </list>
-        </property>
-    </bean>
+    <!--<bean id="config"-->
+          <!--class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+        <!--&lt;!&ndash; 是否忽略不可解析的 &ndash;&gt;-->
+        <!--<property name="ignoreUnresolvablePlaceholders" value="true" />-->
+        <!--&lt;!&ndash; 多个locations， 单个location <value> &ndash;&gt;-->
+        <!--<property name="locations">-->
+            <!--<list>-->
+                <!--<value>classpath*:/conf/*.properties</value>-->
+                <!--<value>classpath*:/conf/*</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 </beans>

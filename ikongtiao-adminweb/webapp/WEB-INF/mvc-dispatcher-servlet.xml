@@ -11,72 +11,20 @@
 		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+    <bean id="projectPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <!-- 这里支持多种寻址方式：classpath和file -->
                 <!--<value>classpath:/conf/weixin.properties</value>-->
                 <!--<value>classpath:/conf/redis.conf</value>-->
                 <value>classpath*:/conf/*.conf</value>
+                <!--<value>classpath*:/conf/project.conf</value>-->
                 <!-- 推荐使用file的方式引入，这样可以将配置和代码分离 -->
                 <!--<value>file:/opt/demo/config.properties/demo-mq.properties</value>-->
             </list>
         </property>
     </bean>
 
-    <mvc:annotation-driven/>
-    <mvc:default-servlet-handler />
-    <context:component-scan base-package="com.wetrack"/>
-
-    <!--ajax response wrapper的包装拦截器， 和@AjaxResponseWrapper结合使用，目前只支持启用  <mvc:annotation-driven/> 的mvc配置-->
-    <!--<mvc:interceptors>-->
-        <!--<bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>-->
-    <!--</mvc:interceptors>-->
-
-    <import resource="classpath*:/spring/redis-repo.xml"></import>
-    <import resource="classpath*:/spring/datasource.xml"></import>
-
-
-    <bean id="viewResolver"
-          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix">
-            <value>/WEB-INF/jsp/</value>
-        </property>
-        <property name="suffix">
-            <value>.jsp</value>
-        </property>
-    </bean>
-
-    <bean id="ajaxExceptionHandler" class="com.wetrack.base.exception.AjaxExceptionHandler"/>
-    <!-- 全局异常处理类 -->
-    <bean id="globalExceptionHandler" p:errorPage="errors/exception"
-          class="com.wetrack.base.exception.GlobalExceptionHandler">
-    </bean>
-
-    <!-- 全局异常处理 -->
-    <bean id="exceptionResolver" p:defaultStatusCode="503"
-          class="com.wetrack.base.exception.HandlerMappingExceptionResolver">
-        <property name="exceptionMappings">
-            <props>
-                <!-- 遇到AjaxException异常时，采用 ajaxExceptionHandler 处理 -->
-                <prop key="com.wetrack.base.result.AjaxException">handler:ajaxExceptionHandler</prop>
-            </props>
-        </property>
-        <!-- 全局异常：在exceptionMappings里面找不到对应的异常时，采用 globalExceptionHandler 处理 -->
-        <property name="defaultErrorView" value="handler:globalExceptionHandler"/>
-        <!-- 定义在发生异常时视图跟返回码的对应关系 -->
-        <property name="statusCodes">
-            <props>
-                <!-- 发生AjaxException时对应视图handler:ajaxExceptionHandler，返回状态码200 -->
-                <prop key="handler:ajaxExceptionHandler">200</prop>
-            </props>
-        </property>
-    </bean>
-
-    <mvc:interceptors>
-        <!--ajax response wrapper的包装拦截器， 和@AjaxResponseWrapper结合使用，目前只支持启用  <mvc:annotation-driven/> 的mvc配置-->
-        <!--<bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>-->
-        <bean class="com.wetrack.auth.filter.SignTokenAuthInterceptor"></bean>
-    </mvc:interceptors>
-
+    <import resource="classpath*:/spring/service.xml"/>
 </beans>

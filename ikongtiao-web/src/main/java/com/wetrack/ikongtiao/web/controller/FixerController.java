@@ -10,10 +10,12 @@ import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.domain.fixer.GetuiClientId;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.fixer.GetuiClientIdService;
 import com.wetrack.ikongtiao.utils.RegExUtil;
 import com.wetrack.verification.VerificationCodeService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,10 +60,10 @@ public class FixerController {
     void signUp(@RequestBody SignUpForm form) throws Exception{
 
         if(!RegExUtil.isMobilePhone(form.getPhone())){
-            throw new Exception("手机号码无效!");
+            throw new BusinessException("手机号码无效!");
         }
         if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
-            throw new Exception("验证码无效");
+            throw new BusinessException("验证码无效");
         }
 
         fixerService.createAccount(form.getPhone(), form.getName(), form.getPassword());
@@ -105,6 +108,15 @@ public class FixerController {
     void certificateSubmit(@RequestBody FixerCertInfo fixerCertInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
         fixerCertInfo.setFixerId(Integer.valueOf(user.getId()));
+        if(StringUtils.isEmpty(fixerCertInfo.getIdNum())){
+            throw new BusinessException("身份证号码必须填写!");
+        }
+        if(StringUtils.isEmpty(fixerCertInfo.getIdImgFront())){
+            throw new BusinessException("身份证正面图片没有提供");
+        }
+        if(StringUtils.isEmpty(fixerCertInfo.getIdImgBack())){
+            throw new BusinessException("身份证背面图片没有提供");
+        }
         fixerService.submitCertInfo(fixerCertInfo);
     }
 
@@ -114,6 +126,22 @@ public class FixerController {
     void insuranceSubmit(@RequestBody FixerInsuranceInfo insuranceInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
         insuranceInfo.setFixerId(Integer.valueOf(user.getId()));
+
+        if(StringUtils.isEmpty(insuranceInfo.getInsuranceNum())){
+            throw new BusinessException("保险单号码必须填写!");
+        }
+        if(StringUtils.isEmpty(insuranceInfo.getInsuranceImg())){
+            throw new BusinessException("保险单图片没有提供");
+        }
+        if(insuranceInfo.getInsuranceDate() == null){
+            throw new BusinessException("保险生效时间没有填写");
+        }
+        if(insuranceInfo.getExpiresAt() == null){
+            throw new BusinessException("保险过期时间没有填写");
+        }else if(insuranceInfo.getExpiresAt().getTime() <= new Date().getTime()){
+            throw new BusinessException("保单已经过期");
+        }
+
         fixerService.submitInsuranceInfo(insuranceInfo);
     }
 
@@ -123,6 +151,16 @@ public class FixerController {
     void professSubmit(@RequestBody FixerProfessionInfo professionInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
         professionInfo.setFixerId(Integer.valueOf(user.getId()));
+
+        if(professionInfo.getProfessType() == null){
+            throw new BusinessException("技能类型未选择");
+        }
+        if(StringUtils.isEmpty(professionInfo.getProfessNum())){
+            throw new BusinessException("技能证书号必须填写!");
+        }
+        if(StringUtils.isEmpty(professionInfo.getProfessImg())){
+            throw new BusinessException("技能证书图片没有提供");
+        }
         fixerService.submitProfessInfo(professionInfo);
     }
 
@@ -175,7 +213,17 @@ public class FixerController {
         User user = (User)request.getAttribute("user");
         Fixer fixer = new Fixer();
         BeanUtils.copyProperties(form, fixer);
+        fixer.setInService(form.isInService());
         fixer.setId(Integer.valueOf(user.getId()));
+        if(fixer.isInService() != null && fixer.isInService() == true){
+            Fixer current = fixerService.getFixer(fixer.getId());
+            if(current.getInsuranceState() != null && current.getInsuranceState().equals(2)
+                    &&current.getCertificateState() != null && current.getCertificateState().equals(2)){
+
+            }else{
+                throw new BusinessException("没有通过实名认证或者保险认证前，无法进入服务状态");
+            }
+        }
         fixerService.updateInfo(fixer);
         return "ok";
     }
@@ -184,7 +232,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/code", method = RequestMethod.GET)
     String getRegisterCode(HttpServletRequest request , @RequestParam(value = "phone") String phone) throws Exception{
         if(!RegExUtil.isMobilePhone(phone)){
-            throw new Exception("无效的手机号码！");
+            throw new BusinessException("无效的手机号码！");
         }
         verificationCodeService.sendVericationCode(phone);
         return "ok";
@@ -197,16 +245,16 @@ public class FixerController {
         User user = (User)request.getAttribute("user");
         Fixer fixer = fixerService.getFixer(Integer.valueOf(user.getId()));
         if(fixer.getPhone() != null){
-            throw new Exception("已经绑定过了电话，不能重复绑定");
+            throw new BusinessException("已经绑定过了电话，不能重复绑定");
         }
         if(!RegExUtil.isMobilePhone(form.getPhone())){
-            throw new Exception("手机号码错误!");
+            throw new BusinessException("手机号码错误!");
         }
         if(form.getVerification() == null){
-            throw new Exception("验证码为空！");
+            throw new BusinessException("验证码为空！");
         }
         if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
-            throw new Exception("验证码错误！");
+            throw new BusinessException("验证码错误！");
         }
 
         Fixer fixer1 = new Fixer();
@@ -223,28 +271,28 @@ public class FixerController {
         User user = (User)request.getAttribute("user");
         Fixer fixer = fixerService.getFixer(Integer.valueOf(user.getId()));
         if(fixer.getPhone() == null){
-            throw new Exception("未绑定过手机，不能换绑");
+            throw new BusinessException("未绑定过手机，不能换绑");
         }
         if(!fixer.getPhone().equals(form.getPhone())){
-            throw new Exception("原手机号码错误!");
+            throw new BusinessException("原手机号码错误!");
         }
         if(form.getVerification() == null){
-            throw new Exception("原手机验证码为空！");
+            throw new BusinessException("原手机验证码为空！");
         }
         if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
-            throw new Exception("原手机验证码错误！");
+            throw new BusinessException("原手机验证码错误！");
         }
         if(!RegExUtil.isMobilePhone(form.getNewPhone())){
-            throw new Exception("新手机号码错误");
+            throw new BusinessException("新手机号码错误");
         }
         if(form.getNewVerification() == null){
-            throw new Exception("新手机验证码为空！");
+            throw new BusinessException("新手机验证码为空！");
         }
         if(form.getPhone().equals(form.getNewPhone())){
-            throw new Exception("新老手机号码一致！");
+            throw new BusinessException("新老手机号码一致！");
         }
         if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
-            throw new Exception("新验证码错误！");
+            throw new BusinessException("新验证码错误！");
         }
 
         Fixer fixer1 = new Fixer();
@@ -283,10 +331,10 @@ public class FixerController {
 
         Fixer fixer = fixerService.getFixerByPhone(form.getPhone());
         if(!RegExUtil.isMobilePhone(form.getPhone())){
-            throw new Exception("手机号码无效!");
+            throw new BusinessException("手机号码无效!");
         }
         if(!verificationCodeService.verifyCode(form.getPhone(), form.getVerification())){
-            throw new Exception("验证码无效");
+            throw new BusinessException("验证码无效");
         }
         fixerService.resetPassword(fixer.getId(), form.getNewPass());
     }
@@ -558,4 +606,16 @@ public class FixerController {
         }
     }
 
+    public static void main(String[] args){
+        UpdateForm updateForm = new UpdateForm();
+        updateForm.setInService(true);
+        updateForm.setAddress("ok");
+        Fixer fixer = new Fixer();
+        try {
+            BeanUtils.copyProperties(updateForm, fixer);
+            System.out.print("copied");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

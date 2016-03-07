@@ -21,7 +21,7 @@ public class AjaxExceptionHandler extends AbstractExceptionHandler {
             AjaxException e = (AjaxException)ex;
             String code = e.getCode();
             String message = e.getMessage();
-            logger.info("Ajax异常处理：code=[{}], msg=[{}]", code, message);
+            logger.info("Ajax异常：code=[{}], msg=[{}]", code, message);
             return this.createJsonView(code, message, ex, request);
         } else {
             return null;

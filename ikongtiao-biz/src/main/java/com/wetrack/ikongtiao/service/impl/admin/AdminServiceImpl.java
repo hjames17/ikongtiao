@@ -107,4 +107,12 @@ public class AdminServiceImpl implements AdminService{
         // 每个客服 正在谈话的数量 可以放在redis中，然后从redis中获取对应的空闲的客服
         return 1;
     }
+
+    @Override
+    public void dutyOn(Integer id, boolean on) throws Exception{
+        User user = new User();
+        user.setId(id);
+        user.setInService(on);
+        adminRepo.update(user);
+    }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +31,7 @@ public class FixerController {
     @Autowired
     FixerService fixerService;
 
+    @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.GET})
     public PageList<Fixer> list(@RequestParam(required = false, value = "inService") Boolean inService,
@@ -63,6 +65,15 @@ public class FixerController {
         return fixerService.listWithParams(queryForm);
     }
 
+    @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/listIn" , method = {RequestMethod.POST})
+    public List<Fixer> list(@RequestBody List<Integer> ids) throws Exception{
+
+        return fixerService.listInIds(ids);
+    }
+
+    @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
     public Fixer get(@PathVariable(value = "id") Integer id) throws Exception{
@@ -75,18 +86,21 @@ public class FixerController {
 //
 //    }
 
+    @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/certificate", method = {RequestMethod.GET})
     public FixerCertInfo getCertInfo(@RequestParam(value = "fixerId") Integer fixerId) throws Exception{
         return fixerService.getCertificateInfo(fixerId);
     }
 
+    @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/insurance", method = {RequestMethod.GET})
     public FixerInsuranceInfo getInsuranceInfo(@RequestParam(value = "fixerId") Integer fixerId) throws Exception{
         return fixerService.getInsuranceInfo(fixerId);
     }
 
+    @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/profession", method = {RequestMethod.GET})
     public Map<String, FixerProfessionInfo> getProfessInfo(@RequestParam(value = "fixerId") Integer fixerId) throws Exception{
@@ -96,6 +110,7 @@ public class FixerController {
         return map;
     }
 
+    @SignTokenAuth(roleNameRequired = "AUDIT_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/check", method = {RequestMethod.POST})
     public void check(@RequestBody CheckForm form, HttpServletRequest request) throws Exception{

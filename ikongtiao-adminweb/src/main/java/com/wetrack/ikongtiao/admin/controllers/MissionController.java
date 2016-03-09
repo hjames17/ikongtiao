@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
  * Created by zhanghong on 15/12/28.
  */
 @Controller
-@SignTokenAuth(roleNameRequired = "KEFU")
 public class MissionController {
 
     static final String BASE_PATH = "/mission";
@@ -28,6 +27,7 @@ public class MissionController {
 
 
     @ResponseBody
+    @SignTokenAuth(roleNameRequired = "VIEW_MISSION")
     @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.POST})
     public PageList<MissionDto> listMission(@RequestBody AppMissionQueryParam param) throws Exception{
         if (param == null) {
@@ -37,12 +37,14 @@ public class MissionController {
     }
 
     @ResponseBody
+    @SignTokenAuth(roleNameRequired = "VIEW_MISSION")
     @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
     public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
         return missionService.getMissionDto(id);
     }
 
     @ResponseBody
+    @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @RequestMapping(value = BASE_PATH + "/deny" , method = {RequestMethod.POST})
     public void denyMission(@RequestBody DenyForm denyForm, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
@@ -56,6 +58,7 @@ public class MissionController {
     }
 
     @ResponseBody
+    @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @RequestMapping(value = BASE_PATH + "/accept" , method = {RequestMethod.GET})
     public void acceptMission(@RequestParam(value = "missionId") Integer missionId, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
@@ -66,6 +69,7 @@ public class MissionController {
     }
 
     @ResponseBody
+    @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.GET})
     public void dispatchMission(@RequestParam(value = "missionId") Integer missionId,
                                   @RequestParam(value = "fixerId") Integer fixerId, HttpServletRequest request) throws Exception{
@@ -78,6 +82,7 @@ public class MissionController {
         missionService.dispatchMission(missionId, fixerId, Integer.valueOf(user.getId()));
     }
     @ResponseBody
+    @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @RequestMapping(value = BASE_PATH + "/describe" , method = {RequestMethod.POST})
     public void describeMission(@RequestBody DescribeForm form, HttpServletRequest request) throws Exception {
         User user = (User)request.getAttribute("user");

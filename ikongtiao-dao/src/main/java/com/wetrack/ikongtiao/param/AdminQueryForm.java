@@ -11,7 +11,7 @@ public class AdminQueryForm extends BaseCondition {
     String phone;
     String name;
     String email;
-    String role;
+
 
     public Boolean isInService() {
         return inService;
@@ -43,14 +43,6 @@ public class AdminQueryForm extends BaseCondition {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
 }

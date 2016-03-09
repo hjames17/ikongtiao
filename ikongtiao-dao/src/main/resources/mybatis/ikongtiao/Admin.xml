@@ -6,7 +6,8 @@
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
-    <result column="roles_string" property="rolesString" jdbcType="VARCHAR" />
+    <!--<result column="roles_string" property="rolesString" jdbcType="VARCHAR" />-->
+    <result column="admin_type" property="adminType" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -16,8 +17,8 @@
     <result column="disabled" property="disabled" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, password, avatar, phone, email, roles_string,
-    create_time, update_time, in_service, deleted, disabled
+    id, name, password, avatar, phone, email,
+    create_time, update_time, in_service, deleted, disabled, admin_type
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -53,7 +54,10 @@
         avatar,
       </if>
       <if test="phone != null" >
-        phone
+        phone,
+      </if>
+      <if test="adminType != null">
+        admin_type
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -64,7 +68,10 @@
         #{avatar,jdbcType=VARCHAR},
       </if>
       <if test="phone != null" >
-        #{phone,jdbcType=VARCHAR}
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="adminType != null" >
+        #{adminType,jdbcType=VARCHAR}
       </if>
     </trim>
   </insert>
@@ -132,9 +139,6 @@
       <if test="email != null ">
         and  email LIKE #{email}
       </if>
-      <if test="role != null ">
-        and  role LIKE #{role}
-      </if>
 
     </where>
     limit #{start},#{pageSize}
@@ -157,9 +161,6 @@
       </if>
       <if test="email != null ">
         and email LIKE #{email}
-      </if>
-      <if test="role != null ">
-        and role LIKE #{role}
       </if>
     </where>
   </select>

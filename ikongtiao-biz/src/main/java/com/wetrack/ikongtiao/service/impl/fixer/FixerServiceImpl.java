@@ -340,6 +340,11 @@ public class FixerServiceImpl implements FixerService {
     }
 
     @Override
+    public List<Fixer> listInIds(List<Integer> ids) {
+        return fixerRepo.listFixerOfIds(ids);
+    }
+
+    @Override
     public Fixer createAccount(String phone, String name, String password) throws Exception {
         FixerQueryForm query = new FixerQueryForm();
         query.setPhone(phone);

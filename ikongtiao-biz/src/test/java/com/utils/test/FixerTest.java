@@ -39,9 +39,13 @@ public class FixerTest {
     }
 
     @Test
-    public void testGetuiClientId(){
+    public void get(){
+        List<Integer> ids = new ArrayList<>();
+        ids.add(1);
+        ids.add(2);
         try {
-            getuiClientIdService.registerClientId(1, "22222");
+            List<Fixer> fixers = fixerService.listInIds(ids);
+            System.out.println("Ok");
         } catch (Exception e) {
             e.printStackTrace();
         }

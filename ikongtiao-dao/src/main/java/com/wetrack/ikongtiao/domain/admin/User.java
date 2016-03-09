@@ -31,7 +31,8 @@ public class User {
 
     //便于存储
     //格式: kefu;financial
-    String rolesString;
+//    String rolesString;
+    AdminType adminType;
 
     public String getEmail() {
         return email;
@@ -65,26 +66,27 @@ public class User {
         this.password = password;
     }
 
-    public Role[] getRoles() {
-        return parseRolesString();
-    }
+//    public Role[] getRoles() {
+//        return parseRolesString();
+//    }
 
     public String[] getRolesArrayString(){
-        if(rolesString == null || rolesString.isEmpty()){
-            return null;
-        }
-
-        String[] parts = rolesString.split(DELIMITER);
-        return parts;
+        return adminType.getRolesStringArray();
+//        if(rolesString == null || rolesString.isEmpty()){
+//            return null;
+//        }
+//
+//        String[] parts = rolesString.split(DELIMITER);
+//        return parts;
     }
 
-    public String getRolesString() {
-        return rolesString;
-    }
-
-    public void setRolesString(String rolesString) {
-        this.rolesString = rolesString;
-    }
+//    public String getRolesString() {
+//        return rolesString;
+//    }
+//
+//    public void setRolesString(String rolesString) {
+//        this.rolesString = rolesString;
+//    }
 
     public Integer getId() {
         return id;
@@ -145,24 +147,33 @@ public class User {
 //        this.roles = roles;
 //    }
 
-    static final String DELIMITER = ";";
-    private Role[] parseRolesString(){
-        if(rolesString == null || rolesString.isEmpty()){
-            return null;
-        }
-
-        String[] parts = rolesString.split(DELIMITER);
-        Role[] roles = new Role[parts.length];
-        for(int i = 0; i < parts.length; i++){
-            try {
-                roles[i] = Role.valueOf(parts[i]);
-            }catch (Exception e){
-                //skip error role
-            }
-        }
-
-        return roles;
+    public AdminType getAdminType() {
+        return adminType;
     }
+
+    public void setAdminType(AdminType adminType) {
+        this.adminType = adminType;
+    }
+
+
+//    static final String DELIMITER = ";";
+//    private Role[] parseRolesString(){
+//        if(rolesString == null || rolesString.isEmpty()){
+//            return null;
+//        }
+//
+//        String[] parts = rolesString.split(DELIMITER);
+//        Role[] roles = new Role[parts.length];
+//        for(int i = 0; i < parts.length; i++){
+//            try {
+//                roles[i] = Role.valueOf(parts[i]);
+//            }catch (Exception e){
+//                //skip error role
+//            }
+//        }
+//
+//        return roles;
+//    }
 
 
 }

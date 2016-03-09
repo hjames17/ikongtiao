@@ -364,6 +364,16 @@
     ORDER BY id
     limit #{start},#{pageSize}
   </select>
+  <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    from fixer
+    WHERE id IN
+    <foreach collection="list" index="index" item="item"
+      open = "(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 
   <select id="countByQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.FixerQueryForm" >
     <if test="longitude!=null and latitude!=null">

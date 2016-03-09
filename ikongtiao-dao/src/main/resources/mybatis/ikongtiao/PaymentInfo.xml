@@ -2,20 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.wetrack.ikongtiao.domain.PaymentInfo" >
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.PaymentInfo" >
-    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="id" property="id" jdbcType="BIGINT" />
     <result column="payment_method" property="paymentMethod" jdbcType="TINYINT" />
-    <result column="repair_order_id" property="repairOrderId" jdbcType="INTEGER" />
-    <result column="out_trade_no" property="outTradeNo" jdbcType="BIGINT" />
-    <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
+    <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
     <result column="pay_state" property="payState" jdbcType="TINYINT" />
     <result column="pay_amount" property="payAmount" jdbcType="INTEGER" />
     <result column="refund_amount" property="refundAmount" jdbcType="INTEGER" />
     <result column="paid_time" property="paidTime" jdbcType="TIMESTAMP" />
     <result column="refund_time" property="refundTime" jdbcType="TIMESTAMP" />
-    <result column="repair_order_desc" property="repairOrderDesc" jdbcType="VARCHAR" />
-    <result column="operator" property="operator" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, payment_method, repair_order_id, out_trade_no, trade_no, pay_state, pay_amount, 
@@ -26,29 +21,25 @@
     select 
     <include refid="Base_Column_List" />
     from payment_info
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from payment_info
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into payment_info (payment_method, repair_order_id, out_trade_no, 
-      trade_no, pay_state, pay_amount, 
-      refund_amount, paid_time, refund_time, 
-      repair_order_desc, operator, create_time, 
-      update_time)
-    values (#{paymentMethod,jdbcType=TINYINT}, #{repairOrderId,jdbcType=INTEGER}, #{outTradeNo,jdbcType=BIGINT}, 
-      #{tradeNo,jdbcType=VARCHAR}, #{payState,jdbcType=TINYINT}, #{payAmount,jdbcType=INTEGER}, 
+    insert into payment_info (payment_method, out_trade_no,
+      pay_state, pay_amount, refund_amount, paid_time, refund_time, create_time)
+    values (#{paymentMethod,jdbcType=TINYINT}, #{outTradeNo,jdbcType=VARCHAR},
+      #{payState,jdbcType=TINYINT}, #{payAmount,jdbcType=INTEGER},
       #{refundAmount,jdbcType=INTEGER}, #{paidTime,jdbcType=TIMESTAMP}, #{refundTime,jdbcType=TIMESTAMP}, 
-      #{repairOrderDesc,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into payment_info
@@ -56,14 +47,8 @@
       <if test="paymentMethod != null" >
         payment_method,
       </if>
-      <if test="repairOrderId != null" >
-        repair_order_id,
-      </if>
       <if test="outTradeNo != null" >
         out_trade_no,
-      </if>
-      <if test="tradeNo != null" >
-        trade_no,
       </if>
       <if test="payState != null" >
         pay_state,
@@ -80,31 +65,16 @@
       <if test="refundTime != null" >
         refund_time,
       </if>
-      <if test="repairOrderDesc != null" >
-        repair_order_desc,
-      </if>
-      <if test="operator != null" >
-        operator,
-      </if>
       <if test="createTime != null" >
         create_time,
-      </if>
-      <if test="updateTime != null" >
-        update_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="paymentMethod != null" >
         #{paymentMethod,jdbcType=TINYINT},
       </if>
-      <if test="repairOrderId != null" >
-        #{repairOrderId,jdbcType=INTEGER},
-      </if>
       <if test="outTradeNo != null" >
-        #{outTradeNo,jdbcType=BIGINT},
-      </if>
-      <if test="tradeNo != null" >
-        #{tradeNo,jdbcType=VARCHAR},
+        #{outTradeNo,jdbcType=VARCHAR},
       </if>
       <if test="payState != null" >
         #{payState,jdbcType=TINYINT},
@@ -121,17 +91,8 @@
       <if test="refundTime != null" >
         #{refundTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="repairOrderDesc != null" >
-        #{repairOrderDesc,jdbcType=VARCHAR},
-      </if>
-      <if test="operator != null" >
-        #{operator,jdbcType=VARCHAR},
-      </if>
       <if test="createTime != null" >
         #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -141,11 +102,8 @@
       <if test="paymentMethod != null" >
         payment_method = #{paymentMethod,jdbcType=TINYINT},
       </if>
-      <if test="repairOrderId != null" >
-        repair_order_id = #{repairOrderId,jdbcType=INTEGER},
-      </if>
       <if test="outTradeNo != null" >
-        out_trade_no = #{outTradeNo,jdbcType=BIGINT},
+        out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
       </if>
       <if test="tradeNo != null" >
         trade_no = #{tradeNo,jdbcType=VARCHAR},
@@ -165,36 +123,7 @@
       <if test="refundTime != null" >
         refund_time = #{refundTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="repairOrderDesc != null" >
-        repair_order_desc = #{repairOrderDesc,jdbcType=VARCHAR},
-      </if>
-      <if test="operator != null" >
-        operator = #{operator,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
-    update payment_info
-    set payment_method = #{paymentMethod,jdbcType=TINYINT},
-      repair_order_id = #{repairOrderId,jdbcType=INTEGER},
-      out_trade_no = #{outTradeNo,jdbcType=BIGINT},
-      trade_no = #{tradeNo,jdbcType=VARCHAR},
-      pay_state = #{payState,jdbcType=TINYINT},
-      pay_amount = #{payAmount,jdbcType=INTEGER},
-      refund_amount = #{refundAmount,jdbcType=INTEGER},
-      paid_time = #{paidTime,jdbcType=TIMESTAMP},
-      refund_time = #{refundTime,jdbcType=TIMESTAMP},
-      repair_order_desc = #{repairOrderDesc,jdbcType=VARCHAR},
-      operator = #{operator,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

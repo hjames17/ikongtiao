@@ -125,4 +125,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 		imMessageService.save(imMessage);
 		return "ok";
 	}
+
+	@Override
+	public List<UserInfo> listInIds(List<String> ids) {
+		return userInfoRepo.listInIds(ids);
+	}
 }

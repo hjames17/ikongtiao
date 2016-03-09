@@ -41,6 +41,12 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
+    public User getByAdminId(String email) {
+        return adminRepo.findByEmail(email);
+    }
+
+
+    @Override
     public Token login(String email, String password) throws Exception {
 
         User user = adminRepo.findByEmail(email);
@@ -74,6 +80,9 @@ public class AdminServiceImpl implements AdminService{
         }
         if(StringUtils.isEmpty(form.getPassword())){
             throw new Exception("密码不能为空");
+        }
+        if(StringUtils.isEmpty(form.getName())){
+            throw new Exception("姓名不能为空");
         }
 
         User exist = adminRepo.findByEmailOrPhone(form.getEmail(), form.getPhone());

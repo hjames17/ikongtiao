@@ -49,7 +49,7 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
                 message.setId(messageId);
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
-                message.setReceiver(Role.KEFU.toString());
+                message.setReceiver(Role.EDIT_MISSION.toString());
                 message.setTitle("有新任务啦");
                 message.setContent("有新的任务，请赶快处理");
                 message.setData(mission);
@@ -140,7 +140,7 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
                 message.setId(messageId);
-                message.setReceiver(Role.KEFU.toString());
+                message.setReceiver(Role.AUDIT_FIXER.toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
                 String auditText;
                 switch (messageId){

@@ -112,5 +112,10 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 		return baseCondition == null ? 0 : baseCondition.getTotalSize();
 	}
 
+	@Override
+	public List<UserInfo> listInIds(List<String> ids) {
+		return commonDao.mapper(UserInfo.class).sql("selectInIds").session().selectList(ids);
+	}
+
 
 }

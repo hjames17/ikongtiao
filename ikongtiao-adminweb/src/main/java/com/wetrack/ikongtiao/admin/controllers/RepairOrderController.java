@@ -20,7 +20,6 @@ import java.util.List;
  */
 @ResponseBody
 @Controller
-@SignTokenAuth(roleNameRequired = "KEFU")
 public class RepairOrderController {
 
     static final String BASE_PATH = "/repairOrder";
@@ -31,23 +30,26 @@ public class RepairOrderController {
     @Autowired
     RepairOrderService repairOrderService;
 
-
+    @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
     public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
         return repairOrderService.listForMission(missionId, true);
     }
 
+    @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
     public RepairOrder getRepairOrder(@PathVariable(value = "id") long id) throws Exception{
         return repairOrderService.getById(id, false);
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form) throws Exception{
         RepairOrder repairOrder = repairOrderService.create(null, form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
         return repairOrder.getId().toString();
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/accessory/create" , method = {RequestMethod.POST})
     public String createAccessory(@RequestBody Accessory form) throws Exception{
         if(form.getRepairOrderId() == null){
@@ -56,6 +58,8 @@ public class RepairOrderController {
         Accessory created = repairOrderService.createAccessory(form.getRepairOrderId(), form.getName(), form.getCount(), form.getPrice());
         return created.getId().toString();
     }
+
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/accessory/update" , method = {RequestMethod.POST})
     public void updateAccessory(@RequestBody Accessory form) throws Exception{
         if(form.getId() == null){
@@ -64,11 +68,13 @@ public class RepairOrderController {
         repairOrderService.updateAccessory(form);
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/accessory/delete" , method = {RequestMethod.GET})
     public void deleteAccessory(@RequestParam(value = "accessoryId") Long id) throws Exception{
         repairOrderService.deleteAccessory(id);
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/cost/create" , method = {RequestMethod.POST})
     public void createCost(@RequestBody CreateCostForm form) throws Exception{
         RepairOrder repairOrder = repairOrderService.getById(form.getRepairOrderId(), false);
@@ -84,6 +90,7 @@ public class RepairOrderController {
         repairOrderService.addCost(form.getRepairOrderId(), form.getAccessoryList(), form.getLaborCost(), form.isFinishCost());
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.POST})
     public void dispatchOrder(@RequestBody OperationForm form, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
@@ -94,6 +101,7 @@ public class RepairOrderController {
         repairOrderService.dispatchRepairOrder(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.getFixerId());
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/cost/finish" , method = {RequestMethod.POST})
     public void costFinish(@RequestBody OperationForm form, HttpServletRequest request) throws Exception {
         User user = (User)request.getAttribute("user");
@@ -101,6 +109,7 @@ public class RepairOrderController {
         repairOrderService.setCostFinished(Integer.valueOf(user.getId()), form.getRepairOrderId());
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/prepared" , method = {RequestMethod.POST})
     public void prepared(@RequestBody OperationForm form, HttpServletRequest request) throws Exception {
         User user = (User)request.getAttribute("user");
@@ -108,7 +117,7 @@ public class RepairOrderController {
         repairOrderService.setPrepared(Integer.valueOf(user.getId()), form.getRepairOrderId());
     }
 
-    @SignTokenAuth(roleNameRequired = "AUDITOR")
+    @SignTokenAuth(roleNameRequired = "AUDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/audit" , method = {RequestMethod.POST})
     public void audit(@RequestBody AuditForm form, HttpServletRequest request) throws Exception {
         User user = (User)request.getAttribute("user");

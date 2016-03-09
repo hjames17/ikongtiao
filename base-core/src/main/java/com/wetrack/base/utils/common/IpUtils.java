@@ -1,6 +1,7 @@
 package com.wetrack.base.utils.common;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
 
 /**
  * Created by zhangsong on 15/11/16.
@@ -28,5 +29,9 @@ public class IpUtils {
 			return ips[0].trim(); // 返回第一个
 		}
 		return ip;
+	}
+
+	public static String getSelfIpAddr() throws Exception{
+		return InetAddress.getLocalHost().getHostAddress();
 	}
 }

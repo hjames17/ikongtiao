@@ -33,6 +33,8 @@ public class RedirectController {
     String mission;
     @Value("${weixin.page.setting}")
     String setting;
+    @Value("${weixin.page.support}")
+    String support;
 
     private static final String WEIXIN_REDIRECT = "/redirect";
 
@@ -52,6 +54,7 @@ public class RedirectController {
         MISSION_LIST(1),
         MISSION_NEW(2),
         USER_SETTING(3),
+        ONLINE_SUPPORT(4),
         ;
 
         int value;
@@ -133,6 +136,9 @@ public class RedirectController {
                         break;
                     case USER_SETTING:
                         redirectUrl = host + setting + "?uid=" + userInfo.getId();
+                        break;
+                    case ONLINE_SUPPORT:
+                        redirectUrl = host + support + "?uid=" + userInfo.getId();
                         break;
                     case MISSION_LIST:
                     default:

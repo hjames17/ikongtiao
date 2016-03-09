@@ -33,10 +33,6 @@ public class AdminRepoImpl implements AdminRepo {
             //加上sql like查询通配符
             queryForm.setEmail("%" + queryForm.getEmail() + "%");
         }
-        if(queryForm.getRole() != null){
-            //加上sql like查询通配符
-            queryForm.setRole("%" + queryForm.getRole() + "%");
-        }
 
         BaseCondition baseCondition = commonDao.mapper(User.class).sql("countByQueryParam").session()
                 .selectOne(queryForm);
@@ -57,10 +53,6 @@ public class AdminRepoImpl implements AdminRepo {
         if(queryForm.getEmail() != null){
             //加上sql like查询通配符
             queryForm.setEmail("%" + queryForm.getEmail() + "%");
-        }
-        if(queryForm.getRole() != null){
-            //加上sql like查询通配符
-            queryForm.setRole("%" + queryForm.getRole() + "%");
         }
         return commonDao.mapper(User.class).sql("listByQueryParam").session().selectList(queryForm);
     }

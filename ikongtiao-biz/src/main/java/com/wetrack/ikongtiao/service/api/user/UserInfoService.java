@@ -9,6 +9,8 @@ import com.wetrack.ikongtiao.param.UserQueryParam;
 import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
 import com.wetrack.ikongtiao.service.api.im.ImTokenDto;
 
+import java.util.List;
+
 /**
  * Created by zhanghong on 15/12/26.
  */
@@ -30,5 +32,6 @@ public interface UserInfoService {
 
     String saveImMessage(ImMessage imMessage);
 
+    List<UserInfo> listInIds(List<String> ids);
 }
 

@@ -27,7 +27,7 @@ public enum MessageType implements MessageBuilder {
 			messageInfo.setId(NEW_COMMISSION.getCode());
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.EDIT_MISSION.toString());
 				messageInfo.setTitle("有新任务啦");
 				messageInfo.setContent("有新的任务，请赶快处理");
 				messageInfo.setData(mission);
@@ -193,7 +193,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.VIEW_MISSION.toString());
 				messageInfo.setTitle("任务已完成");
 				messageInfo.setContent(String.format("由维修员%s维修的任务已经完成了", fixer.getName()));
 				messageInfo.setData(mission);
@@ -226,7 +226,7 @@ public enum MessageType implements MessageBuilder {
 			messageInfo.setId(NEW_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.EDIT_REPAIR_ORDER.toString());
 				messageInfo.setTitle("有新的维修单提交");
 				messageInfo.setContent(String.format("维修员%s提交了新的维修单", fixer.getName()));
 				messageInfo.setData(repairOrder);
@@ -282,7 +282,7 @@ public enum MessageType implements MessageBuilder {
 			messageInfo.setId(CONFIRM_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.EDIT_REPAIR_ORDER.toString());
 				messageInfo.setTitle("有维修单被确认了");
 				messageInfo.setContent(String.format("维修单%d已被客户确认", repairOrder.getId()));
 				messageInfo.setData(repairOrder);
@@ -313,7 +313,7 @@ public enum MessageType implements MessageBuilder {
 			messageInfo.setId(CANCEL_FIX_ORDER.getCode());
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.EDIT_REPAIR_ORDER.toString());
 				messageInfo.setTitle("有维修单被取消了");
 				messageInfo.setContent(String.format("维修单%d被用户%s取消了", repairOrder.getId(), userInfo.getPhone()));
 				messageInfo.setData(repairOrder);
@@ -368,7 +368,7 @@ public enum MessageType implements MessageBuilder {
 				messageInfo.setUrl(messageSimple.getUrl());
 				break;
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.VIEW_REPAIR_ORDER.toString());
 				messageInfo.setTitle("有维修单完成了");
 				messageInfo.setContent(String.format("维修单%d已完成", repairOrder.getId()));
 				messageInfo.setData(repairOrder);
@@ -386,7 +386,7 @@ public enum MessageType implements MessageBuilder {
 			messageInfo.setId(FIXER_SUBMIT_AUDIT.getCode());
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.AUDIT_FIXER.toString());
 				messageInfo.setTitle("维修员提交审核");
 				messageInfo.setContent("维修员提交审核");
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));
@@ -404,7 +404,7 @@ public enum MessageType implements MessageBuilder {
 			messageInfo.setId(USER_SUBMIT_AUDIT.getCode());
 			switch (messageChannel) {
 			case WEB:
-				messageInfo.setMessageTo(Role.KEFU.toString());
+				messageInfo.setMessageTo(Role.AUDIT_CUSTOMER.toString());
 				messageInfo.setTitle("客户提交审核");
 				messageInfo.setContent("客户提交审核");
 				//messageInfo.setData(Jackson.mobile().writeValueAsString(mission));

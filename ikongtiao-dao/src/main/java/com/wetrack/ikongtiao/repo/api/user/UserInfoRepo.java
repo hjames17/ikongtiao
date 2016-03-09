@@ -49,4 +49,6 @@ public interface UserInfoRepo {
 	List<UserInfoDto> listByQueryParam(UserQueryParam param) throws Exception;
 
 	int countByQueryParam(UserQueryParam param) throws Exception;
+
+	List<UserInfo> listInIds(List<String> ids);
 }

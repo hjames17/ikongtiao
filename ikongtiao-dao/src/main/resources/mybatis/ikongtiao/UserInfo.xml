@@ -207,4 +207,14 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+  <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    from user_info
+    WHERE id IN
+    <foreach collection="list" index="index" item="item"
+             open = "(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

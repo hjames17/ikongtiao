@@ -1,12 +1,15 @@
 package com.wetrack.ikongtiao.dao.test;
 
-import com.wetrack.ikongtiao.dto.UserInfoDto;
+import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by zhanghong on 15/12/30.
@@ -26,8 +29,9 @@ public class UserInfoTest {
 
     @Test
     public void test(){
-        UserInfoDto u = userInfoRepo.getDtoById("15121510004100000008");
-        System.out.println(u.getAddress().toString());
+//        UserInfoDto u = userInfoRepo.getDtoById("15121510004100000008");
+        List<UserInfo> list = userInfoRepo.listInIds(Arrays.asList("15121522052300000010", "15122618315700000012"));
+        System.out.println("ok");
     }
 
 

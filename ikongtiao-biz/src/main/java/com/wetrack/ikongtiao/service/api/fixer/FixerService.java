@@ -8,6 +8,8 @@ import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
 
+import java.util.List;
+
 /**
  * Created by zhanghong on 15/12/30.
  */
@@ -46,4 +48,6 @@ public interface FixerService {
     Fixer getFixerByPhone(String phone) throws Exception;
 
     void resetPassword(Integer id, String newPass) throws Exception;
+
+    List<Fixer> listInIds(List<Integer> ids);
 }

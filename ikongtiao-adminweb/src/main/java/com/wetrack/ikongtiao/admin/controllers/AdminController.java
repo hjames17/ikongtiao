@@ -41,7 +41,6 @@ public class AdminController {
                                 @RequestParam(required = false, value = "name") String name,
                                 @RequestParam(required = false, value = "email") String email,
                                 @RequestParam(required = false, value = "phone") String phone,
-                                @RequestParam(required = false, value = "role") String role,
                                 @RequestParam(required = false, value = "page") Integer page,
                                 @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
         AdminQueryForm queryForm = new AdminQueryForm();
@@ -51,7 +50,6 @@ public class AdminController {
         queryForm.setName(name);
         queryForm.setEmail(email);
         queryForm.setInService(inService);
-        queryForm.setRole(role);
         return adminService.listWithParams(queryForm);
     }
 
@@ -64,6 +62,11 @@ public class AdminController {
         out.setToken(token.getToken());
         out.setId(token.getUser().getId());
         adminService.dutyOn(Integer.valueOf(token.getUser().getId()), true);
+        User user = adminService.getByAdminId(loginForm.getEmail());
+        user.setPassword(null);
+        out.setUserInfo(user);
+//        out.setRoleString(user.getRolesString());
+//        out.setAdminType(user.getAdminType());
         return out;
     }
 
@@ -128,6 +131,18 @@ public class AdminController {
         String token;
         String id;
 
+        public User getUserInfo() {
+            return userInfo;
+        }
+
+        public void setUserInfo(User userInfo) {
+            this.userInfo = userInfo;
+        }
+
+        User userInfo;
+//        String roleString;
+//        String roleName;
+
         public String getToken() {
             return token;
         }
@@ -143,6 +158,22 @@ public class AdminController {
         public void setId(String id) {
             this.id = id;
         }
+
+//        public String getRoleString() {
+//            return roleString;
+//        }
+//
+//        public void setRoleString(String roleString) {
+//            this.roleString = roleString;
+//        }
+
+//        public String getAdminType() {
+//            return roleName;
+//        }
+//
+//        public void setAdminType(String roleName) {
+//            this.roleName = roleName;
+//        }
     }
 
     static class LoginForm{

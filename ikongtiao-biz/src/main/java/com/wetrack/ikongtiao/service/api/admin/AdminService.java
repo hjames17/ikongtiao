@@ -12,6 +12,8 @@ public interface AdminService {
 
     PageList<User> listWithParams(AdminQueryForm queryForm) throws Exception;
 
+    User getByAdminId(String email);
+
     Token login(String email, String password) throws Exception;
 
     User create(User form) throws Exception;

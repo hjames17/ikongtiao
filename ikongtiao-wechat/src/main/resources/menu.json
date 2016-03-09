@@ -34,9 +34,9 @@
             "key":"KF_HOT_LINE"
           },
           {
-            "type":"click",
+            "type":"view",
             "name":"在线客服",
-            "key":"KF_ONLINE"
+            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfb738dfd1f310531&redirect_uri=http%3A%2F%2Fweixin.weiwaisong.com%2Fwechat%2Fredirect&response_type=code&scope=snsapi_base&state=A%3AONLINE_SUPPORT#wechat_redirect"
           }]
       }
     ]

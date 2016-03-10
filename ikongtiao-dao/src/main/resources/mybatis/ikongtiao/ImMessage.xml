@@ -3,6 +3,8 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.ImMessage">
     <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.ImMessage">
         <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="session_id" property="sessionId" jdbcType="INTEGER"/>
+        <result column="message_uid" property="messageUid" jdbcType="VARCHAR"/>
         <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>
         <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
         <result column="message_type" property="messageType" jdbcType="INTEGER"/>
@@ -10,13 +12,19 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, message_to, message_from, message_content, create_time,message_type
+    id, session_id,message_uid,message_to, message_from, message_content, create_time,message_type
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
         from im_message
         where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="findImMessageByMessageUid" resultMap="BaseResultMap" parameterType="String">
+        select
+        <include refid="Base_Column_List"/>
+        from im_message
+        where message_uid = #{messageUid,jdbcType=BIGINT}
     </select>
     <select id="listImMessageByAdminId" resultMap="BaseResultMap">
         select
@@ -28,7 +36,7 @@
             parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
         select
         <include refid="Base_Column_List"/>
-        from im_message where message_to = #{userId} or message_from = #{userId}
+        from im_message where (message_to = #{userId} or message_from = #{userId}) and create_time &lt; #{dateTime}
         order by id desc limit #{start},#{pageSize}
     </select>
 
@@ -36,7 +44,7 @@
             parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
         select
         count(*) as totalSize
-        from im_message where message_to = #{userId} or message_from = #{userId}
+        from im_message where (message_to = #{userId} or message_from = #{userId}) and create_time &lt; #{dateTime}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from im_message
@@ -48,6 +56,12 @@
         </selectKey>
         insert into im_message
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="messageUid != null">
+                message_uid,
+            </if>
+            <if test="sessionId != null">
+                session_id,
+            </if>
             <if test="messageTo != null">
                 message_to,
             </if>
@@ -65,6 +79,12 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="messageUid != null">
+                #{messageUid,jdbcType=VARCHAR},
+            </if>
+            <if test="sessionId != null">
+                #{sessionId,jdbcType=INTEGER},
+            </if>
             <if test="messageTo != null">
                 #{messageTo,jdbcType=VARCHAR},
             </if>
@@ -87,6 +107,12 @@
         <set>
             <if test="messageTo != null">
                 message_to = #{messageTo,jdbcType=VARCHAR},
+            </if>
+            <if test="sessionId != null">
+                session_id = #{sessionId,jdbcType=INTEGER},
+            </if>
+            <if test="messageUid != null">
+                message_uid = #{messageUid,jdbcType=VARCHAR},
             </if>
             <if test="messageType != null">
                 message_type = #{messageType,jdbcType=INTEGER},

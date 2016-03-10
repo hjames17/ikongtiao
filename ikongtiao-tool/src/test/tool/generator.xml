@@ -97,16 +97,16 @@
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>-->
 
-		<table tableName="im_token" domainObjectName="ImToken"
+		<table tableName="im_session" domainObjectName="ImSession"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>
-		<table tableName="im_message" domainObjectName="ImMessage"
+		<!--<table tableName="im_message" domainObjectName="ImMessage"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
-		</table>
+		</table>-->
 		<!--<table tableName="machine_type" domainObjectName="MachineType"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">

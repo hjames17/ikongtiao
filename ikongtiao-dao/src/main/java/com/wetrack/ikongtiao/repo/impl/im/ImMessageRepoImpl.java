@@ -39,4 +39,8 @@ public class ImMessageRepoImpl implements ImMessageRepo {
 	@Override public List<ImMessage> listMessageByAdminId(String adminId) {
 		return commonDao.mapper(ImMessage.class).sql("listImMessageByAdminId").session().selectList(adminId);
 	}
+
+	@Override public ImMessage findImMessageByMessageUid(String messageUid) {
+		return commonDao.mapper(ImMessage.class).sql("findImMessageByMessageUid").session().selectOne(messageUid);
+	}
 }

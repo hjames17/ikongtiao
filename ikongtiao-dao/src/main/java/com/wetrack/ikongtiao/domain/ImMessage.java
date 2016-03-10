@@ -17,6 +17,15 @@ public class ImMessage implements Serializable {
 	private Long id;
 
 	/**
+	 * 会话id
+	 */
+	private Long sessionId;
+
+	/**
+	 * 全局唯一消息id
+	 */
+	private String messageUid;
+	/**
 	 * message_to:
 	 */
 	private String messageTo;
@@ -125,6 +134,22 @@ public class ImMessage implements Serializable {
 
 	public void setMessageType(Integer messageType) {
 		this.messageType = messageType;
+	}
+
+	public Long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(Long sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public String getMessageUid() {
+		return messageUid;
+	}
+
+	public void setMessageUid(String messageUid) {
+		this.messageUid = messageUid;
 	}
 
 	/**

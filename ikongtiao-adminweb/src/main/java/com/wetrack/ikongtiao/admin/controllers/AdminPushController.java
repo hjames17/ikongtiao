@@ -2,8 +2,10 @@ package com.wetrack.ikongtiao.admin.controllers;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.ImMessage;
+import com.wetrack.ikongtiao.domain.ImSession;
 import com.wetrack.ikongtiao.domain.ImToken;
 import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
+import com.wetrack.ikongtiao.repo.api.im.ImSessionRepo;
 import com.wetrack.ikongtiao.service.api.im.ImMessageService;
 import com.wetrack.ikongtiao.service.api.im.ImTokenDto;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
@@ -34,8 +36,6 @@ public class AdminPushController {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(AdminPushController.class);
 
-//	@Resource
-//	private MessageProcess messageProcess;
 	@Resource
 	private ImTokenService imTokenService;
 
@@ -43,6 +43,9 @@ public class AdminPushController {
 	private ImMessageService imMessageService;
 	@Autowired
 	MessageService messageService;
+
+	@Resource
+	private ImSessionRepo imSessionRepo;
 
 	@ResponseBody
 	@RequestMapping("/socket/push")
@@ -55,12 +58,12 @@ public class AdminPushController {
 	@ResponseBody
 	@RequestMapping("/push/notifyUser")
 	public String pushToWechatUserByKefu(String userId) throws IOException {
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setUserId(userId);
-//		messageSimple.setUrl("");
-//		messageProcess.process(MessageType.KEFU_NOTIFY_WECHAT, messageSimple);
+		//		MessageSimple messageSimple = new MessageSimple();
+		//		messageSimple.setUserId(userId);
+		//		messageSimple.setUrl("");
+		//		messageProcess.process(MessageType.KEFU_NOTIFY_WECHAT, messageSimple);
 		Map<String, Object> params = new HashMap<String, Object>();
-//		params.put(MessageParamKey.ADMIN_ID, );
+		//		params.put(MessageParamKey.ADMIN_ID, );
 		params.put(MessageParamKey.USER_ID, userId);
 		messageService.send(MessageId.KEFU_NOTIFY_WECHAT, params);
 		return "ok";
@@ -69,11 +72,11 @@ public class AdminPushController {
 	@ResponseBody
 	@RequestMapping("/push/notifyFixer")
 	public String pushToWechatUserByFixer(Integer fixerId) throws IOException {
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setFixerId(fixerId);
-//		messageProcess.process(MessageType.KEFU_NOTIFY_FIXER, messageSimple);
+		//		MessageSimple messageSimple = new MessageSimple();
+		//		messageSimple.setFixerId(fixerId);
+		//		messageProcess.process(MessageType.KEFU_NOTIFY_FIXER, messageSimple);
 		Map<String, Object> params = new HashMap<String, Object>();
-//		params.put(MessageParamKey.ADMIN_ID, );
+		//		params.put(MessageParamKey.ADMIN_ID, );
 		params.put(MessageParamKey.FIXER_ID, fixerId);
 		messageService.send(MessageId.KEFU_NOTIFY_FIXER, params);
 		return "ok";
@@ -102,5 +105,17 @@ public class AdminPushController {
 			throws Exception {
 		imMessageService.save(imMessage);
 		return "ok";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/message/session/close") String closeSession(Long sessionId)
+			throws Exception {
+		ImSession imSession = imSessionRepo.findSessionById(sessionId);
+		if (imSession == null || imSession.getStatus() == 1) {
+			throw new Exception("会话不存在或者已经关闭");
+		}
+		imSession.setStatus(1);
+		imSessionRepo.update(imSession);
+		return "会话关闭成功";
 	}
 }

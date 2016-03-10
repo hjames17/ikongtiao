@@ -1,10 +1,10 @@
 package com.wetrack.wechat.controller;
 
 import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.repo.api.wechat.WechatPublicAccountRepo;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
+import com.wetrack.wechat.WeixinServiceProvider;
 import me.chanjar.weixin.common.exception.WxErrorException;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
-import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import org.slf4j.Logger;
@@ -39,11 +39,9 @@ public class RedirectController {
     private static final String WEIXIN_REDIRECT = "/redirect";
 
     @Autowired
-    protected WxMpConfigStorage weixinConfigStorage;
-    @Autowired
     protected WxMpService weixinService;
-    @Autowired
-    protected WxMpMessageRouter wexinMessageRouter;
+//    @Autowired
+//    protected WxMpMessageRouter wexinMessageRouter;
 
     @Autowired
     UserInfoService userInfoService;
@@ -69,7 +67,7 @@ public class RedirectController {
             parseFromString(stateString);
         }
 
-        static final String W = "W"; //代表微信公众号在数据库里的id
+        static final String W = "W"; //代表微信公众号的appId
         static final String A = "A"; //代表请求的动作
         static final String AD = "AD";
         static final String DELIMITER = ",";
@@ -103,6 +101,8 @@ public class RedirectController {
 
     }
 
+    @Autowired
+    WechatPublicAccountRepo wechatPublicAccountRepo;
 
     @RequestMapping(value = WEIXIN_REDIRECT, method = RequestMethod.GET)
     void WeixinRedirect(@RequestParam(required = true, value = "state") String stateString
@@ -110,6 +110,9 @@ public class RedirectController {
                         HttpServletResponse response){
 
         State state = new State(stateString);
+
+//        WxMpService weixinService = weixinServiceProvider.getWeixinService(state.wxpaId);
+
         WxMpOAuth2AccessToken token = null;
         try {
             token = weixinService.oauth2getAccessToken(code);

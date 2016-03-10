@@ -2,7 +2,6 @@ package com.wetrack.wechat.controller;
 
 import com.wetrack.ikongtiao.domain.admin.User;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
-import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +25,8 @@ public class TestController {
     protected WxMpConfigStorage weixinConfigStorage;
     @Autowired
     protected WxMpService weixinService;
-    @Autowired
-    protected WxMpMessageRouter wexinMessageRouter;
+//    @Autowired
+//    protected WxMpMessageRouter wexinMessageRouter;
 
     static final String BASE_PATH = "/menu";
 

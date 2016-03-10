@@ -3,7 +3,6 @@ package com.wetrack.wechat.controller;
 import com.wetrack.wechat.domain.WxKefuOut;
 import com.wetrack.wechat.service.KefuService;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
-import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +23,6 @@ public class KefuController {
     private static final Logger log = LoggerFactory.getLogger(KefuController.class);
 
     static final String BASE_PATH = "/kefu";
-    @Autowired
-    protected WxMpConfigStorage weixinConfigStorage;
-    @Autowired
-    protected WxMpService weixinService;
-    @Autowired
-    protected WxMpMessageRouter wexinMessageRouter;
     @Autowired
     KefuService kefuService;
 

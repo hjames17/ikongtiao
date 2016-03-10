@@ -1,5 +1,7 @@
 package com.wetrack.wechat.controller;
 
+import com.wetrack.wechat.WeixinServiceProvider;
+import com.wetrack.wechat.service.WechatMessageRouterProvider;
 import me.chanjar.weixin.common.bean.WxJsapiSignature;
 import me.chanjar.weixin.common.util.StringUtils;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
@@ -11,10 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +45,8 @@ public class EndPointController {
         String signature = request.getParameter("signature");
         String nonce = request.getParameter("nonce");
         String timestamp = request.getParameter("timestamp");
+
+//        WxMpService weixinService = weixinServiceProvider.getWeixinService(appId);
 
         if (!weixinService.checkSignature(timestamp, nonce, signature)) {
             // 消息签名不正确，说明不是公众平台发过来的消息
@@ -93,6 +94,8 @@ public class EndPointController {
             @RequestParam(required = true, value = "url") String url,
             HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+
+//            WxMpService weixinService = weixinServiceProvider.getWeixinService(appId);
 
             return weixinService.createJsapiSignature(url);
 

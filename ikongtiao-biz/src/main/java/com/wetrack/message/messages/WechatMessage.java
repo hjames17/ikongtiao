@@ -8,6 +8,7 @@ import com.wetrack.message.Message;
 public class WechatMessage implements Message {
     int id;
     String receiver;
+    String appId;//微信公众号appId
     String title;
     String content;
     String url;

@@ -50,6 +50,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfo;
 	}
 
+	//TODO 缓存
 	@Override
 	public UserInfo getByWeChatOpenId(String weChatOpenId) {
 		return userInfoRepo.getByOpenId(weChatOpenId);
@@ -58,6 +59,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public UserInfoDto getUser(String id) throws Exception {
 		return userInfoRepo.getDtoById(id);
+	}
+
+	@Override
+	public UserInfo getBasicInfoById(String id) {
+		return userInfoRepo.getById(id);
 	}
 
 	@Override

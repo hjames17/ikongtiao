@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.service.impl;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.PaymentInfo;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
@@ -12,6 +13,7 @@ import com.wetrack.ikongtiao.repo.api.repairOrder.AccessoryRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.AuditInfoRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.CommentRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
+import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.SettingsService;
 import com.wetrack.message.MessageId;
@@ -40,9 +42,6 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	RepairOrderRepo repairOrderRepo;
 
 	@Autowired
-	AccessoryRepo accessoryRepo;
-
-	@Autowired
 	CommentRepo commentRepo;
 
 	@Autowired
@@ -50,6 +49,9 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	@Autowired
 	MessageService messageService;
+
+	@Autowired
+	PaymentService paymentService;
 
 	@Override
 	public List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception {
@@ -227,6 +229,9 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		messageService.send(MessageId.COMPLETED_FIX_ORDER, params);
 	}
 
+
+	@Autowired
+	AccessoryRepo accessoryRepo;
 	@Override
 	public void confirm(Long repairOrderId, boolean deny, Integer payment) throws Exception {
 
@@ -240,14 +245,30 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setPayment(payment);
 		repairOrderRepo.update(repairOrder);
 
+
 		repairOrder = repairOrderRepo.getById(repairOrderId);
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setUserId(repairOrder.getUserId());
-//		messageSimple.setRepairOrderId(repairOrder.getId());
-//		if(!deny)
-//			messageProcess.process(MessageType.CONFIRM_FIX_ORDER,messageSimple);
-//		else
-//			messageProcess.process(MessageType.CANCEL_FIX_ORDER,messageSimple);
+		/**
+		 * TODO : 利用切面分离这些处理逻辑，解除代码耦合
+		 */
+		if(deny){
+			//用户可能已经付款，要发起退款
+			if(repairOrder.getPayment() == 1){
+				paymentService.closed(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, repairOrder.getId().toString());
+			}
+		}else if(repairOrder.getPayment() == 1){
+			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
+			int price = 0;
+			if(accessories != null && accessories.size() > 0){
+				for(Accessory accessory : accessories){
+					price += accessory.getPrice() * accessory.getCount() * 100;
+				}
+			}
+			price += repairOrder.getLaborCost() * 100;
+			paymentService.create(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, repairOrder.getId().toString(), price);
+		}
+
+		//消息发送
+
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
 		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());

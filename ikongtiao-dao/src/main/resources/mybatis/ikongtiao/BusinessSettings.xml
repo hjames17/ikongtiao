@@ -5,7 +5,7 @@
     <result column="id" property="id" jdbcType="INTEGER" />
     <result column="repair_order_auto_audit" property="repairOrderAutoAudit" jdbcType="TINYINT" />
     <result column="wechat_app_id" property="wechatAppId" jdbcType="VARCHAR" />
-    <result column="wechat_redirect_handler_url" property="wechatRedirectHandlerUrl" jdbcType="VARCHAR" />
+    <result column="wechat_handler_url" property="wechatHandlerUrl" jdbcType="VARCHAR" />
   </resultMap>
   <select id="select" resultMap="BaseResultMap">
     select *

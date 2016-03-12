@@ -20,6 +20,8 @@ public interface UserInfoService {
 
     UserInfoDto getUser(String id) throws Exception;
 
+    UserInfo getBasicInfoById(String id);
+
     void update(UserInfo userInfo, Address address) throws Exception;
 
     Address createAddress(Address address) throws Exception;

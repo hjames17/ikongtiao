@@ -3,6 +3,7 @@ package com.wetrack.wechat.ikongtiao;
 import com.wetrack.base.container.ContainerContext;
 import com.wetrack.ikongtiao.domain.BusinessSettings;
 import com.wetrack.ikongtiao.service.api.SettingsService;
+import com.wetrack.wechat.config.Const;
 import com.wetrack.wechat.service.WeixinMenuGenerator;
 import me.chanjar.weixin.common.bean.WxMenu;
 import org.springframework.beans.factory.InitializingBean;
@@ -72,22 +73,12 @@ public class IktWeixinMenuGenerator implements WeixinMenuGenerator, Initializing
     public void afterPropertiesSet() throws Exception {
         BusinessSettings settings = settingsService.getBusinessSettings();
         appId = settings.getWechatAppId();
-        redirectUrl = settings.getWechatRedirectHandlerUrl();
+        redirectUrl = settings.getWechatHandlerUrl() + Const.REDIRECT_PATH;
     }
 
+
     public static void main(String[] args) throws UnsupportedEncodingException {
-        String api = "http://weixin.weiwaisong.com/wechat/redirect";
-        String appId = "wxfb738dfd1f310531";
-        String state = String.format("A:%s", "Mission");
 
-
-        String params = String.format("appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect",
-                URLEncoder.encode(appId, "utf-8"), URLEncoder.encode(api, "utf-8"), URLEncoder.encode(state, "utf-8"));
-        System.out.println(params);
-
-        String url = String.format("%s?%s", WEIXIN_OAUTH2_API, params);
-
-        System.out.println(url);
     }
 
     public SettingsService getSettingsService() {

@@ -102,16 +102,10 @@ public class RepairOrder implements Serializable {
      */
     Integer payment;
 
-    //以下只在线上付款情况下有效
     /**
-     * 已付款
+     * 关联表 payment_info
      */
-    boolean paid;
-
-    /**
-     * 关联字段，关联支付信息表
-     */
-    String paymentInfoId;
+    PaymentInfo paymentInfo;
 
     /**
      * 关联表，comment
@@ -300,22 +294,6 @@ public class RepairOrder implements Serializable {
         this.payment = payment;
     }
 
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
-
-    public String getPaymentInfoId() {
-        return paymentInfoId;
-    }
-
-    public void setPaymentInfoId(String paymentInfoId) {
-        this.paymentInfoId = paymentInfoId;
-    }
-
     public Integer getAdminUserId() {
         return adminUserId;
     }
@@ -323,6 +301,14 @@ public class RepairOrder implements Serializable {
     public void setAdminUserId(Integer adminUserId) {
 
         this.adminUserId = adminUserId;
+    }
+
+    public PaymentInfo getPaymentInfo() {
+        return paymentInfo;
+    }
+
+    public void setPaymentInfo(PaymentInfo paymentInfo) {
+        this.paymentInfo = paymentInfo;
     }
 
     public Integer getCreatorFixerId() {

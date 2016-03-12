@@ -3,58 +3,38 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.PaymentInfo" >
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.PaymentInfo" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="payment_method" property="paymentMethod" jdbcType="TINYINT" />
+    <result column="method" property="method" jdbcType="TINYINT" />
     <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
-    <result column="pay_state" property="payState" jdbcType="TINYINT" />
-    <result column="pay_amount" property="payAmount" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
     <result column="refund_amount" property="refundAmount" jdbcType="INTEGER" />
     <result column="paid_time" property="paidTime" jdbcType="TIMESTAMP" />
     <result column="refund_time" property="refundTime" jdbcType="TIMESTAMP" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="close_time" property="closeTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, payment_method, repair_order_id, out_trade_no, trade_no, pay_state, pay_amount, 
-    refund_amount, paid_time, refund_time, repair_order_desc, operator, create_time, 
+    id, method, out_trade_no, state, amount,
+    refund_amount, paid_time, refund_time, create_time, close_time
     update_time
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from payment_info
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from payment_info
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into payment_info (payment_method, out_trade_no,
-      pay_state, pay_amount, refund_amount, paid_time, refund_time, create_time)
-    values (#{paymentMethod,jdbcType=TINYINT}, #{outTradeNo,jdbcType=VARCHAR},
-      #{payState,jdbcType=TINYINT}, #{payAmount,jdbcType=INTEGER},
-      #{refundAmount,jdbcType=INTEGER}, #{paidTime,jdbcType=TIMESTAMP}, #{refundTime,jdbcType=TIMESTAMP}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
-  </insert>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
     <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into payment_info
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="paymentMethod != null" >
-        payment_method,
+      <if test="method != null" >
+        method,
       </if>
       <if test="outTradeNo != null" >
         out_trade_no,
       </if>
-      <if test="payState != null" >
-        pay_state,
+      <if test="state != null" >
+        state,
       </if>
-      <if test="payAmount != null" >
-        pay_amount,
+      <if test="amount != null" >
+        amount,
       </if>
       <if test="refundAmount != null" >
         refund_amount,
@@ -70,17 +50,17 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="paymentMethod != null" >
-        #{paymentMethod,jdbcType=TINYINT},
+      <if test="method != null" >
+        #{method,jdbcType=VARCHAR},
       </if>
       <if test="outTradeNo != null" >
         #{outTradeNo,jdbcType=VARCHAR},
       </if>
-      <if test="payState != null" >
-        #{payState,jdbcType=TINYINT},
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
       </if>
-      <if test="payAmount != null" >
-        #{payAmount,jdbcType=INTEGER},
+      <if test="amount != null" >
+        #{amount,jdbcType=INTEGER},
       </if>
       <if test="refundAmount != null" >
         #{refundAmount,jdbcType=INTEGER},
@@ -96,23 +76,20 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
+  <update id="updateSelective" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" >
     update payment_info
     <set >
-      <if test="paymentMethod != null" >
-        payment_method = #{paymentMethod,jdbcType=TINYINT},
+      <if test="method != null" >
+        method = #{method,jdbcType=VARCHAR},
       </if>
       <if test="outTradeNo != null" >
         out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
       </if>
-      <if test="tradeNo != null" >
-        trade_no = #{tradeNo,jdbcType=VARCHAR},
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
       </if>
-      <if test="payState != null" >
-        pay_state = #{payState,jdbcType=TINYINT},
-      </if>
-      <if test="payAmount != null" >
-        pay_amount = #{payAmount,jdbcType=INTEGER},
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=INTEGER},
       </if>
       <if test="refundAmount != null" >
         refund_amount = #{refundAmount,jdbcType=INTEGER},
@@ -123,7 +100,40 @@
       <if test="refundTime != null" >
         refund_time = #{refundTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="closeTime != null" >
+        close_time = #{closeTime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="findByMatch" parameterType="com.wetrack.ikongtiao.domain.PaymentInfo" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+    from payment_info
+    <where>
+      <if test="method != null" >
+        and method = #{method,jdbcType=VARCHAR}
+      </if>
+      <if test="outTradeNo != null" >
+        and out_trade_no = #{outTradeNo,jdbcType=VARCHAR}
+      </if>
+      <if test="state != null" >
+        and state = #{state,jdbcType=VARCHAR}
+      </if>
+      <if test="amount != null" >
+        and amount = #{amount,jdbcType=INTEGER}
+      </if>
+      <if test="refundAmount != null" >
+        and refund_amount = #{refundAmount,jdbcType=INTEGER}
+      </if>
+      <if test="paidTime != null" >
+        and paid_time = #{paidTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="refundTime != null" >
+        and refund_time = #{refundTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="closeTime != null" >
+        and close_time = #{closeTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
 </mapper>

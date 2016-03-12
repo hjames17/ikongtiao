@@ -3,10 +3,12 @@ package com.wetrack.wechat.controller;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.repo.api.wechat.WechatPublicAccountRepo;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
-import com.wetrack.wechat.WeixinServiceProvider;
+import com.wetrack.wechat.config.Const;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
+import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ public class RedirectController {
     @Value("${weixin.page.support}")
     String support;
 
-    private static final String WEIXIN_REDIRECT = "/redirect";
+//    private static final String WEIXIN_REDIRECT = "/redirect";
 
     @Autowired
     protected WxMpService weixinService;
@@ -104,7 +106,7 @@ public class RedirectController {
     @Autowired
     WechatPublicAccountRepo wechatPublicAccountRepo;
 
-    @RequestMapping(value = WEIXIN_REDIRECT, method = RequestMethod.GET)
+    @RequestMapping(value = Const.REDIRECT_PATH, method = RequestMethod.GET)
     void WeixinRedirect(@RequestParam(required = true, value = "state") String stateString
             , @RequestParam(required = true, value = "code") String code,
                         HttpServletResponse response){
@@ -132,6 +134,21 @@ public class RedirectController {
                 UserInfo userInfo = userInfoService.getByWeChatOpenId(token.getOpenId());
                 if(userInfo == null){
                     userInfo = userInfoService.CreateFromWeChatOpenId(token.getOpenId());
+                }
+                if(StringUtils.isEmpty(userInfo.getAccountName())){
+                    try {
+                        WxMpUser wxMpUser = weixinService.userInfo(userInfo.getWechatOpenId(), null);
+                        userInfo.setAccountName(wxMpUser.getNickname());
+                        if(StringUtils.isEmpty(userInfo.getAvatar())){
+                            userInfo.setAvatar(wxMpUser.getHeadImgUrl());
+                        }
+                        userInfoService.update(userInfo, null);
+                    } catch (WxErrorException e) {
+                        //ignore
+                        log.warn("获取用信息失败:" + e.getMessage());
+                    } catch (Exception e) {
+                        log.warn("保存用户信息失败：" + e.getMessage());
+                    }
                 }
                 switch (state.action){
                     case MISSION_NEW:

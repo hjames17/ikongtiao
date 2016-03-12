@@ -7,7 +7,7 @@ public class BusinessSettings {
     Integer id;
     Boolean repairOrderAutoAudit;
     String wechatAppId;
-    String wechatRedirectHandlerUrl;
+    String wechatHandlerUrl;
 
     public Boolean isRepairOrderAutoAudit() {
         return repairOrderAutoAudit;
@@ -33,11 +33,11 @@ public class BusinessSettings {
         this.wechatAppId = wechatAppId;
     }
 
-    public String getWechatRedirectHandlerUrl() {
-        return wechatRedirectHandlerUrl;
+    public String getWechatHandlerUrl() {
+        return wechatHandlerUrl;
     }
 
-    public void setWechatRedirectHandlerUrl(String wechatRedirectHandlerUrl) {
-        this.wechatRedirectHandlerUrl = wechatRedirectHandlerUrl;
+    public void setWechatHandlerUrl(String wechatHandlerUrl) {
+        this.wechatHandlerUrl = wechatHandlerUrl;
     }
 }

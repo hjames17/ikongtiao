@@ -18,7 +18,8 @@
     <result column="accessory_content" property="accessoryContent" jdbcType="VARCHAR" />
     <result column="labor_cost" property="laborCost" jdbcType="FLOAT" />
     <result column="discount" property="discount" jdbcType="FLOAT" />
-    <result column="payment_info_id" property="paymentInfoId" jdbcType="VARCHAR" />
+    <result column="payment" property="payment" jdbcType="TINYINT" />
+    <association property="paymentInfo" javaType="com.wetrack.ikongtiao.domain.PaymentInfo" column="id" select="selectPayment"/>
     <association property="comment" javaType="com.wetrack.ikongtiao.domain.repairOrder.Comment" column="id" select="selectComment"/>
     <association property="auditInfo" javaType="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" column="id" select="selectAuditInfo"/>
   </resultMap>
@@ -37,10 +38,30 @@
     <result column="pass" property="pass" jdbcType="TINYINT" />
     <result column="reason" property="reason" jdbcType="VARCHAR" />
   </resultMap>
+  <resultMap id="PaymentMap" type="com.wetrack.ikongtiao.domain.PaymentInfo">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="method" property="method" jdbcType="TINYINT" />
+    <result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="refund_amount" property="refundAmount" jdbcType="INTEGER" />
+    <result column="paid_time" property="paidTime" jdbcType="TIMESTAMP" />
+    <result column="refund_time" property="refundTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="close_time" property="closeTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
   <sql id="Base_Column_List" >
     id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
-    update_time, name_plate_img, labor_cost, discount, payment_info_id, accessory_content, user_id
+    update_time, name_plate_img, labor_cost, discount, accessory_content, user_id, payment
   </sql>
+
+  <select id="selectPayment" resultMap="PaymentMap" parameterType="java.lang.Long">
+    SELECT *
+    FROM payment_info
+    WHERE out_trade_no = CONCAT("RO", #{id})
+    limit 0,1
+  </select>
 
   <select id="selectComment" resultMap="CommentMap" parameterType="java.lang.Long">
     SELECT *
@@ -48,6 +69,7 @@
     WHERE repair_order_id = #{id}
     limit 0,1
   </select>
+
   <select id="selectAuditInfo" resultMap="AuditMap" parameterType="java.lang.Long">
     SELECT *
     FROM repair_order_audit_info

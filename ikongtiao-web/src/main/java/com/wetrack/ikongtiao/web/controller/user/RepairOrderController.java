@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import static com.wetrack.ikongtiao.constant.RepairOrderState.CLOSED;
+
 /**
  * Created by zhanghong on 16/1/15.
  */
@@ -49,7 +51,9 @@ public class RepairOrderController {
         if(!repairOrder.getUserId().equals(form.getUserId())){
             throw new BusinessException("这不是您的维修单!");
         }
-        if(form.getPayment() == null){
+        if(form.isDeny() && repairOrder.getRepairOrderState().equals(CLOSED.getCode())){
+            throw new BusinessException("不要重复关闭维修单!");
+        }else if(form.getPayment() == null){
             throw new BusinessException("未选择支付方式!");
         }
         repairOrderService.confirm(form.getRepairOrderId(), form.isDeny(), form.getPayment());

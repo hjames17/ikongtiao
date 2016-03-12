@@ -1,8 +1,5 @@
 package com.wetrack.wechat.config;
 
-import com.wetrack.ikongtiao.service.api.SettingsService;
-import com.wetrack.wechat.WechatPublicAccountService;
-import com.wetrack.wechat.service.WechatMessageRouterProvider;
 import com.wetrack.wechat.weixinHandlers.SubscriptionHandler;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
@@ -10,9 +7,6 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/17.

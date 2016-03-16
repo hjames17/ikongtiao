@@ -65,6 +65,7 @@ public class MessageId {
     public static final int KEFU_NOTIFY_WECHAT = 301;
     public static final int FIXER_NOTIFY_WECHAT = 302;
     public static final int KEFU_NOTIFY_FIXER = 303;
+    public static final int WECHAT_NOTIFY_FIXER = 304;
 
 
     //维修员认证类型

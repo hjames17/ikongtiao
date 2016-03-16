@@ -2,10 +2,11 @@ package com.wetrack.ikongtiao.web.controller.user;
 
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
-import com.wetrack.message.deprecated.MessageSimple;
+import com.wetrack.ikongtiao.service.impl.im.ImRongyunPrex;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
+import com.wetrack.message.deprecated.MessageSimple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,16 +27,16 @@ import java.util.Map;
 public class FixerController {
 
 	private static final String BASE_PATH = "/u/fixer";
-//	@Value("${file.location.images}")
-//	String imageLocation;
-//	@Value("${host.static}")
-//	String host;
-//	@Value("${wechat.app.token}")
-//	String token;
+	//	@Value("${file.location.images}")
+	//	String imageLocation;
+	//	@Value("${host.static}")
+	//	String host;
+	//	@Value("${wechat.app.token}")
+	//	String token;
 
-//
-//	@Resource
-//	private MessageProcess messageProcess;
+	//
+	//	@Resource
+	//	private MessageProcess messageProcess;
 	@Autowired
 	FixerService fixerService;
 	@Autowired
@@ -53,14 +54,14 @@ public class FixerController {
 
 	@ResponseBody
 	@RequestMapping("/u/fixer/notifyUser")
-	public String pushToWechatUserByKefu(String userId) throws IOException {
+	public String pushToWechatUserByKefu(String userId,
+			@RequestParam(value = "fixerId", required = false) Integer fixerId)
+			throws IOException {
 		MessageSimple messageSimple = new MessageSimple();
 		messageSimple.setUserId(userId);
-//		messageSimple.setUrl("");
-//		messageProcess.process(MessageType.FIXER_NOTIFY_WECHAT, messageSimple);
 
 		Map<String, Object> params = new HashMap<String, Object>();
-//		params.put(MessageParamKey.FIXER_ID, );
+		params.put(MessageParamKey.FIXER_ID, ImRongyunPrex.FIXER.getPrex() + fixerId);
 		params.put(MessageParamKey.USER_ID, userId);
 		messageService.send(MessageId.FIXER_NOTIFY_WECHAT, params);
 		return "ok";

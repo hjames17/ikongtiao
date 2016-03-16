@@ -12,13 +12,12 @@
     <result column="auth_state" property="authState" jdbcType="INTEGER" />
     <result column="auth_img" property="authImg" jdbcType="VARCHAR" />
     <result column="license_no" property="licenseNo" jdbcType="VARCHAR" />
-    <result column="address_id" property="addressId" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, wechat_open_id,phone, avatar, type, account_name, account_email, auth_state,
-    auth_img, license_no, address_id, create_time, update_time
+    auth_img, license_no, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
@@ -56,12 +55,11 @@
     insert into user_info (wechat_open_id, avatar, type, 
       account_name, account_email, account_phone, 
       auth_state, auth_img, license_no, 
-      address_id, create_time, update_time
+     create_time, update_time
       )
     values (#{wechatOpenId,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{accountName,jdbcType=VARCHAR}, #{accountEmail,jdbcType=VARCHAR}, #{accountPhone,jdbcType=VARCHAR}, 
-      #{authState,jdbcType=INTEGER}, #{authImg,jdbcType=VARCHAR}, #{licenseNo,jdbcType=VARCHAR}, 
-      #{addressId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{authState,jdbcType=INTEGER}, #{authImg,jdbcType=VARCHAR}, #{licenseNo,jdbcType=VARCHAR},  #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.UserInfo" >
@@ -96,9 +94,6 @@
       </if>
       <if test="licenseNo != null" >
         license_no,
-      </if>
-      <if test="addressId != null" >
-        address_id,
       </if>
       <if test="createTime != null" >
         create_time,
@@ -138,9 +133,6 @@
       <if test="licenseNo != null" >
         #{licenseNo,jdbcType=VARCHAR},
       </if>
-      <if test="addressId != null" >
-        #{addressId,jdbcType=INTEGER},
-      </if>
       <if test="createTime != null" >
         #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -179,9 +171,6 @@
       <if test="licenseNo != null" >
         license_no = #{licenseNo,jdbcType=VARCHAR},
       </if>
-      <if test="addressId != null" >
-        address_id = #{addressId,jdbcType=INTEGER},
-      </if>
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -202,7 +191,6 @@
       auth_state = #{authState,jdbcType=INTEGER},
       auth_img = #{authImg,jdbcType=VARCHAR},
       license_no = #{licenseNo,jdbcType=VARCHAR},
-      address_id = #{addressId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}

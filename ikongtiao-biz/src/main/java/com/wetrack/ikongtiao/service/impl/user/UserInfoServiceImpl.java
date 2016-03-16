@@ -2,16 +2,12 @@ package com.wetrack.ikongtiao.service.impl.user;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Address;
-import com.wetrack.ikongtiao.domain.ImMessage;
-import com.wetrack.ikongtiao.domain.ImToken;
 import com.wetrack.ikongtiao.domain.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
-import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
 import com.wetrack.ikongtiao.service.api.im.ImMessageService;
-import com.wetrack.ikongtiao.service.api.im.ImTokenDto;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.ikongtiao.utils.SequenceGenerator;
@@ -109,27 +105,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 		page.setData(data);
 		return page;
-	}
-
-	@Override public ImTokenDto getImTokenDtoByUserId(String userId, String srcType, String desType) throws Exception {
-		ImToken imToken = imTokenService.getTokenByUserId(userId, srcType);
-		int id = adminService.getAvailableAdminId();
-		ImTokenDto imTokenDto = new ImTokenDto();
-		if (imToken != null) {
-			imTokenDto.setUserId(imToken.getUserId());
-			imTokenDto.setToken(imToken.getToken());
-			imTokenDto.setTargetId(desType + id);
-		}
-		return imTokenDto;
-	}
-
-	@Override public PageList<ImMessage> listMessageByParam(ImMessageQueryParam param) {
-		return imMessageService.listImMessageByParam(param);
-	}
-
-	@Override public String saveImMessage(ImMessage imMessage) {
-		imMessageService.save(imMessage);
-		return "ok";
 	}
 
 	@Override

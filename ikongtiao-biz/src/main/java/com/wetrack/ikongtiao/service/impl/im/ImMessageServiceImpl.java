@@ -51,6 +51,13 @@ public class ImMessageServiceImpl implements ImMessageService {
 		} else {
 			param.setDateTime(imMessage.getCreateTime());
 		}
+
+		ImSession imSession = imSessionRepo.findSessionByMessageToAndMessageFrom(param.getUserId(),
+				param.getTargetId());
+		if (imSession != null && imSession.getStatus().equals(0)) {
+			// 有未完成的会话。
+			param.setSessionId(imSession.getId());
+		}
 		List<ImMessage> imMessages = imMessageRepo.listMessageByParam(param);
 		page.setTotalSize(imMessageRepo.countMessageByParam(param));
 		page.setData(imMessages);
@@ -58,7 +65,7 @@ public class ImMessageServiceImpl implements ImMessageService {
 	}
 
 	@Override public List<ImMessage> listImMessageByAminId(Integer adminId) {
-		String targetId = "kefu_" + adminId;
+		String targetId = ImRongyunPrex.KEFU.getPrex() + adminId;
 		return imMessageRepo.listMessageByAdminId(targetId);
 	}
 }

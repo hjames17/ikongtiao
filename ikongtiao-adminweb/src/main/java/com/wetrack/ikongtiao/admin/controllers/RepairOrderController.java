@@ -4,6 +4,7 @@ import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -45,7 +46,8 @@ public class RepairOrderController {
     @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form) throws Exception{
-        RepairOrder repairOrder = repairOrderService.create(null, form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
+        RepairOrder repairOrder = repairOrderService.create(null, form.getMissionId(), form.getNamePlateImg(),
+                form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(), form.getImages());
         return repairOrder.getId().toString();
     }
 
@@ -182,7 +184,7 @@ public class RepairOrderController {
     public static class CreateCostForm{
         Long repairOrderId;
         List<Accessory> accessoryList;
-        Float laborCost;
+        Integer laborCost;
         Boolean finishCost;
 
         public Long getRepairOrderId() {
@@ -201,11 +203,11 @@ public class RepairOrderController {
             this.accessoryList = accessoryList;
         }
 
-        public Float getLaborCost() {
+        public Integer getLaborCost() {
             return laborCost;
         }
 
-        public void setLaborCost(Float laborCost) {
+        public void setLaborCost(Integer laborCost) {
             this.laborCost = laborCost;
         }
 
@@ -225,6 +227,7 @@ public class RepairOrderController {
         String makeOrderNum;
         String repairOrderDesc;
         String accessoryContent;
+        List<RoImage> images;
 
         public Integer getMissionId() {
             return missionId;
@@ -263,7 +266,16 @@ public class RepairOrderController {
         }
 
         public void setAccessoryContent(String accessoryContent) {
+
             this.accessoryContent = accessoryContent;
+        }
+
+        public List<RoImage> getImages() {
+            return images;
+        }
+
+        public void setImages(List<RoImage> images) {
+            this.images = images;
         }
     }
 }

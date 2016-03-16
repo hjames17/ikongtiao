@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import com.wetrack.base.utils.common.IpUtils;
 import com.wetrack.ikongtiao.domain.BusinessSettings;
 import com.wetrack.ikongtiao.domain.PaymentInfo;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.ikongtiao.service.api.SettingsService;

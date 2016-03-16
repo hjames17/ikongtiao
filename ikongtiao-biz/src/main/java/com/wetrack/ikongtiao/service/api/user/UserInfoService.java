@@ -1,8 +1,7 @@
 package com.wetrack.ikongtiao.service.api.user;
 
 import com.wetrack.base.page.PageList;
-import com.wetrack.ikongtiao.domain.Address;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
 
@@ -13,15 +12,17 @@ import java.util.List;
  */
 public interface UserInfoService {
     UserInfo CreateFromWeChatOpenId(String weChatOpenId);
+
+    UserInfo create(UserInfo userInfo);
     UserInfo getByWeChatOpenId(String weChatOpenId);
 
-    UserInfoDto getUser(String id) throws Exception;
+    //    UserInfoDto getUser(String id) throws Exception;
 
     UserInfo getBasicInfoById(String id);
 
-    void update(UserInfo userInfo, Address address) throws Exception;
+    void update(UserInfo userInfo) throws Exception;
 
-    Address createAddress(Address address) throws Exception;
+    //    Address createAddress(Address address) throws Exception;
 
     PageList<UserInfoDto> listUserByQueryParam(UserQueryParam param) throws Exception;
 

@@ -7,12 +7,10 @@ import com.wetrack.ikongtiao.domain.PaymentInfo;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
+import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
-import com.wetrack.ikongtiao.repo.api.repairOrder.AccessoryRepo;
-import com.wetrack.ikongtiao.repo.api.repairOrder.AuditInfoRepo;
-import com.wetrack.ikongtiao.repo.api.repairOrder.CommentRepo;
-import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
+import com.wetrack.ikongtiao.repo.api.repairOrder.*;
 import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.SettingsService;
@@ -53,6 +51,9 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	@Autowired
 	PaymentService paymentService;
 
+	@Autowired
+	RepairOrderImageRepo repairOrderImageRepo;
+
 	@Override
 	public List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception {
 		List<RepairOrder> list = repairOrderRepo.listForMission(missionId);
@@ -68,7 +69,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum,
-			String repairOrderDesc, String accessoryContent) throws Exception {
+			String repairOrderDesc, String accessoryContent, List<RoImage> images) throws Exception {
 		Mission mission = missionRepo.getMissionById(missionId);
 		RepairOrder repairOrder = new RepairOrder();
 		if(creatorId == null) {
@@ -84,6 +85,15 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setRepairOrderDesc(repairOrderDesc);
 		repairOrder.setAccessoryContent(accessoryContent);
 		repairOrder = repairOrderRepo.create(repairOrder);
+
+		if(images != null && images.size() > 0){
+			int ordinal = 0;
+			for(RoImage image : images){
+				image.setRepairOrderId(repairOrder.getId());
+				image.setOrdinal(ordinal++);
+			}
+			repairOrderImageRepo.insert(images);
+		}
 
 		//创建维修单状态
 		mission.setMissionState(MissionState.FIXING.getCode());
@@ -110,7 +120,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost, Boolean finishCost)
+	public void addCost(Long repairOrderId, List<Accessory> accessoryList, Integer laborCost, Boolean finishCost)
 			throws Exception {
 		//insert accessory list into accessory table
 		if (accessoryList != null && accessoryList.size() > 0) {
@@ -159,6 +169,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.FIXER_ID, fixerId);
+		params.put(MessageParamKey.MISSION_ID, order.getMissionId());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
 		messageService.send(MessageId.ASSIGNED_FIXER, params);
 	}
@@ -232,21 +243,32 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	@Autowired
 	AccessoryRepo accessoryRepo;
-	@Override
-	public void confirm(Long repairOrderId, boolean deny, Integer payment) throws Exception {
 
-		RepairOrder repairOrder = new RepairOrder();
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle) throws Exception {
+
+		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		repairOrder.setId(repairOrderId);
 		if (deny) {
 			repairOrder.setRepairOrderState(RepairOrderState.CLOSED.getCode());
 		} else {
+			if(needInvoice){
+				repairOrder.setInvoiceTitle(invoiceTitle);
+				List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
+				Integer accessoryMoney = 0;
+				if(accessories != null) {
+					for (Accessory accessory : accessories) {
+						accessoryMoney += accessory.getCount() * accessory.getPrice();
+					}
+				}
+				Float taxAmount = ((repairOrder.getLaborCost() + accessoryMoney) * settingsService.getBusinessSettings().getTaxPoint())/100;
+				repairOrder.setTaxAmount(taxAmount.intValue());
+			}
 			repairOrder.setRepairOrderState(RepairOrderState.CONFIRMED.getCode());
 		}
 		repairOrder.setPayment(payment);
 		repairOrderRepo.update(repairOrder);
-
-
-		repairOrder = repairOrderRepo.getById(repairOrderId);
 		/**
 		 * TODO : 利用切面分离这些处理逻辑，解除代码耦合
 		 */
@@ -340,7 +362,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 //	}
 
 	@Override
-	public Accessory createAccessory(Long repairOrderId, String name, Integer count, Float price) throws Exception {
+	public Accessory createAccessory(Long repairOrderId, String name, Integer count, Integer price) throws Exception {
 		Accessory accessory = new Accessory();
 		accessory.setRepairOrderId(repairOrderId);
 		accessory.setCount(count);

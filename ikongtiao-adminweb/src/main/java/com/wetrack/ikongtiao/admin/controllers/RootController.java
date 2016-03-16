@@ -14,6 +14,6 @@ public class RootController {
     @ResponseBody
     @RequestMapping(value = "/" , method = {RequestMethod.GET})
     public String hello() {
-        return "hello admin!";
+        return System.getProperty("app.log.name");
     }
 }

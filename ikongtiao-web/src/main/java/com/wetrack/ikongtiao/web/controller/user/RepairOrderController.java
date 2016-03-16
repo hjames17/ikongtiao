@@ -7,8 +7,11 @@ import com.wetrack.ikongtiao.service.api.CommentService;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.wetrack.ikongtiao.constant.RepairOrderState.CLOSED;
 
@@ -42,8 +45,9 @@ public class RepairOrderController {
      * @throws Exception
      */
     @ResponseBody
-    @RequestMapping(value = BASE_PATH + "/confirm" , method = {RequestMethod.POST})
-    public String confirm(@RequestBody ConfirmationForm form) throws Exception{
+    @RequestMapping(value = BASE_PATH + "/confirm" , method = {RequestMethod.POST},
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void confirm(@RequestBody ConfirmationForm form) throws Exception{
         if(form.getUserId() == null){
             throw new BusinessException("无效的用户id");
         }
@@ -56,21 +60,22 @@ public class RepairOrderController {
         }else if(form.getPayment() == null){
             throw new BusinessException("未选择支付方式!");
         }
-        repairOrderService.confirm(form.getRepairOrderId(), form.isDeny(), form.getPayment());
-        return "ok";
+        repairOrderService.confirm(form.getRepairOrderId(), form.isDeny(), form.getPayment(), form.isNeedInvoice(), form.getInvoiceTitle());
     }
 
     @ResponseBody
-    @RequestMapping(value = BASE_PATH + "/pay", method = {RequestMethod.POST})
-    public void pay(){
-        //TODO 线上付款
-    }
-
-    @ResponseBody
-    @RequestMapping(value = BASE_PATH , method = {RequestMethod.GET})
+    @RequestMapping(value = BASE_PATH + "/{id}", method = {RequestMethod.GET})
     public RepairOrder repairOrder(@RequestParam(value = "uid") String uid,
-                              @RequestParam(value = "repairOrderId") Long repairOrderId) throws Exception{
-        return repairOrderService.getById(repairOrderId, false);
+                                   @PathVariable(value = "id") long id) throws Exception{
+        return repairOrderService.getById(id, false);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
+    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId,
+                                            @RequestParam(value = "uid") String uid) throws Exception{
+        return repairOrderService.listForMission(missionId, false);
     }
 
     static class ConfirmationForm{
@@ -78,6 +83,8 @@ public class RepairOrderController {
         Long repairOrderId;
         Integer payment; //0线下， 1 线上
         boolean deny;
+        boolean needInvoice;
+        String invoiceTitle;//发票抬头
 
         public Long getRepairOrderId() {
             return repairOrderId;
@@ -109,6 +116,22 @@ public class RepairOrderController {
 
         public void setUserId(String userId) {
             this.userId = userId;
+        }
+
+        public boolean isNeedInvoice() {
+            return needInvoice;
+        }
+
+        public void setNeedInvoice(boolean needInvoice) {
+            this.needInvoice = needInvoice;
+        }
+
+        public String getInvoiceTitle() {
+            return invoiceTitle;
+        }
+
+        public void setInvoiceTitle(String invoiceTitle) {
+            this.invoiceTitle = invoiceTitle;
         }
     }
 }

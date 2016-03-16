@@ -1,9 +1,10 @@
 package com.wetrack.ikongtiao.service.impl.user;
 
 import com.wetrack.base.page.PageList;
-import com.wetrack.ikongtiao.domain.Address;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
+import com.wetrack.ikongtiao.geo.GeoLocation;
+import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.UserQueryParam;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
@@ -11,11 +12,14 @@ import com.wetrack.ikongtiao.service.api.im.ImMessageService;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.ikongtiao.utils.SequenceGenerator;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +28,8 @@ import java.util.List;
  */
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
+
+	static final Logger log = LoggerFactory.getLogger(UserInfoServiceImpl.class);
 
 	@Autowired
 	UserInfoRepo userInfoRepo;
@@ -46,16 +52,23 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return userInfo;
 	}
 
+	@Override
+	public UserInfo create(UserInfo userInfo) {
+		userInfo.setId(SequenceGenerator.generateUserId());
+		userInfoRepo.save(userInfo);
+		return userInfo;
+	}
+
 	//TODO 缓存
 	@Override
 	public UserInfo getByWeChatOpenId(String weChatOpenId) {
 		return userInfoRepo.getByOpenId(weChatOpenId);
 	}
 
-	@Override
-	public UserInfoDto getUser(String id) throws Exception {
-		return userInfoRepo.getDtoById(id);
-	}
+	//	@Override
+	//	public UserInfoDto getUser(String id) throws Exception {
+	//		return userInfoRepo.getDtoById(id);
+	//	}
 
 	@Override
 	public UserInfo getBasicInfoById(String id) {
@@ -63,33 +76,39 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public void update(UserInfo userInfo, Address address) throws Exception {
-		if (userInfo.getPhone() == null && userInfo.getAccountEmail() == null && userInfo.getAccountName() == null
-				&& userInfo.getAuthImg() == null && userInfo.getAuthState() == null && userInfo.getAvatar() == null
-				&& userInfo.getType() == null && userInfo.getLicenseNo() == null) {
+	public void update(UserInfo userInfo) throws Exception {
+		if (!StringUtils.isEmpty(userInfo.getAddress()) && (userInfo.getLongitude() == null
+				|| userInfo.getLatitude() == null)) {
+			try {
+				GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(userInfo.getAddress());
+				if (geoLocation != null) {
+					userInfo.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
+					userInfo.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
+				} else {
+					log.warn(String.format("用户%d地址经纬度解析失败%s", userInfo.getId(), userInfo.getAddress()));
+				}
+			} catch (Exception e) {
+				log.warn(String.format("用户%d地址经纬度解析失败%s, 原因:%s", userInfo.getId(), userInfo.getAddress(),
+						e.getMessage()));
+			}
+		}
+		userInfo.setUpdateTime(new Date());
+		userInfoRepo.update(userInfo);
 
-		} else {
-			userInfo.setUpdateTime(new Date());
-			userInfoRepo.update(userInfo);
-		}
-		if (address != null) {
-			address.setUpdateTime(new Date());
-			userInfoRepo.updateAddress(address);
-		}
 	}
 
-	@Transactional(rollbackFor = Exception.class)
-	@Override
-	public Address createAddress(Address address) throws Exception {
-		Address created = userInfoRepo.saveAddress(address);
-		if (created != null) {
-			UserInfo userInfo = new UserInfo();
-			userInfo.setId(created.getUserId());
-			userInfo.setAddressId(created.getId());
-			userInfoRepo.update(userInfo);
-		}
-		return created;
-	}
+	//	@Transactional(rollbackFor = Exception.class)
+	//	@Override
+	//	public Address createAddress(Address address) throws Exception {
+	//		Address created = userInfoRepo.saveAddress(address);
+	//		if (created != null) {
+	//			UserInfo userInfo = new UserInfo();
+	//			userInfo.setId(created.getUserId());
+	//			userInfo.setAddressId(created.getId());
+	//			userInfoRepo.update(userInfo);
+	//		}
+	//		return created;
+	//	}
 
 	@Override
 	public PageList<UserInfoDto> listUserByQueryParam(UserQueryParam param) throws Exception {

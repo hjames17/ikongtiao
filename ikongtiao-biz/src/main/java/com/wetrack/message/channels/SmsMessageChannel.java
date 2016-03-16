@@ -1,7 +1,7 @@
 package com.wetrack.message.channels;
 
 import com.wetrack.ikongtiao.domain.Fixer;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;

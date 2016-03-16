@@ -3,7 +3,7 @@ package com.wetrack.ikongtiao.repo.impl.user;
 import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.Address;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
@@ -57,10 +57,10 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 		return commonDao.mapper(UserInfo.class).sql("getUserInfoByParam").session().selectOne(param);
 	}
 
-	@Override
-	public UserInfoDto getDtoById(String userId) {
-		return commonDao.mapper(UserInfoDto.class).sql("selectByPrimaryKey").session().selectOne(userId);
-	}
+//	@Override
+//	public UserInfoDto getDtoById(String userId) {
+//		return commonDao.mapper(UserInfoDto.class).sql("selectByPrimaryKey").session().selectOne(userId);
+//	}
 
 	@Override
 	public Address saveAddress(Address address) {

@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.repo.api.user;
 
 import com.wetrack.ikongtiao.domain.Address;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
 
@@ -40,7 +40,7 @@ public interface UserInfoRepo {
 	 */
 	UserInfo getByOpenId(String openId);
 
-	UserInfoDto getDtoById(String userId);
+//	UserInfoDto getDtoById(String userId);
 
 	Address saveAddress(Address address);
 

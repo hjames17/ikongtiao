@@ -3,7 +3,7 @@ package com.wetrack.message.channels;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.RepairOrder;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
@@ -141,10 +141,9 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 			public Message build(int messageId, Map<String, Object> params) {
 				WechatMessage message = new WechatMessage();
 				UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
-				Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
 				message.setReceiver(userInfo.getWechatOpenId());
 				message.setTitle("您有待确认的维修单");
-				message.setContent(String.format("维修单%d已经生成，请点击进行确认", fixer.getId()));
+				message.setContent(String.format("维修单%d已经生成，请点击进行确认", params.get(MessageParamKey.REPAIR_ORDER_ID)));
 				//TODO 图片地址可配置
 				message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
 				String url = String

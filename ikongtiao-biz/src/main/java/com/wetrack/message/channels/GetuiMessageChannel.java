@@ -48,7 +48,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                 message.setContent(String.format("任务号是%d,点击查看详情", params.get(MessageParamKey.MISSION_ID)));
                 // 任务id，
                 Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.MISSION_ID));
+                map.put(MessageParamKey.MISSION_ID, params.get(MessageParamKey.MISSION_ID));
                 map.put("type", "mission");
                 message.setData(map);
                 return message;
@@ -61,10 +61,11 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixerDevice.getClientId());
                 message.setTitle("有新的维修单分配给你");
-                message.setContent(String.format("维修单号是%d,点击查看详情", params.get(MessageParamKey.MISSION_ID)));
+                message.setContent(String.format("维修单号是%d,点击查看详情", params.get(MessageParamKey.REPAIR_ORDER_ID)));
                 // 任务id，
                 Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.MISSION_ID));
+                map.put(MessageParamKey.MISSION_ID, params.get(MessageParamKey.MISSION_ID));
+                map.put(MessageParamKey.REPAIR_ORDER_ID, params.get(MessageParamKey.REPAIR_ORDER_ID));
                 map.put("type", "mission");
                 message.setData(map);
                 return message;

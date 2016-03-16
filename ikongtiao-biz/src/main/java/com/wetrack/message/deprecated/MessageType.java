@@ -2,6 +2,7 @@ package com.wetrack.message.deprecated;
 
 import com.wetrack.ikongtiao.domain.*;
 import com.wetrack.ikongtiao.domain.admin.Role;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 
 import java.util.HashMap;
 import java.util.Map;

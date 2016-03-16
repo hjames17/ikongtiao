@@ -87,7 +87,7 @@ public class RepairOrder implements Serializable {
     /**
      * 人工费
      */
-    Float laborCost;
+    Integer laborCost; //分为单位
 
     /**
      * 配件清单，单独存表
@@ -96,6 +96,21 @@ public class RepairOrder implements Serializable {
     List<Accessory> accessoryList;
 
     Float discount; //折扣
+
+    /**
+     * 是否开发票
+     */
+    Boolean needInvoice;
+
+    /**
+     * 发票信息
+     */
+    String invoiceTitle;
+
+    /**
+     * 发票税额
+     */
+    Integer taxAmount; //单位为分
 
     /**
      * 付款方式， 0 线下， 1 线上
@@ -116,6 +131,11 @@ public class RepairOrder implements Serializable {
      * 关联表，repair_order_audit_info
      */
     AuditInfo auditInfo;
+
+    /**
+     * 关联表, repair_order_image
+     */
+    List<String> images;
 
 
     /**
@@ -262,11 +282,11 @@ public class RepairOrder implements Serializable {
         this.accessoryContent = accessoryContent;
     }
 
-    public Float getLaborCost() {
+    public Integer getLaborCost() {
         return laborCost;
     }
 
-    public void setLaborCost(Float laborCost) {
+    public void setLaborCost(Integer laborCost) {
         this.laborCost = laborCost;
     }
 
@@ -341,6 +361,30 @@ public class RepairOrder implements Serializable {
 
     public void setAuditInfo(AuditInfo auditInfo) {
         this.auditInfo = auditInfo;
+    }
+
+    public Boolean isNeedInvoice() {
+        return needInvoice;
+    }
+
+    public void setNeedInvoice(Boolean needInvoice) {
+        this.needInvoice = needInvoice;
+    }
+
+    public String getInvoiceTitle() {
+        return invoiceTitle;
+    }
+
+    public void setInvoiceTitle(String invoiceTitle) {
+        this.invoiceTitle = invoiceTitle;
+    }
+
+    public Integer getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(Integer taxAmount) {
+        this.taxAmount = taxAmount;
     }
 
     /**

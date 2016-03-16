@@ -6,7 +6,7 @@ import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.MachineType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.MissionAddress;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -84,11 +85,10 @@ public class MissionServiceImpl implements MissionService {
 		if (StringUtils.isEmpty(userInfo.getPhone())) {
 			UserInfo bindUserInfo = new UserInfo();
 			bindUserInfo.setId(userInfo.getId());
-			bindUserInfo.setPhone(param.getPhone());
-			if (userInfoRepo.update(bindUserInfo) > 0) {
-				userInfo.setPhone(param.getPhone());
-			}
+			bindUserInfo.setContacterPhone(param.getPhone());
+			userInfoRepo.update(bindUserInfo);
 		}
+
 
 
 		Mission mission = null;
@@ -111,6 +111,12 @@ public class MissionServiceImpl implements MissionService {
 		//创建一个地址信息
 		MissionAddress missionAddress = new MissionAddress();
 		missionAddress.setPhone(param.getPhone());
+		//如果没有指定故障单位名称，则按照默认顺序使用客户的 1 单位名称 2 联系人
+		if(!StringUtils.isEmpty(userInfo.getAccountName())){
+			missionAddress.setName(userInfo.getAccountName());
+		}else if(!StringUtils.isEmpty(userInfo.getContacterName())){
+			missionAddress.setName(userInfo.getContacterName());
+		}
 		missionAddress.setId(mission.getId());
 		missionAddressRepo.save(missionAddress);
 
@@ -122,6 +128,29 @@ public class MissionServiceImpl implements MissionService {
 		params.put(MessageParamKey.MISSION_ID, mission.getId());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		messageService.send(MessageId.NEW_COMMISSION, params);
+		return mission;
+	}
+
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public Mission saveMission(Mission mission, MissionAddress address) throws Exception{
+		mission = missionRepo.save(mission);
+		GeoLocation geoLocation = null;
+		try {
+			geoLocation = GeoUtil.getGeoLocationFromAddress(address.getAddress());
+		} catch (UnsupportedEncodingException e) {
+			throw new BusinessException("地址内容编码错误");
+		}
+		if(geoLocation == null){
+			throw new BusinessException(String.format("地址:%s无法获取经纬度，需要重新填写!", address));
+		}else{
+			address.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
+			address.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
+		}
+		address.setId(mission.getId());
+		missionAddressRepo.save(address);
+
 		return mission;
 	}
 
@@ -345,5 +374,10 @@ public class MissionServiceImpl implements MissionService {
 		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
 		params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
 		messageService.send(MessageId.COMPLETED_MISSION, params);
+	}
+
+	@Override
+	public void update(Mission mission) {
+		missionRepo.update(mission);
 	}
 }

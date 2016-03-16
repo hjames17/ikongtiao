@@ -7,8 +7,8 @@
     <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="count" property="count" jdbcType="SMALLINT" />
-    <result column="price" property="price" jdbcType="FLOAT" />
-    <result column="discount" property="discount" jdbcType="FLOAT" />
+    <result column="price" property="price" jdbcType="INTEGER" />
+    <result column="discount" property="discount" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, mission_id, repair_order_id, name, price, discount, count
@@ -53,25 +53,25 @@
       mission_id = #{missionId,jdbcType=INTEGER},
     </if>
      #{repairOrderId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
-      #{price,jdbcType=FLOAT}, #{count,jdbcType=SMALLINT}, #{discount,jdbcType=FLOAT})
+      #{price}, #{count,jdbcType=SMALLINT}, #{discount})
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.repairOrder.Accessory" >
     update accessory
     <set >
       <if test="name != null" >
-        name = #{repairOrderDesc,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="repair_order_id != null" >
+      <if test="repairOrderId != null" >
         repair_order_id = #{repairOrderId,jdbcType=BIGINT},
       </if>
       <if test="count != null" >
         count = #{count,jdbcType=SMALLINT},
       </if>
       <if test="price != null" >
-        price = #{price,jdbcType=FLOAT},
+        price = #{price},
       </if>
       <if test="discount != null" >
-        discount = #{discount,jdbcType=FLOAT},
+        discount = #{discount},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}

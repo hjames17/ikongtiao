@@ -8,13 +8,12 @@
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="account_name" property="accountName" jdbcType="VARCHAR" />
     <result column="account_email" property="accountEmail" jdbcType="VARCHAR" />
+    <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
+    <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
     <result column="auth_state" property="authState" jdbcType="INTEGER" />
     <result column="auth_img" property="authImg" jdbcType="VARCHAR" />
     <result column="license_no" property="licenseNo" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <!--<association property="address" column="address_id" javaType="com.wetrack.ikongtiao.domain.Address"-->
-                 <!--select="selectAddress"/>-->
-    <result column="address_id" property="addressId" jdbcType="INTEGER"/>
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
     <result column="city_id" property="cityId" jdbcType="INTEGER" />
     <result column="district_id" property="districtId" jdbcType="INTEGER" />
@@ -24,47 +23,16 @@
     <result column="mission_count" property="missionCount" jdbcType="INTEGER" />
 
   </resultMap>
-
-  <resultMap id="AddressResultMap" type="com.wetrack.ikongtiao.domain.Address" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="user_id" property="userId" jdbcType="VARCHAR" />
-    <result column="phone" property="phone" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
-    <result column="city_id" property="cityId" jdbcType="INTEGER" />
-    <result column="district_id" property="districtId" jdbcType="INTEGER" />
-    <result column="address" property="address" jdbcType="VARCHAR" />
-    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
-    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
-    <result column="is_deleted" property="isDeleted" jdbcType="BIT" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
-  </resultMap>
   <sql id="Base_Column_List" >
     user_info.id, user_info.phone, user_info.avatar, user_info.type, user_info.account_name, user_info.account_email, user_info.auth_state,
-    user_info.auth_img, user_info.license_no, user_info.address_id, user_info.create_time,
-    address.province_id, address.city_id, address.district_id, address.address, address.latitude, address.longitude, address.id as address_id
+    user_info.auth_img, user_info.license_no, user_info.create_time, user_info.contacter_name, user_info.contacter_phone,
+    user_info.province_id, user_info.city_id, user_info.district_id, user_info.address, user_info.latitude, user_info.longitude
   </sql>
-  <select id="selectAddress" resultMap="AddressResultMap" parameterType="java.lang.Integer">
-    SELECT id, phone, name, province_id, city_id, district_id, address, latitude, longitude, is_deleted, create_time, update_time
-    from address
-    WHERE id = #{id}
-  </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from user_info
-    LEFT OUTER JOIN address
-    ON user_info.address_id = address.id
-    where user_info.id = #{id,jdbcType=VARCHAR}
-  </select>
 
   <select id="listUserByParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.UserQueryParam" >
     select DISTINCT
     <include refid="Base_Column_List" />, count(mission.id) as mission_count
     from user_info
-    LEFT OUTER JOIN address
-    ON user_info.address_id = address.id
     LEFT OUTER JOIN mission
     ON mission.user_id = user_info.id
     <where>
@@ -75,7 +43,7 @@
         and user_info.account_name LIKE #{userName}
       </if>
       <if test="address != null ">
-        and address.address LIKE #{address}
+        and user_info.address LIKE #{address}
       </if>
     </where>
     GROUP BY user_info.id
@@ -86,10 +54,6 @@
     select
     count(*) as totalSize
     from user_info
-    <if test="address != null ">
-      LEFT OUTER JOIN address
-      ON user_info.address_id = address.id
-    </if>
     <where>
       <if test="phone != null ">
         and phone LIKE #{phone}

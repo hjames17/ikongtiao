@@ -1,6 +1,6 @@
 package com.utils.test;
 
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import org.junit.Test;
 import org.junit.runner.RunWith;

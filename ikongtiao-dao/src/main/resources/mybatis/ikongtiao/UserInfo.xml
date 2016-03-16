@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.wetrack.ikongtiao.domain.UserInfo" >
-  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.UserInfo" >
+<mapper namespace="com.wetrack.ikongtiao.domain.customer.UserInfo" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.customer.UserInfo" >
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="wechat_open_id" property="wechatOpenId" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
@@ -9,16 +9,25 @@
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="account_name" property="accountName" jdbcType="VARCHAR" />
     <result column="account_email" property="accountEmail" jdbcType="VARCHAR" />
+    <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
+    <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
     <result column="auth_state" property="authState" jdbcType="INTEGER" />
     <result column="auth_img" property="authImg" jdbcType="VARCHAR" />
     <result column="license_no" property="licenseNo" jdbcType="VARCHAR" />
-    <result column="address_id" property="addressId" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="district_id" property="districtId" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="latitude" property="latitude" jdbcType="DECIMAL" />
+    <result column="longitude" property="longitude" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, wechat_open_id,phone, avatar, type, account_name, account_email, auth_state,
-    auth_img, license_no, address_id, create_time, update_time
+    province_id, city_id, district_id, address, latitude, longitude,
+    contacter_name, contacter_phone,
+    auth_img, license_no, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
@@ -27,7 +36,7 @@
     where id = #{id,jdbcType=VARCHAR}
   </select>
 
-  <select id="getUserInfoByParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.UserInfo" >
+  <select id="getUserInfoByParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
     select
     <include refid="Base_Column_List" />
     from user_info
@@ -49,22 +58,7 @@
     delete from user_info
     where id = #{id,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.UserInfo" >
-    <selectKey resultType="java.lang.String" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into user_info (wechat_open_id, avatar, type, 
-      account_name, account_email, account_phone, 
-      auth_state, auth_img, license_no, 
-      address_id, create_time, update_time
-      )
-    values (#{wechatOpenId,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
-      #{accountName,jdbcType=VARCHAR}, #{accountEmail,jdbcType=VARCHAR}, #{accountPhone,jdbcType=VARCHAR}, 
-      #{authState,jdbcType=INTEGER}, #{authImg,jdbcType=VARCHAR}, #{licenseNo,jdbcType=VARCHAR}, 
-      #{addressId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.UserInfo" >
+  <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
     insert into user_info
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -97,14 +91,29 @@
       <if test="licenseNo != null" >
         license_no,
       </if>
-      <if test="addressId != null" >
-        address_id,
-      </if>
       <if test="createTime != null" >
         create_time,
       </if>
       <if test="updateTime != null" >
         update_time,
+      </if>
+      <if test="provinceId != null" >
+        province_id ,
+      </if>
+      <if test="cityId != null" >
+        city_id ,
+      </if>
+      <if test="districtId != null" >
+        district_id ,
+      </if>
+      <if test="address != null" >
+        address ,
+      </if>
+      <if test="latitude != null" >
+        latitude ,
+      </if>
+      <if test="longitude != null" >
+        longitude ,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -138,18 +147,33 @@
       <if test="licenseNo != null" >
         #{licenseNo,jdbcType=VARCHAR},
       </if>
-      <if test="addressId != null" >
-        #{addressId,jdbcType=INTEGER},
-      </if>
       <if test="createTime != null" >
         #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null" >
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="districtId != null" >
+        #{districtId,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=DECIMAL},
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.UserInfo" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
     update user_info
     <set >
       <if test="wechatOpenId != null" >
@@ -179,19 +203,34 @@
       <if test="licenseNo != null" >
         license_no = #{licenseNo,jdbcType=VARCHAR},
       </if>
-      <if test="addressId != null" >
-        address_id = #{addressId,jdbcType=INTEGER},
-      </if>
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="updateTime != null" >
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="districtId != null" >
+        district_id = #{districtId,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=DECIMAL},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=DECIMAL},
+      </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.UserInfo" >
+  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
     update user_info
     set wechat_open_id = #{wechatOpenId,jdbcType=VARCHAR},
       avatar = #{avatar,jdbcType=VARCHAR},
@@ -202,7 +241,6 @@
       auth_state = #{authState,jdbcType=INTEGER},
       auth_img = #{authImg,jdbcType=VARCHAR},
       license_no = #{licenseNo,jdbcType=VARCHAR},
-      address_id = #{addressId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}

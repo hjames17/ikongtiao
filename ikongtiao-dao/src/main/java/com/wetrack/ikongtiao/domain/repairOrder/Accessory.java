@@ -11,8 +11,8 @@ public class Accessory implements Serializable{
     Integer missionId; //冗余字段，便以统计
     String name;
     Integer count;
-    Float price;
-    Float discount; //折扣金额
+    Integer price; //分为单位
+    Integer discount; //折扣金额，分为单位
 
     public Long getId() {
         return id;
@@ -54,19 +54,19 @@ public class Accessory implements Serializable{
         this.count = count;
     }
 
-    public Float getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public Float getDiscount() {
+    public Integer getDiscount() {
         return discount;
     }
 
-    public void setDiscount(Float discount) {
+    public void setDiscount(Integer discount) {
         this.discount = discount;
     }
 }

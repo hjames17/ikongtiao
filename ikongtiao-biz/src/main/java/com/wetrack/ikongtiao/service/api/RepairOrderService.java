@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.service.api;
 
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 
 import java.util.List;
 
@@ -11,9 +12,11 @@ import java.util.List;
 public interface RepairOrderService {
     List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception;
 
-    RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum, String repairOrderDesc, String accessoryContent) throws Exception;
+    RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg,
+                       String makeOrderNum, String repairOrderDesc, String accessoryContent, List<RoImage> images) throws Exception;
 
-    void addCost(Long repairOrderId, List<Accessory> accessoryList, Float laborCost, Boolean finishCost) throws Exception;
+
+    void addCost(Long repairOrderId, List<Accessory> accessoryList, Integer laborCost, Boolean finishCost) throws Exception;
 
     void dispatchRepairOrder(Integer adminUserId, Long repairOrderId, Integer fixerId) throws Exception;
 
@@ -25,13 +28,13 @@ public interface RepairOrderService {
 
 //    void comment(Long repairOrderId, Integer rate, String comment) throws Exception;
 
-    Accessory createAccessory(Long repairOrderId, String name, Integer count, Float price) throws Exception;
+    Accessory createAccessory(Long repairOrderId, String name, Integer count, Integer price) throws Exception;
 
     boolean updateAccessory(Accessory accessory) throws Exception;
 
     boolean deleteAccessory(Long accessoryId) throws Exception;
 
-    void confirm(Long repairOrderId, boolean deny, Integer payment) throws Exception;
+    void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle) throws Exception;
 
     void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception;
 }

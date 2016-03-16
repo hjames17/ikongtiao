@@ -8,6 +8,7 @@ public class BusinessSettings {
     Boolean repairOrderAutoAudit;
     String wechatAppId;
     String wechatHandlerUrl;
+    Float taxPoint; //开票税点,为百分值点
 
     public Boolean isRepairOrderAutoAudit() {
         return repairOrderAutoAudit;
@@ -39,5 +40,13 @@ public class BusinessSettings {
 
     public void setWechatHandlerUrl(String wechatHandlerUrl) {
         this.wechatHandlerUrl = wechatHandlerUrl;
+    }
+
+    public Float getTaxPoint() {
+        return taxPoint;
+    }
+
+    public void setTaxPoint(Float taxPoint) {
+        this.taxPoint = taxPoint;
     }
 }

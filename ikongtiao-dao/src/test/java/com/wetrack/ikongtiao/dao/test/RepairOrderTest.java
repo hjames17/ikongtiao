@@ -1,15 +1,13 @@
 package com.wetrack.ikongtiao.dao.test;
 
-import com.wetrack.ikongtiao.domain.customer.UserInfo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.domain.RepairOrder;
+import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by zhanghong on 15/12/30.
@@ -18,22 +16,24 @@ import java.util.List;
 @ContextConfiguration(
         locations = {"classpath*:spring/*.xml"}
 )
-public class UserInfoTest {
-
+public class RepairOrderTest {
 
 //    List<Fixer> list;
 
     @Autowired
-    UserInfoRepo userInfoRepo;
+    RepairOrderRepo repo;
+
+    @Before
+    public void init(){
+//        list = new ArrayList<>();
+    }
 
 
     @Test
-    public void test(){
-//        UserInfoDto u = userInfoRepo.getDtoById("15121510004100000008");
-        List<UserInfo> list = userInfoRepo.listInIds(Arrays.asList("15121522052300000010", "15122618315700000012"));
+    public void list(){
+        RepairOrder order = repo.getById(144L);
         System.out.println("ok");
     }
-
 
 //    @Test
 //    public void testSave(){

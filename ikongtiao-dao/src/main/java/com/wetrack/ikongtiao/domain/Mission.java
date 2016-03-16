@@ -51,9 +51,9 @@ public class Mission implements Serializable {
      */
     private Integer adminUserId;
 
-//    /**
-//     * mission_address_id:任务地址id
-//     */
+    /**
+     * mission_address_id:任务地址id
+     */
 //    private Integer missionAddressId;
 
     /**

@@ -122,9 +122,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
             paymentInfo.setOutTradeNo(type + orderId);
             paymentInfo.setMethod(method);
             PaymentInfo found = paymentInfoRepo.findByMatch(paymentInfo);
-            if(found == null){
-                throw new Exception("支付订单不存在,关闭失败:"+paymentKey);
-            }else{
+            if(found != null){
                 if(found.getState().equals(PaymentInfo.State.PAID)){
                     //TODO 退款发起
                 }else if(found.getState().equals(PaymentInfo.State.WAIT)){

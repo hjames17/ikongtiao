@@ -44,6 +44,7 @@ public class Fixer implements Serializable {
      */
     private String contacts;
 
+    @Deprecated
     /**
      * province_name:省
      */
@@ -54,6 +55,7 @@ public class Fixer implements Serializable {
      */
     private Integer provinceId;
 
+    @Deprecated
     /**
      * city_name:市
      */
@@ -64,6 +66,7 @@ public class Fixer implements Serializable {
      */
     private Integer cityId;
 
+    @Deprecated
     /**
      * district_name:
      */

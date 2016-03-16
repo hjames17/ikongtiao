@@ -16,12 +16,21 @@
     <result column="name_plate_img" property="namePlateImg" jdbcType="VARCHAR" />
     <result column="make_order_num" property="makeOrderNum" jdbcType="VARCHAR" />
     <result column="accessory_content" property="accessoryContent" jdbcType="VARCHAR" />
-    <result column="labor_cost" property="laborCost" jdbcType="FLOAT" />
+    <result column="labor_cost" property="laborCost" jdbcType="INTEGER" />
+    <result column="need_invoice" property="needInvoice" jdbcType="TINYINT" />
+    <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR" />
+    <result column="tax_amount" property="taxAmount" jdbcType="INTEGER" />
     <result column="discount" property="discount" jdbcType="FLOAT" />
     <result column="payment" property="payment" jdbcType="TINYINT" />
     <association property="paymentInfo" javaType="com.wetrack.ikongtiao.domain.PaymentInfo" column="id" select="selectPayment"/>
     <association property="comment" javaType="com.wetrack.ikongtiao.domain.repairOrder.Comment" column="id" select="selectComment"/>
     <association property="auditInfo" javaType="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" column="id" select="selectAuditInfo"/>
+    <collection property="images" ofType="com.wetrack.ikongtiao.domain.repairOrder.RoImage" select="selectImages" column="id">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+      <result column="url" property="url" jdbcType="VARCHAR" />
+      <result column="ordinal" property="ordinal" jdbcType="INTEGER" />
+    </collection>
   </resultMap>
   <resultMap id="CommentMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment">
     <id column="id" property="id" jdbcType="BIGINT" />
@@ -50,12 +59,24 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="close_time" property="closeTime" jdbcType="TIMESTAMP" />
   </resultMap>
+  <resultMap id="RoImageMap" type="com.wetrack.ikongtiao.domain.repairOrder.RoImage" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="ordinal" property="ordinal" jdbcType="INTEGER" />
+  </resultMap>
 
   <sql id="Base_Column_List" >
     id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
-    update_time, name_plate_img, labor_cost, discount, accessory_content, user_id, payment
+    update_time, name_plate_img, labor_cost, discount, accessory_content, user_id, payment, need_invoice, invoice_title, tax_amount, make_order_num
   </sql>
 
+  <select id="selectImages" resultMap="RoImageMap" parameterType="java.lang.Long">
+    SELECT *
+    FROM repair_order_image
+    WHERE repair_order_id = #{id}
+    ORDER BY ordinal asc
+  </select>
   <select id="selectPayment" resultMap="PaymentMap" parameterType="java.lang.Long">
     SELECT *
     FROM payment_info
@@ -81,7 +102,7 @@
     select 
     <include refid="Base_Column_List" />
     from repair_order
-    where id = #{id,jdbcType=BIGINT}
+    where repair_order.id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from repair_order
@@ -150,10 +171,19 @@
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="laborCost != null" >
-        labor_cost = #{laborCost,jdbcType=FLOAT},
+        labor_cost = #{laborCost},
       </if>
       <if test="updateTime != null" >
         update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="needInvoice != null" >
+        need_invoice = #{needInvoice},
+      </if>
+      <if test="invoiceTitle != null" >
+        invoice_title = #{invoiceTitle},
+      </if>
+      <if test="taxAmount != null" >
+        tax_amount = #{taxAmount},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -162,6 +192,6 @@
     select
     <include refid="Base_Column_List" />
     from repair_order
-    where mission_id = #{id}
+    where repair_order.mission_id = #{id}
   </select>
 </mapper>

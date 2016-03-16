@@ -89,8 +89,6 @@ public class UserInfoDto implements Serializable{
      */
     private BigDecimal longitude;
 
-    private Integer addressId;
-
     private Integer missionCount;
 
     /**
@@ -281,14 +279,6 @@ public class UserInfoDto implements Serializable{
 
     public void setProvinceId(Integer provinceId) {
         this.provinceId = provinceId;
-    }
-
-    public Integer getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
     }
 
     public Integer getMissionCount() {

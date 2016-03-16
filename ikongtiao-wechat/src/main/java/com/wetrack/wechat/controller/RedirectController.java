@@ -1,6 +1,6 @@
 package com.wetrack.wechat.controller;
 
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.repo.api.wechat.WechatPublicAccountRepo;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.wechat.config.Const;
@@ -135,14 +135,14 @@ public class RedirectController {
                 if(userInfo == null){
                     userInfo = userInfoService.CreateFromWeChatOpenId(token.getOpenId());
                 }
-                if(StringUtils.isEmpty(userInfo.getAccountName())){
+                if(StringUtils.isEmpty(userInfo.getContacterName())){
                     try {
                         WxMpUser wxMpUser = weixinService.userInfo(userInfo.getWechatOpenId(), null);
-                        userInfo.setAccountName(wxMpUser.getNickname());
+                        userInfo.setContacterName(wxMpUser.getNickname());
                         if(StringUtils.isEmpty(userInfo.getAvatar())){
                             userInfo.setAvatar(wxMpUser.getHeadImgUrl());
                         }
-                        userInfoService.update(userInfo, null);
+                        userInfoService.update(userInfo);
                     } catch (WxErrorException e) {
                         //ignore
                         log.warn("获取用信息失败:" + e.getMessage());

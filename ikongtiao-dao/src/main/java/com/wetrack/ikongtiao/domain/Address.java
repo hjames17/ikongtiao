@@ -100,20 +100,6 @@ public class Address implements Serializable {
     }
 
     /**
-     * @return the value of user_id
-     */
-    public String getUserId() {
-        return userId;
-    }
-
-    /**
-     * @param userId the value for user_id
-     */
-    public void setUserId(String userId) {
-        this.userId = userId == null ? null : userId.trim();
-    }
-
-    /**
      * @return the value of phone
      */
     public String getPhone() {
@@ -267,6 +253,21 @@ public class Address implements Serializable {
         this.updateTime = updateTime;
     }
 
+
+    /**
+     * @return the value of user_id
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * @param userId the value for user_id
+     */
+    public void setUserId(String userId) {
+        this.userId = userId == null ? null : userId.trim();
+    }
+
     /**
      * This method corresponds to the database table address
      */
@@ -277,7 +278,6 @@ public class Address implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", userId=").append(userId);
         sb.append(", phone=").append(phone);
         sb.append(", name=").append(name);
         sb.append(", provinceId=").append(provinceId);

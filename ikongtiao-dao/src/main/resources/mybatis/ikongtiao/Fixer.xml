@@ -8,11 +8,8 @@
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="contacts" property="contacts" jdbcType="VARCHAR" />
-    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
-    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
     <result column="city_id" property="cityId" jdbcType="INTEGER" />
-    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
     <result column="district_id" property="districtId" jdbcType="INTEGER" />
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="latitude" property="latitude" jdbcType="DECIMAL" />
@@ -35,8 +32,8 @@
     <result column="deleted" property="deleted" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, password, avatar, phone, contacts, province_name, province_id, city_name, city_id,
-    district_name, district_id, address, latitude, longitude, geohash, level, min_price, 
+    id, name, password, avatar, phone, contacts, province_id, city_id,
+    district_id, address, latitude, longitude, geohash, level, min_price,
     dw_create_time, dw_update_time, operate_id, in_service, certificate_state, insurance_state, welder_state, electrician_state
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -61,8 +58,7 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into fixer (name, avatar, phone, 
-      contacts, province_name, province_id, 
-      city_name, city_id, district_name, 
+      contacts, province_id, city_id,
       district_id, address, latitude, 
       longitude, geohash, level, 
       min_price, dw_create_time, dw_update_time, 
@@ -93,20 +89,11 @@
       <if test="contacts != null" >
         contacts,
       </if>
-      <if test="provinceName != null" >
-        province_name,
-      </if>
       <if test="provinceId != null" >
         province_id,
       </if>
-      <if test="cityName != null" >
-        city_name,
-      </if>
       <if test="cityId != null" >
         city_id,
-      </if>
-      <if test="districtName != null" >
-        district_name,
       </if>
       <if test="districtId != null" >
         district_id,
@@ -155,20 +142,11 @@
       <if test="contacts != null" >
         #{contacts,jdbcType=VARCHAR},
       </if>
-      <if test="provinceName != null" >
-        #{provinceName,jdbcType=VARCHAR},
-      </if>
       <if test="provinceId != null" >
         #{provinceId,jdbcType=INTEGER},
       </if>
-      <if test="cityName != null" >
-        #{cityName,jdbcType=VARCHAR},
-      </if>
       <if test="cityId != null" >
         #{cityId,jdbcType=VARCHAR},
-      </if>
-      <if test="districtName != null" >
-        #{districtName,jdbcType=VARCHAR},
       </if>
       <if test="districtId != null" >
         #{districtId,jdbcType=INTEGER},
@@ -223,20 +201,11 @@
       <if test="contacts != null" >
         contacts = #{contacts,jdbcType=VARCHAR},
       </if>
-      <if test="provinceName != null" >
-        province_name = #{provinceName,jdbcType=VARCHAR},
-      </if>
       <if test="provinceId != null" >
         province_id = #{provinceId,jdbcType=INTEGER},
       </if>
-      <if test="cityName != null" >
-        city_name = #{cityName,jdbcType=VARCHAR},
-      </if>
       <if test="cityId != null" >
         city_id = #{cityId,jdbcType=INTEGER},
-      </if>
-      <if test="districtName != null" >
-        district_name = #{districtName,jdbcType=VARCHAR},
       </if>
       <if test="districtId != null" >
         district_id = #{districtId,jdbcType=INTEGER},
@@ -304,11 +273,8 @@
       avatar = #{avatar,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
       contacts = #{contacts,jdbcType=VARCHAR},
-      province_name = #{provinceName,jdbcType=VARCHAR},
       province_id = #{provinceId,jdbcType=INTEGER},
-      city_name = #{cityName,jdbcType=VARCHAR},
       city_id = #{cityId,jdbcType=INTEGER},
-      district_name = #{districtName,jdbcType=VARCHAR},
       district_id = #{districtId,jdbcType=INTEGER},
       address = #{address,jdbcType=VARCHAR},
       latitude = #{latitude,jdbcType=DECIMAL},

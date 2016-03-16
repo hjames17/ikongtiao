@@ -4,6 +4,7 @@ import com.wetrack.base.utils.Utils;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.base.utils.thread.ThreadExecutor;
 import com.wetrack.ikongtiao.domain.*;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerDeviceRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;

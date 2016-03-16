@@ -6,7 +6,7 @@ import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
-import com.wetrack.ikongtiao.domain.UserInfo;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.admin.Role;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;

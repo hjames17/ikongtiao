@@ -2,10 +2,8 @@ package com.wetrack.ikongtiao.web.controller;
 
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
-import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.RepairOrder;
-import com.wetrack.ikongtiao.domain.repairOrder.Comment;
-import com.wetrack.ikongtiao.param.CommentQueryParam;
+import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
 
 
@@ -40,17 +37,22 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        RepairOrder repairOrder = repairOrderService.create(Integer.valueOf(user.getId()), form.getMissionId(), form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent());
+        RepairOrder repairOrder = repairOrderService.create(Integer.valueOf(user.getId()), form.getMissionId(),
+                form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(),
+                form.getImages());
         return repairOrder.getId().toString();
     }
 
+    @SignTokenAuth
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
     public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
         return repairOrderService.listForMission(missionId, false);
     }
 
-    @RequestMapping(value = BASE_PATH , method = {RequestMethod.GET})
-    public RepairOrder get(@RequestParam(value = "id") Long id) throws Exception{
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/{id}", method = {RequestMethod.GET})
+    public RepairOrder repairOrder(@PathVariable(value = "id") long id) throws Exception{
         return repairOrderService.getById(id, false);
     }
 
@@ -70,6 +72,7 @@ public class RepairOrderController {
         String makeOrderNum;
         String repairOrderDesc;
         String accessoryContent;
+        List<RoImage> images;
 
         public Integer getMissionId() {
             return missionId;
@@ -108,7 +111,16 @@ public class RepairOrderController {
         }
 
         public void setAccessoryContent(String accessoryContent) {
+
             this.accessoryContent = accessoryContent;
+        }
+
+        public List<RoImage> getImages() {
+            return images;
+        }
+
+        public void setImages(List<RoImage> images) {
+            this.images = images;
         }
     }
 }

@@ -56,11 +56,16 @@ public abstract class AbstractMessageChannel implements MessageChannel{
             try {
                 MessageRaw messageRaw = bufList.take();
                 if (adapterMap.get(messageRaw.id) != null) {
-                    doSend(adapterMap.get(messageRaw.id).build(messageRaw.id, messageRaw.params));
+                    Message message = adapterMap.get(messageRaw.id).build(messageRaw.id, messageRaw.params);
+                    if(message != null) {
+                        doSend(message);
+                    }
                 }
             } catch (InterruptedException e) {
                 logger.error("message channel take message failed ! " + e.getMessage());
 //            e.printStackTrace();
+            } catch (Exception e){
+                //抛弃任何异常
             }
         }
 //        Thread t = new Thread(new Runnable() {

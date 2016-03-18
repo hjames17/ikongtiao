@@ -30,7 +30,7 @@ public class SettingsServiceImpl implements SettingsService, InitializingBean{
     @Override
     public void updateBusinessSettings(BusinessSettings businessSettings) throws Exception {
         businessSettingsRepo.update(businessSettings);
-        businessSettings = businessSettingsRepo.getTheOne();
+        this.businessSettings = businessSettingsRepo.getTheOne();
     }
 
     @Override

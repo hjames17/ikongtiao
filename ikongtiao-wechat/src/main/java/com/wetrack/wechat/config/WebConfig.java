@@ -49,7 +49,7 @@ public class WebConfig {
     WxMpMessageRouter getWeixinMessageRouter(WxMpService weixinService){
         WxMpMessageRouter wxMpMessageRouter = new WxMpMessageRouter(weixinService);
         wxMpMessageRouter
-                .rule().msgType(WxConsts.XML_MSG_EVENT).event(WxConsts.EVT_SUBSCRIBE).handler(subscriptionHandler).end();
+                .rule().async(false).msgType(WxConsts.XML_MSG_EVENT).event(WxConsts.EVT_SUBSCRIBE).handler(subscriptionHandler).end();
 
         return wxMpMessageRouter;
     }

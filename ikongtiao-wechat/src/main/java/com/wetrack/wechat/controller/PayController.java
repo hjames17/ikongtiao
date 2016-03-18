@@ -9,6 +9,9 @@ import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.ikongtiao.service.api.SettingsService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import com.wetrack.wechat.config.Const;
 import me.chanjar.weixin.common.util.xml.XStreamInitializer;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -53,6 +56,9 @@ public class PayController implements InitializingBean {
 
     @Autowired
     SettingsService settingsService;
+
+    @Autowired
+    MessageService messageService;
 
     String weixinHandlerUrl;
 
@@ -147,6 +153,15 @@ public class PayController implements InitializingBean {
 
         }
 
+        /**
+         * 通知
+         */
+        if(cbro.getReturn_code().equals("SUCCESS")){
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put(MessageParamKey.REPAIR_ORDER_ID, payCallback.getOut_trade_no().substring("RO".length()));
+            messageService.send(MessageId.REPAIR_ORDER_PAID, params);
+        }
+
         XStream xstream = XStreamInitializer.getInstance();
         /**
          * alias让xml根节点名称由
@@ -158,7 +173,6 @@ public class PayController implements InitializingBean {
         return xstream.toXML(cbro);
 
     }
-
 
     private Map<String,String> getPayCallbackDataMap(WxMpPayCallback payCallback) {
         Map<String, String > map = new HashMap<String, String>();

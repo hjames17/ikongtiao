@@ -40,6 +40,7 @@ public class EndPointController {
     @RequestMapping(value = WEIXIN , method = {RequestMethod.POST, RequestMethod.GET})
     public void weixinMessage(HttpServletRequest request, HttpServletResponse response) throws Exception{
 
+        log.debug("weixinMessage push");
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 

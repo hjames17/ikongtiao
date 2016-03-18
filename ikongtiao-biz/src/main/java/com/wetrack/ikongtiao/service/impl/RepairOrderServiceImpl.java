@@ -282,10 +282,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			int price = 0;
 			if(accessories != null && accessories.size() > 0){
 				for(Accessory accessory : accessories){
-					price += accessory.getPrice() * accessory.getCount() * 100;
+					price += accessory.getPrice() * accessory.getCount();
 				}
 			}
-			price += repairOrder.getLaborCost() * 100;
+			price += repairOrder.getLaborCost();
 			paymentService.create(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, repairOrder.getId().toString(), price);
 		}
 

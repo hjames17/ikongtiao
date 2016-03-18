@@ -2,16 +2,21 @@
   "menu":{
     "button":[
       {
-        "name":"故障",
+        "name":"报修",
         "sub_button":[
           {
             "type":"view",
-            "name":"提交故障",
+            "name":"自助报修",
             "url":"GOTO://MISSION_NEW"
           },
           {
             "type":"view",
-            "name":"我的故障",
+            "name":"人工报修",
+            "url":"GOTO://ONLINE_SUPPORT"
+          },
+          {
+            "type":"view",
+            "name":"查看进度",
             "url":"GOTO://MISSION_LIST"
           }]
       },
@@ -30,14 +35,10 @@
           },
           {
             "type":"click",
-            "name":"客服热线",
+            "name":"电话热线",
             "key":"KF_HOT_LINE"
-          },
-          {
-            "type":"view",
-            "name":"在线客服",
-            "url":"GOTO://ONLINE_SUPPORT"
-          }]
+          }
+          ]
       }
     ]
   }

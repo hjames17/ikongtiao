@@ -1,12 +1,9 @@
 package com.wetrack.ikongtiao.service.api.user;
 
 import com.wetrack.base.page.PageList;
-import com.wetrack.ikongtiao.domain.ImMessage;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
-import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
-import com.wetrack.ikongtiao.service.api.im.ImTokenDto;
 
 import java.util.List;
 
@@ -15,24 +12,19 @@ import java.util.List;
  */
 public interface UserInfoService {
     UserInfo CreateFromWeChatOpenId(String weChatOpenId);
+
     UserInfo create(UserInfo userInfo);
     UserInfo getByWeChatOpenId(String weChatOpenId);
 
-//    UserInfoDto getUser(String id) throws Exception;
+    //    UserInfoDto getUser(String id) throws Exception;
 
     UserInfo getBasicInfoById(String id);
 
     void update(UserInfo userInfo) throws Exception;
 
-//    Address createAddress(Address address) throws Exception;
+    //    Address createAddress(Address address) throws Exception;
 
     PageList<UserInfoDto> listUserByQueryParam(UserQueryParam param) throws Exception;
-
-    ImTokenDto getImTokenDtoByUserId(String userId,String srcType,String desType) throws Exception;
-
-    PageList<ImMessage> listMessageByParam(ImMessageQueryParam param);
-
-    String saveImMessage(ImMessage imMessage);
 
     List<UserInfo> listInIds(List<String> ids);
 }

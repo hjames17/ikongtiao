@@ -13,6 +13,9 @@ import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
 import com.wetrack.message.WebSocketManager;
+import com.wetrack.rong.RongCloudApiService;
+import com.wetrack.rong.models.FormatType;
+import com.wetrack.rong.models.SdkHttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,8 @@ public class AdminPushController {
 	@Resource
 	private ImSessionRepo imSessionRepo;
 
+	@Resource
+	private RongCloudApiService rongCloudApiService;
 	@ResponseBody
 	@RequestMapping("/socket/push")
 	public String pushService(String messageTo, Integer type, String message) throws IOException {
@@ -59,12 +64,7 @@ public class AdminPushController {
 	@ResponseBody
 	@RequestMapping("/push/notifyUser")
 	public String pushToWechatUserByKefu(String userId) throws IOException {
-		//		MessageSimple messageSimple = new MessageSimple();
-		//		messageSimple.setUserId(userId);
-		//		messageSimple.setUrl("");
-		//		messageProcess.process(MessageType.KEFU_NOTIFY_WECHAT, messageSimple);
 		Map<String, Object> params = new HashMap<String, Object>();
-		//		params.put(MessageParamKey.ADMIN_ID, );
 		params.put(MessageParamKey.USER_ID, userId);
 		messageService.send(MessageId.KEFU_NOTIFY_WECHAT, params);
 		return "ok";
@@ -73,9 +73,6 @@ public class AdminPushController {
 	@ResponseBody
 	@RequestMapping("/push/notifyFixer")
 	public String pushToWechatUserByFixer(Integer fixerId) throws IOException {
-		//		MessageSimple messageSimple = new MessageSimple();
-		//		messageSimple.setFixerId(fixerId);
-		//		messageProcess.process(MessageType.KEFU_NOTIFY_FIXER, messageSimple);
 		Map<String, Object> params = new HashMap<String, Object>();
 		//		params.put(MessageParamKey.ADMIN_ID, );
 		params.put(MessageParamKey.FIXER_ID, fixerId);
@@ -124,5 +121,12 @@ public class AdminPushController {
 		imSession.setStatus(1);
 		imSessionRepo.update(imSession);
 		return "会话关闭成功";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/message/checkOnline") String checkOnline(String rongyunUserId)
+			throws Exception {
+		SdkHttpResult result = rongCloudApiService.checkOnline(rongyunUserId, FormatType.json);
+		return result.getResult();
 	}
 }

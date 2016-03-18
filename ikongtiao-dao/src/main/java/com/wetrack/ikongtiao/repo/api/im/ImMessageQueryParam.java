@@ -16,6 +16,12 @@ public class ImMessageQueryParam extends BaseCondition {
 	 */
 	private String messageUid;
 
+	/**
+	 * 获取和谁的童话
+	 */
+	private String targetId;
+
+	private Long sessionId;
 	private Date dateTime;
 
 	public String getUserId() {
@@ -40,5 +46,21 @@ public class ImMessageQueryParam extends BaseCondition {
 
 	public void setDateTime(Date dateTime) {
 		this.dateTime = dateTime;
+	}
+
+	public String getTargetId() {
+		return targetId;
+	}
+
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
+	}
+
+	public Long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(Long sessionId) {
+		this.sessionId = sessionId;
 	}
 }

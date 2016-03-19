@@ -7,7 +7,6 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.WxMpXmlOutMessage;
 import me.chanjar.weixin.mp.bean.WxMpXmlOutTextMessage;
-import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -30,7 +29,7 @@ public class SubscriptionHandler implements WxMpMessageHandler {
             qrCode = eventKey.substring(QR_SCENE.length());
         }
         //获取用户基本信息
-        WxMpUser wxUser = wxMpService.userInfo(wxMessage.getFromUserName(), "zh_CN");
+        //WxMpUser wxUser = wxMpService.userInfo(wxMessage.getFromUserName(), "zh_CN");
 
         WxMpXmlOutTextMessage m
                 = WxMpXmlOutMessage.TEXT().content("欢迎!").fromUser(wxMessage.getToUserName())

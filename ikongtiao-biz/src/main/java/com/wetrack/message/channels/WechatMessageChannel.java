@@ -149,8 +149,31 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				String url = String
 						.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
 								params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
-
 				message.setUrl(url);
+				return message;
+			}
+		});
+
+		registerAdapter(MessageId.REPAIR_ORDER_PAID, new MessageAdapter() {
+			@Override
+			public Message build(int messageId, Map<String, Object> params) {
+				WechatMessage message = new WechatMessage();
+				RepairOrder order = repairOrderRepo.getById(Long.valueOf((String) params.get(MessageParamKey.REPAIR_ORDER_ID)));
+				UserInfo userInfo = userInfoRepo.getById(order.getUserId());
+				if(userInfo.getWechatOpenId() != null) {
+					message.setReceiver(userInfo.getWechatOpenId());
+					message.setTitle("您已经完成支付");
+					message.setContent(String.format("维修单%s已经完成付款，点击查看", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+					//TODO 图片地址可配置
+					message.setPicUrl(staticHost + "/images/ikongtiao/mission.png");
+					String url = String
+							.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
+									order.getUserId(), params.get(MessageParamKey.REPAIR_ORDER_ID));
+
+					message.setUrl(url);
+				}else{
+					return null;
+				}
 				return message;
 			}
 		});

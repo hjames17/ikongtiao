@@ -26,6 +26,7 @@ public class MessageId {
     public static final int ASSIGNED_FIXER = 105;
     public static final int COMPLETED_FIX_ORDER = 106;
     public static final int COMMENT_REPAIR_ORDER = 107;
+    public static final int REPAIR_ORDER_PAID = 108;
 
     /**
      * 认证提交

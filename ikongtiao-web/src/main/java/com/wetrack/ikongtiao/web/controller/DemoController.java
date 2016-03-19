@@ -1,6 +1,5 @@
 package com.wetrack.ikongtiao.web.controller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DemoController {
 
 
-    @Value("${app.log.name}")
-    String appName;
+//    @Value("${app.log.name}")
+//    String appName;
 //    @Resource
 //    WechatTokenService wechatTokenService;
     @RequestMapping("/we/demo")
@@ -24,9 +23,9 @@ public class DemoController {
         return userName+pwd;
     }
 
-    @RequestMapping(value = "/demo")  //,produces = "application/json;charset=UTF-8"
-    @ResponseBody
-    public String demoVo(){
-        return appName;
-    }
+//    @RequestMapping(value = "/demo")  //,produces = "application/json;charset=UTF-8"
+//    @ResponseBody
+//    public String demoVo(){
+//        return appName;
+//    }
 }

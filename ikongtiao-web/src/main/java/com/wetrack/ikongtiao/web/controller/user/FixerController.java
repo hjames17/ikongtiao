@@ -2,11 +2,7 @@ package com.wetrack.ikongtiao.web.controller.user;
 
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
-import com.wetrack.ikongtiao.service.impl.im.ImRongyunPrex;
-import com.wetrack.message.MessageId;
-import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
-import com.wetrack.message.deprecated.MessageSimple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by zhanghong on 16/1/4.
@@ -52,7 +45,7 @@ public class FixerController {
 		return fixer;
 	}
 
-	@ResponseBody
+	/*@ResponseBody
 	@RequestMapping("/u/fixer/notifyUser")
 	public String pushToWechatUserByKefu(String userId,
 			@RequestParam(value = "fixerId", required = false) Integer fixerId)
@@ -65,6 +58,6 @@ public class FixerController {
 		params.put(MessageParamKey.USER_ID, userId);
 		messageService.send(MessageId.FIXER_NOTIFY_WECHAT, params);
 		return "ok";
-	}
+	}*/
 
 }

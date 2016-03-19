@@ -89,5 +89,6 @@
         <module>../ikongtiao-biz</module>
         <module>../ikongtiao-web</module>
         <module>../ikongtiao-adminweb</module>
+        <module>../ikongtiao-im</module>
     </modules>
 </project>

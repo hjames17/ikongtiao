@@ -172,7 +172,7 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				return message;
 			}
 		});
-		registerAdapter(MessageId.FIXER_NOTIFY_WECHAT, new MessageAdapter() {
+		/*registerAdapter(MessageId.FIXER_NOTIFY_WECHAT, new MessageAdapter() {
 			@Override
 			public Message build(int messageId, Map<String, Object> params) {
 				WechatMessage message = new WechatMessage();
@@ -181,14 +181,14 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				message.setTitle("您有新的消息");
 				message.setContent("维修员给您发来消息，请点击查看");
 				message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
-				String url = String.format("%s%s?uid=%s&type=%peerId=%s",
+				String url = String.format("%s%s?uid=%s&type=%&peerId=%s",
 						weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 1,
 						params.get(MessageParamKey.FIXER_ID));
 				message.setUrl(url);
 				return message;
 			}
-		});
-		registerAdapter(MessageId.KEFU_NOTIFY_WECHAT, new MessageAdapter() {
+		});*/
+		registerAdapter(MessageId.IM_NOTIFY_WECHAT, new MessageAdapter() {
 			@Override
 			public Message build(int messageId, Map<String, Object> params) {
 				WechatMessage message = new WechatMessage();
@@ -197,8 +197,9 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				message.setTitle("您有新的消息");
 				message.setContent("维大师客服给您消息，请点击查看");
 				message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
-				String url = String.format("%s%s?uid=%s&type=%d",
-						weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 0);
+				String url = String.format("%s%s?uid=%s&type=%d&peerId=%s",
+						weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 0,
+						params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID));
 				message.setUrl(url);
 				return message;
 			}

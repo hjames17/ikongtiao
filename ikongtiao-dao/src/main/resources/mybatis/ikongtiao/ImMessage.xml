@@ -8,65 +8,70 @@
         <result column="message_to" property="messageTo" jdbcType="VARCHAR"/>
         <result column="message_from" property="messageFrom" jdbcType="VARCHAR"/>
         <result column="message_type" property="messageType" jdbcType="INTEGER"/>
-        <result column="message_content" property="messageContent" jdbcType="VARCHAR"/>
+        <result column="message_group_type" property="messageGroupType" jdbcType="INTEGER"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
     </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.wetrack.ikongtiao.domain.ImMessage" extends="BaseResultMap">
+        <result column="message_content" property="messageContent" jdbcType="LONGVARCHAR"/>
+    </resultMap>
     <sql id="Base_Column_List">
-    id, session_id,message_uid,message_to, message_from, message_content, create_time,message_type
+    id, session_id, message_uid, message_to, message_from, message_type, message_group_type, 
+    create_time
   </sql>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        select
-        <include refid="Base_Column_List"/>
-        from im_message
-        where id = #{id,jdbcType=BIGINT}
-    </select>
-    <select id="findImMessageByMessageUid" resultMap="BaseResultMap" parameterType="String">
-        select
-        <include refid="Base_Column_List"/>
-        from im_message
-        where message_uid = #{messageUid,jdbcType=BIGINT}
-    </select>
-    <select id="listImMessageByAdminId" resultMap="BaseResultMap">
-        select
-        DISTINCT message_from
-        from im_message where message_to = #{adminId}
-        order by id desc limit 20;
-    </select>
-    <select id="listImMessageByParam" resultMap="BaseResultMap"
-            parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
-        select
-        <include refid="Base_Column_List"/>
-        from im_message where (message_to = #{userId} or message_from = #{userId}) and create_time &lt; #{dateTime}
-        <if test="sessionId!=null">
-            and session_id = #{sessionId}
-        </if>
-        order by id desc limit #{start},#{pageSize}
-    </select>
-
-    <select id="countImMessageByParam" resultType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam"
-            parameterType="com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam">
+    <sql id="Blob_Column_List">
+    message_content
+  </sql>
+    <select id="countImMessageBySessionId"
+            resultType="com.wetrack.ikongtiao.repo.api.im.dto.ImMessageSessionParam"
+            parameterType="com.wetrack.ikongtiao.repo.api.im.dto.ImMessageSessionParam">
         select
         count(*) as totalSize
-        from im_message where (message_to = #{userId} or message_from = #{userId}) and create_time &lt; #{dateTime}
-        <if test="sessionId!=null">
-            and session_id = #{sessionId}
-        </if>
+        from im_message1
+        where session_id=#{sessionId}
+    </select>
+    <select id="listImMessageBySessionId" resultMap="ResultMapWithBLOBs"
+            parameterType="com.wetrack.ikongtiao.repo.api.im.dto.ImMessageSessionParam">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from im_message1
+        where session_id=#{sessionId} order by id desc limit #{start},#{pageSize}
+    </select>
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from im_message1
+        where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from im_message
+    delete from im_message1
     where id = #{id,jdbcType=BIGINT}
   </delete>
+    <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into im_message1 (session_id, message_uid, message_to,
+        message_from, message_type, message_group_type,
+        create_time, message_content)
+        values (#{sessionId,jdbcType=INTEGER}, #{messageUid,jdbcType=VARCHAR}, #{messageTo,jdbcType=VARCHAR},
+        #{messageFrom,jdbcType=VARCHAR}, #{messageType,jdbcType=INTEGER}, #{messageGroupType,jdbcType=INTEGER},
+        #{createTime,jdbcType=TIMESTAMP}, #{messageContent,jdbcType=LONGVARCHAR})
+    </insert>
     <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
         <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into im_message
+        insert into im_message1
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="messageUid != null">
-                message_uid,
-            </if>
             <if test="sessionId != null">
                 session_id,
+            </if>
+            <if test="messageUid != null">
+                message_uid,
             </if>
             <if test="messageTo != null">
                 message_to,
@@ -77,19 +82,22 @@
             <if test="messageType != null">
                 message_type,
             </if>
-            <if test="messageContent != null">
-                message_content,
+            <if test="messageGroupType != null">
+                message_group_type,
             </if>
             <if test="createTime != null">
                 create_time,
             </if>
+            <if test="messageContent != null">
+                message_content,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="messageUid != null">
-                #{messageUid,jdbcType=VARCHAR},
-            </if>
             <if test="sessionId != null">
                 #{sessionId,jdbcType=INTEGER},
+            </if>
+            <if test="messageUid != null">
+                #{messageUid,jdbcType=VARCHAR},
             </if>
             <if test="messageTo != null">
                 #{messageTo,jdbcType=VARCHAR},
@@ -100,46 +108,67 @@
             <if test="messageType != null">
                 #{messageType,jdbcType=INTEGER},
             </if>
-            <if test="messageContent != null">
-                #{messageContent,jdbcType=VARCHAR},
+            <if test="messageGroupType != null">
+                #{messageGroupType,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="messageContent != null">
+                #{messageContent,jdbcType=LONGVARCHAR},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
-        update im_message
+        update im_message1
         <set>
-            <if test="messageTo != null">
-                message_to = #{messageTo,jdbcType=VARCHAR},
-            </if>
             <if test="sessionId != null">
                 session_id = #{sessionId,jdbcType=INTEGER},
             </if>
             <if test="messageUid != null">
                 message_uid = #{messageUid,jdbcType=VARCHAR},
             </if>
-            <if test="messageType != null">
-                message_type = #{messageType,jdbcType=INTEGER},
+            <if test="messageTo != null">
+                message_to = #{messageTo,jdbcType=VARCHAR},
             </if>
             <if test="messageFrom != null">
                 message_from = #{messageFrom,jdbcType=VARCHAR},
             </if>
-            <if test="messageContent != null">
-                message_content = #{messageContent,jdbcType=VARCHAR},
+            <if test="messageType != null">
+                message_type = #{messageType,jdbcType=INTEGER},
+            </if>
+            <if test="messageGroupType != null">
+                message_group_type = #{messageGroupType,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="messageContent != null">
+                message_content = #{messageContent,jdbcType=LONGVARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
-    update im_message
-    set message_to = #{messageTo,jdbcType=VARCHAR},
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+    update im_message1
+    set session_id = #{sessionId,jdbcType=INTEGER},
+      message_uid = #{messageUid,jdbcType=VARCHAR},
+      message_to = #{messageTo,jdbcType=VARCHAR},
       message_from = #{messageFrom,jdbcType=VARCHAR},
-      message_content = #{messageContent,jdbcType=VARCHAR},
+      message_type = #{messageType,jdbcType=INTEGER},
+      message_group_type = #{messageGroupType,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      message_content = #{messageContent,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+    update im_message1
+    set session_id = #{sessionId,jdbcType=INTEGER},
+      message_uid = #{messageUid,jdbcType=VARCHAR},
+      message_to = #{messageTo,jdbcType=VARCHAR},
+      message_from = #{messageFrom,jdbcType=VARCHAR},
+      message_type = #{messageType,jdbcType=INTEGER},
+      message_group_type = #{messageGroupType,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>

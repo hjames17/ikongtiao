@@ -193,7 +193,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.FIXER_PROFESS_AUDIT_DENY, auditResultMessageAdapter);
 
 
-//        registerAdapter(MessageId.KEFU_NOTIFY_FIXER, new MessageAdapter() {
+//        registerAdapter(MessageId.IM_NOTIFY_FIXER, new MessageAdapter() {
 //            @Override
 //            public Message build(int messageId, Map<String, Object> params) {
 //                SmsMessage message = new SmsMessage();

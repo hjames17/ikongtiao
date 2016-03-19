@@ -3,51 +3,69 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.ImToken">
     <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.ImToken">
         <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
-        <result column="token" property="token" jdbcType="VARCHAR"/>
+        <result column="cloud_id" property="cloudId" jdbcType="VARCHAR"/>
+        <result column="system_id" property="systemId" jdbcType="VARCHAR"/>
+        <result column="role_type" property="roleType" jdbcType="INTEGER"/>
+        <result column="avator" property="avator" jdbcType="VARCHAR"/>
+        <result column="tag" property="tag" jdbcType="VARCHAR"/>
+        <result column="cloud_token" property="cloudToken" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, user_id, token, create_time, update_time
+    id, cloud_id, system_id, role_type, avator, tag, cloud_token, create_time, update_time
   </sql>
-
-    <select id="getByMixUserId" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from im_token
-        where user_id = #{userId,jdbcType=VARCHAR}
-    </select>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
-        from im_token
+        from im_token1
         where id = #{id,jdbcType=INTEGER}
     </select>
+
+    <select id="getImTokenByCloudId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from im_token1
+        where cloud_id = #{couldId,jdbcType=INTEGER}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from im_token
+    delete from im_token1
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.ImToken">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into im_token (user_id, token, create_time,
-        update_time)
-        values (#{userId,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-        #{updateTime,jdbcType=TIMESTAMP})
+        insert into im_token1 (cloud_id, system_id, role_type,
+        avator, tag, cloud_token,
+        create_time, update_time)
+        values (#{cloudId,jdbcType=VARCHAR}, #{systemId,jdbcType=VARCHAR}, #{roleType,jdbcType=INTEGER},
+        #{avator,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{cloudToken,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.ImToken">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into im_token
+        insert into im_token1
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">
-                user_id,
+            <if test="cloudId != null">
+                cloud_id,
             </if>
-            <if test="token != null">
-                token,
+            <if test="systemId != null">
+                system_id,
+            </if>
+            <if test="roleType != null">
+                role_type,
+            </if>
+            <if test="avator != null">
+                avator,
+            </if>
+            <if test="tag != null">
+                tag,
+            </if>
+            <if test="cloudToken != null">
+                cloud_token,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -57,11 +75,23 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userId != null">
-                #{userId,jdbcType=VARCHAR},
+            <if test="cloudId != null">
+                #{cloudId,jdbcType=VARCHAR},
             </if>
-            <if test="token != null">
-                #{token,jdbcType=VARCHAR},
+            <if test="systemId != null">
+                #{systemId,jdbcType=VARCHAR},
+            </if>
+            <if test="roleType != null">
+                #{roleType,jdbcType=INTEGER},
+            </if>
+            <if test="avator != null">
+                #{avator,jdbcType=VARCHAR},
+            </if>
+            <if test="tag != null">
+                #{tag,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudToken != null">
+                #{cloudToken,jdbcType=VARCHAR},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -72,13 +102,25 @@
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.ImToken">
-        update im_token
+        update im_token1
         <set>
-            <if test="userId != null">
-                user_id = #{userId,jdbcType=VARCHAR},
+            <if test="cloudId != null">
+                cloud_id = #{cloudId,jdbcType=VARCHAR},
             </if>
-            <if test="token != null">
-                token = #{token,jdbcType=VARCHAR},
+            <if test="systemId != null">
+                system_id = #{systemId,jdbcType=VARCHAR},
+            </if>
+            <if test="roleType != null">
+                role_type = #{roleType,jdbcType=INTEGER},
+            </if>
+            <if test="avator != null">
+                avator = #{avator,jdbcType=VARCHAR},
+            </if>
+            <if test="tag != null">
+                tag = #{tag,jdbcType=VARCHAR},
+            </if>
+            <if test="cloudToken != null">
+                cloud_token = #{cloudToken,jdbcType=VARCHAR},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -90,9 +132,13 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.ImToken">
-    update im_token
-    set user_id = #{userId,jdbcType=VARCHAR},
-      token = #{token,jdbcType=VARCHAR},
+    update im_token1
+    set cloud_id = #{cloudId,jdbcType=VARCHAR},
+      system_id = #{systemId,jdbcType=VARCHAR},
+      role_type = #{roleType,jdbcType=INTEGER},
+      avator = #{avator,jdbcType=VARCHAR},
+      tag = #{tag,jdbcType=VARCHAR},
+      cloud_token = #{cloudToken,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}

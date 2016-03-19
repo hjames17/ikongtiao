@@ -1,3 +1,4 @@
+/*
 package com.wetrack.ikongtiao.admin.controllers;
 
 import com.wetrack.base.page.PageList;
@@ -31,9 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+*/
 /**
  * Created by zhanghong on 15/12/28.
- */
+ *//*
+
 
 @Controller
 public class AdminPushController {
@@ -66,7 +69,7 @@ public class AdminPushController {
 	public String pushToWechatUserByKefu(String userId) throws IOException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.USER_ID, userId);
-		messageService.send(MessageId.KEFU_NOTIFY_WECHAT, params);
+		messageService.send(MessageId.IM_NOTIFY_WECHAT, params);
 		return "ok";
 	}
 
@@ -76,7 +79,7 @@ public class AdminPushController {
 		Map<String, Object> params = new HashMap<String, Object>();
 		//		params.put(MessageParamKey.ADMIN_ID, );
 		params.put(MessageParamKey.FIXER_ID, fixerId);
-		messageService.send(MessageId.KEFU_NOTIFY_FIXER, params);
+		messageService.send(MessageId.IM_NOTIFY_FIXER, params);
 		return "ok";
 	}
 
@@ -130,3 +133,4 @@ public class AdminPushController {
 		return result.getResult();
 	}
 }
+*/

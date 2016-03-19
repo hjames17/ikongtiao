@@ -2,8 +2,8 @@ package com.wetrack.ikongtiao.repo.impl.im;
 
 import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.ikongtiao.domain.ImMessage;
-import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
 import com.wetrack.ikongtiao.repo.api.im.ImMessageRepo;
+import com.wetrack.ikongtiao.repo.api.im.dto.ImMessageSessionParam;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -23,6 +23,19 @@ public class ImMessageRepoImpl implements ImMessageRepo {
 		return imMessage;
 	}
 
+	@Override public int countMessageBySessionId(ImMessageSessionParam param) {
+		ImMessageSessionParam result = commonDao.mapper(ImMessage.class).sql("countImMessageBySessionId").session()
+		                                        .selectOne(param);
+		if (result == null) {
+			return 0;
+		}
+		return result.getTotalSize() == null ? 0 : result.getTotalSize();
+	}
+
+	@Override public List<ImMessage> listMessageBySessionId(ImMessageSessionParam param) {
+		return commonDao.mapper(ImMessage.class).sql("listImMessageBySessionId").session().selectList(param);
+	}
+/*
 	@Override public List<ImMessage> listMessageByParam(ImMessageQueryParam param) {
 		return commonDao.mapper(ImMessage.class).sql("listImMessageByParam").session().selectList(param);
 	}
@@ -38,9 +51,9 @@ public class ImMessageRepoImpl implements ImMessageRepo {
 
 	@Override public List<ImMessage> listMessageByAdminId(String adminId) {
 		return commonDao.mapper(ImMessage.class).sql("listImMessageByAdminId").session().selectList(adminId);
-	}
+	}*//*
 
 	@Override public ImMessage findImMessageByMessageUid(String messageUid) {
 		return commonDao.mapper(ImMessage.class).sql("findImMessageByMessageUid").session().selectOne(messageUid);
-	}
+	}*/
 }

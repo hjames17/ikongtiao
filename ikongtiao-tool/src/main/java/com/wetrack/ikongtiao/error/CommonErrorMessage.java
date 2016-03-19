@@ -9,6 +9,15 @@ public enum CommonErrorMessage implements ErrorMessage {
 
 	MACHINE_TYPE_NOT_EXITS("机器类型不存在"),
 
+	IM_ROLE_TYPE_IS_NULL("IM的角色类型为空"),
+	IM_ROLE_TYPE_WRONG("IM角色类型不存在"),
+	IM_CLOUD_IS_NULL("IM的融云id为空"),
+	IM_SESSION_IS_NOT_EXITS("会话不存在"),
+	IM_SESSION_IS_CLOSED("会话已经关闭"),
+	IM_MESSAGE_PARAM_ERROR("保存聊天记录参数不正确"),
+	IM_MESSAGE_LIST_PARAM_NULL("获取消息记录参数为空"),
+	FIXER_IS_NOT_EXIST("维修员不存在"),
+	USER_IS_NOT_EXIST("用户不存在")
 	;
 
 	private String message;

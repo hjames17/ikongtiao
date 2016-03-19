@@ -91,22 +91,22 @@
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>-->
 
-		<!--<table tableName="user_auth_action" domainObjectName="UserAuthAction"
-			   enableCountByExample="false" enableUpdateByExample="false"
-			   enableDeleteByExample="false" enableSelectByExample="false">
-			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
-		</table>-->
-
-		<table tableName="im_session" domainObjectName="ImSession"
+		<table tableName="im_token1" domainObjectName="ImToken"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
 		</table>
-		<!--<table tableName="im_message" domainObjectName="ImMessage"
+
+		<table tableName="im_session1" domainObjectName="ImSession"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">
 			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
-		</table>-->
+		</table>
+		<table tableName="im_message1" domainObjectName="ImMessage"
+			   enableCountByExample="false" enableUpdateByExample="false"
+			   enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
 		<!--<table tableName="machine_type" domainObjectName="MachineType"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false">

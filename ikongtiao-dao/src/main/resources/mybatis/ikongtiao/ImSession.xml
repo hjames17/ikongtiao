@@ -3,48 +3,61 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.ImSession">
     <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.ImSession">
         <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="cloud_id" property="cloudId" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="tag" property="tag" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, status, create_time, end_time
+    id, cloud_id, status, remark, tag, create_time, end_time
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
-        from im_session
+        from im_session1
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <select id="findSessionByMessageToAndMessageFrom" resultMap="BaseResultMap">
-       select * from im_session where id in(
-       select session_id from im_message where
-       (message_from = #{messageFrom} and message_to =#{ messageTo}) or
-       (message_from = #{messageTo} and message_to = #{messageFrom}))
-       order by id desc limit 1;
+    <select id="findSessionByParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
+        select * from im_session1 where id in(
+        select session_id from im_message1 where
+        (message_from = #{messageFrom} and message_to =#{ messageTo}) or
+        (message_from = #{messageTo} and message_to = #{messageFrom}))
+        order by id desc limit 1;
     </select>
-
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from im_session
+    delete from im_session1
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.ImSession">
         <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into im_session (status, create_time, end_time
+        insert into im_session1 (cloud_id, status, remark,
+        tag, create_time, end_time
         )
-        values (#{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}
+        values (#{cloudId,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR},
+        #{tag,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}
         )
     </insert>
     <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.ImSession">
         <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into im_session
+        insert into im_session1
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cloudId != null">
+                cloud_id,
+            </if>
             <if test="status != null">
                 status,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="tag != null">
+                tag,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -54,8 +67,17 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cloudId != null">
+                #{cloudId,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="tag != null">
+                #{tag,jdbcType=VARCHAR},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -66,10 +88,19 @@
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.ImSession">
-        update im_session
+        update im_session1
         <set>
+            <if test="cloudId != null">
+                cloud_id = #{cloudId,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
                 status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="tag != null">
+                tag = #{tag,jdbcType=VARCHAR},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -81,8 +112,11 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.ImSession">
-    update im_session
-    set status = #{status,jdbcType=INTEGER},
+    update im_session1
+    set cloud_id = #{cloudId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR},
+      tag = #{tag,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       end_time = #{endTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<classPathEntry
+		location="D:/m2/repository/mysql/mysql-connector-java/5.1.21/mysql-connector-java-5.1.21.jar" />
+
+	<context id="MySQLTables" targetRuntime="MyBatis3">
+		<!--去除注释 （true好像不起作用） -->
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>
+		<plugin type="org.mybatis.generator.plugins.ToStringPlugin"></plugin>
+		<commentGenerator>
+			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://192.168.1.128:4306/chediandian" userId="xiaoka"
+			password="xiaoka123">
+		</jdbcConnection>
+
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<javaModelGenerator
+			targetPackage="com.xiaoka.platform.user.orm.entity"
+			targetProject="E:/">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<sqlMapGenerator targetPackage="com.xiaoka.platform.user.orm.entity"
+			targetProject="E:/">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+
+
+		<table tableName="login_action" domainObjectName="LoginActionEntity"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false">
+			<generatedKey column="ID" sqlStatement="MySql" identity="true" />
+		</table>
+	</context>
+</generatorConfiguration>

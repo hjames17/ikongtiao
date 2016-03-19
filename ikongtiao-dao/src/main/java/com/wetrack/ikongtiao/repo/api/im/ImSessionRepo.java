@@ -10,7 +10,9 @@ public interface ImSessionRepo {
 
 	Integer update(ImSession imSession);
 
-	ImSession findSessionById(Long id);
+	/*ImSession findSessionByMessageToAndMessageFrom(String messageTo, String messageForm);
+*/
+	ImSession getImSessionBySessionId(Integer sessionId);
 
-	ImSession findSessionByMessageToAndMessageFrom(String messageTo, String messageForm);
+	ImSession findSessionByParam(String messageFrom, String messageTo);
 }

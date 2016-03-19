@@ -10,7 +10,6 @@ import java.util.Date;
 public class ImMessageQueryParam extends BaseCondition {
 	
 	private String userId;
-
 	/**
 	 * 消息唯一id
 	 */
@@ -21,7 +20,8 @@ public class ImMessageQueryParam extends BaseCondition {
 	 */
 	private String targetId;
 
-	private Long sessionId;
+	private Integer sessionId;
+
 	private Date dateTime;
 
 	public String getUserId() {
@@ -56,11 +56,11 @@ public class ImMessageQueryParam extends BaseCondition {
 		this.targetId = targetId;
 	}
 
-	public Long getSessionId() {
+	public Integer getSessionId() {
 		return sessionId;
 	}
 
-	public void setSessionId(Long sessionId) {
+	public void setSessionId(Integer sessionId) {
 		this.sessionId = sessionId;
 	}
 }

@@ -1,9 +1,16 @@
 package com.wetrack.ikongtiao.service.impl.im;
 
+import com.wetrack.base.result.AjaxException;
 import com.wetrack.base.utils.jackson.Jackson;
+import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.ImToken;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
+import com.wetrack.ikongtiao.error.CommonErrorMessage;
+import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.im.ImTokenRepo;
+import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
+import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
 import com.wetrack.rong.RongCloudApiService;
 import com.wetrack.rong.models.FormatType;
 import com.wetrack.rong.models.SdkHttpResult;
@@ -22,35 +29,67 @@ public class ImTokenServiceImpl implements ImTokenService {
 	private ImTokenRepo imTokenRepo;
 
 	@Resource
+	private FixerRepo fixerRepo;
+
+	@Resource
+	private UserInfoRepo userInfoRepo;
+	@Resource
 	private RongCloudApiService rongCloudApiService;
 
-	/**
-	 * @param userId 微信用户id，维修员id，或者客服的id，已经封装过了
-	 * @return
-	 */
-	private ImToken save(String userId) throws Exception {
-		if (userId == null) {
-			return null;
+	@Override public ImToken getTokenBySystemIdAndRoleType(Object systemUserId,
+			ImRoleType imRoleType) {
+		if (imRoleType == null) {
+			throw new AjaxException("TOKEN_ROLE_TYPE_IS_NULL", "获取token的角色为空");
 		}
-		ImToken imToken = new ImToken();
-		imToken.setUserId(userId);
-		SdkHttpResult result = rongCloudApiService.getToken(userId, "", "", FormatType.json);
-		Map<String, Object> map = Jackson.base().readValue(result.getResult(), Map.class);
-		imToken.setToken(map.get("token").toString());
-		imToken = imTokenRepo.save(imToken);
+		String cloudId = imRoleType.getPrex() + systemUserId;
+		ImToken imToken = imTokenRepo.getImTokenByCloudId(cloudId);
+		if (imToken == null) {
+			imToken = new ImToken();
+			imToken.setCloudId(cloudId);
+			imToken.setRoleType(imRoleType.getCode());
+			imToken.setSystemId(systemUserId.toString());
+			String name = "";
+			String avatar = "";
+			switch (imRoleType) {
+			case FIXER:
+				Fixer fixer = fixerRepo.getFixerById((Integer) systemUserId);
+				if (fixer == null) {
+					throw new AjaxException(CommonErrorMessage.FIXER_IS_NOT_EXIST);
+				}
+				name = fixer.getName();
+				avatar = fixer.getAvatar();
+				break;
+			case WECHAT:
+				UserInfo userInfo = userInfoRepo.getById(systemUserId.toString());
+				if (userInfo == null) {
+					throw new AjaxException(CommonErrorMessage.USER_IS_NOT_EXIST);
+				}
+				name = userInfo.getAccountName();
+				avatar = userInfo.getAvatar();
+				break;
+			case KEFU:
+				name = "维大师客服";
+				avatar = "";
+				break;
+			default:
+				break;
+			}
+			imToken.setAvator(avatar);
+			imToken.setTag(name);
+			SdkHttpResult result = null;
+			try {
+				result = rongCloudApiService.getToken(cloudId, name, avatar, FormatType.json);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (result == null) {
+				throw new AjaxException("GET_CLOUD_TOKEN_ERROR", "获取融云token失败");
+			}
+			Map<String, Object> map = Jackson.base().readValue(result.getResult(), Map.class);
+			imToken.setCloudToken(map.get("token").toString());
+			imTokenRepo.saveImToken(imToken);
+		}
 		return imToken;
-	}
-
-	@Override public ImToken getTokenByUserId(Object userId, String type) throws Exception {
-		String mixUserId = type + "_" + userId;
-		ImToken token = imTokenRepo.getByMixUserId(mixUserId);
-		if (token == null) {
-			token = save(mixUserId);
-		}
-		if (token == null) {
-			throw new Exception("获取token失败");
-		}
-		return token;
 	}
 
 }

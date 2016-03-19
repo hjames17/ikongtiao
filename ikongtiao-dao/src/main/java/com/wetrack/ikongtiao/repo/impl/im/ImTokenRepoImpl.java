@@ -16,12 +16,21 @@ public class ImTokenRepoImpl implements ImTokenRepo {
 	@Resource(name = "commonDao")
 	private CommonDao commonDao;
 
-	@Override public ImToken save(ImToken imToken) {
+	/*@Override public ImToken save(ImToken imToken) {
 		commonDao.mapper(ImToken.class).sql("insertSelective").session().insert(imToken);
 		return imToken;
 	}
 
 	@Override public ImToken getByMixUserId(String mixId) {
 		return commonDao.mapper(ImToken.class).sql("getByMixUserId").session().selectOne(mixId);
+	}*/
+
+	@Override public ImToken saveImToken(ImToken imToken) {
+		commonDao.mapper(ImToken.class).sql("insertSelective").session().insert(imToken);
+		return imToken;
+	}
+
+	@Override public ImToken getImTokenByCloudId(String cloudId) {
+		return commonDao.mapper(ImToken.class).sql("getImTokenByCloudId").session().selectOne(cloudId);
 	}
 }

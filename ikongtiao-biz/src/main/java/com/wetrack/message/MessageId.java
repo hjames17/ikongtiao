@@ -62,9 +62,9 @@ public class MessageId {
     public static final int USER_CERT_AUDIT_PASS = 252;
     public static final int USER_CERT_AUDIT_DENY = 253;
 
-    public static final int KEFU_NOTIFY_WECHAT = 301;
+    public static final int IM_NOTIFY_WECHAT = 301;
+    public static final int IM_NOTIFY_FIXER = 303;
     public static final int FIXER_NOTIFY_WECHAT = 302;
-    public static final int KEFU_NOTIFY_FIXER = 303;
     public static final int WECHAT_NOTIFY_FIXER = 304;
 
 

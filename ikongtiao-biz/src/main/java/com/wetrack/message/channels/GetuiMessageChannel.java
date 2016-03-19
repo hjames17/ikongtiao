@@ -137,18 +137,17 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.FIXER_PROFESS_AUDIT_PASS, auditResultMessageAdapter);
         registerAdapter(MessageId.FIXER_PROFESS_AUDIT_DENY, auditResultMessageAdapter);
 
-
-        registerAdapter(MessageId.KEFU_NOTIFY_FIXER, new MessageAdapter() {
+        registerAdapter(MessageId.IM_NOTIFY_FIXER, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixerDevice.getClientId());
-                message.setTitle("你有新的客服消息");
-                message.setContent("你有新的客服消息，请点击查看");
+                message.setTitle("你有新的消息");
+                message.setContent("你有新的消息，请点击查看");
                 // 任务id，
                 Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.FIXER_ID));
+                map.put("id", params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID));
                 map.put("type", "message");
                 message.setData(map);
                 return message;

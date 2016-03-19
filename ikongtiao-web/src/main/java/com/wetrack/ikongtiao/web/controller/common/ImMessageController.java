@@ -1,9 +1,10 @@
+/*
 package com.wetrack.ikongtiao.web.controller.common;
 
 import com.wetrack.base.page.PageList;
-import com.wetrack.ikongtiao.domain.ImMessage;
-import com.wetrack.ikongtiao.domain.ImSession;
-import com.wetrack.ikongtiao.domain.ImToken;
+import com.wetrack.ikongtiao.domain.du.ImMessage;
+import com.wetrack.ikongtiao.domain.du.ImSession;
+import com.wetrack.ikongtiao.domain.du.ImToken;
 import com.wetrack.ikongtiao.repo.api.im.ImMessageQueryParam;
 import com.wetrack.ikongtiao.repo.api.im.ImSessionRepo;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
@@ -27,9 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+*/
 /**
  * Created by zhangsong on 16/2/29.
- */
+ *//*
+
 @Controller
 @RequestMapping("/message")
 public class ImMessageController {
@@ -107,3 +110,4 @@ public class ImMessageController {
 	}
 
 }
+*/

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>ikongtiao-im</artifactId>
+    <packaging>war</packaging>
+    <parent>
+        <groupId>com.wetrack.ikongtiao</groupId>
+        <artifactId>ikongtiao-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../ikongtiao-pom/pom.xml</relativePath>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>com.wetrack.ikongtiao</groupId>
+            <artifactId>ikongtiao-biz</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>im</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <url>http://115.29.203.145:8090/manager/text</url>
+                    <server>RemoteTomcatServer</server>
+                    <path>/web</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>im</warName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

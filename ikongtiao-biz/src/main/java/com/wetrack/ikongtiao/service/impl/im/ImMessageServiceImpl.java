@@ -36,6 +36,7 @@ public class ImMessageServiceImpl implements ImMessageService {
 			if (imSession == null || ImSessionStatus.CLOSE_SESSION.getCode().equals(imSession.getStatus())) {
 				imSession = new ImSession();
 				imSession.setCloudId(imMessage.getMessageFrom());
+				imSession.setToCloudId(imMessage.getMessageTo());
 				imSession.setStatus(ImSessionStatus.NEW_SISSION.getCode());
 				imSession.setRemark("系统新建会话");
 				imSession = imSessionRepo.save(imSession);
@@ -97,4 +98,5 @@ public class ImMessageServiceImpl implements ImMessageService {
 		}
 		return page;
 	}
+
 }

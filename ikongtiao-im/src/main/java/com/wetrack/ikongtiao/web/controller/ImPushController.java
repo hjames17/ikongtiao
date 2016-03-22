@@ -1,14 +1,16 @@
 package com.wetrack.ikongtiao.web.controller;
 
 import com.wetrack.base.result.AjaxException;
+import com.wetrack.base.result.AjaxResult;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
-import com.wetrack.ikongtiao.service.api.im.dto.PushNotifyDto;
 import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
+import com.wetrack.ikongtiao.service.api.im.dto.PushNotifyDto;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -24,7 +26,8 @@ public class ImPushController {
 	private MessageService messageService;
 
 	@RequestMapping(value = "/im/push/notify")
-	public void pushNotify(PushNotifyDto pushNotifyDto) {
+	@ResponseBody
+	public AjaxResult<String> pushNotify(PushNotifyDto pushNotifyDto) {
 		ImRoleType type = ImRoleType.parseCode(pushNotifyDto.getRoleType());
 
 		if (type == null) {
@@ -49,5 +52,7 @@ public class ImPushController {
 		default:
 			throw new AjaxException(CommonErrorMessage.IM_ROLE_TYPE_WRONG);
 		}
+
+		return new AjaxResult<>("success");
 	}
 }

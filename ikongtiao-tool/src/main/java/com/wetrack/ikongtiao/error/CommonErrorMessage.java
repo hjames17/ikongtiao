@@ -17,8 +17,9 @@ public enum CommonErrorMessage implements ErrorMessage {
 	IM_MESSAGE_PARAM_ERROR("保存聊天记录参数不正确"),
 	IM_MESSAGE_LIST_PARAM_NULL("获取消息记录参数为空"),
 	FIXER_IS_NOT_EXIST("维修员不存在"),
-	USER_IS_NOT_EXIST("用户不存在")
-	;
+	USER_IS_NOT_EXIST("用户不存在"),
+	IM_SESSION_LIST_PARAM_ERROR("获取会话列表参数不全"),
+	IM_MESSAGE_USER_CLOUD_IS_BULL("获取没有关闭会话的和当前聊天人的用户列表参数有误");
 
 	private String message;
 

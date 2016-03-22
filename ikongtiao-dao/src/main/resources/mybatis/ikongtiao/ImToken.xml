@@ -6,14 +6,14 @@
         <result column="cloud_id" property="cloudId" jdbcType="VARCHAR"/>
         <result column="system_id" property="systemId" jdbcType="VARCHAR"/>
         <result column="role_type" property="roleType" jdbcType="INTEGER"/>
-        <result column="avator" property="avator" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
         <result column="tag" property="tag" jdbcType="VARCHAR"/>
         <result column="cloud_token" property="cloudToken" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, cloud_id, system_id, role_type, avator, tag, cloud_token, create_time, update_time
+    id, cloud_id, system_id, role_type, avatar, tag, cloud_token, create_time, update_time
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -37,10 +37,10 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into im_token1 (cloud_id, system_id, role_type,
-        avator, tag, cloud_token,
+        avatar, tag, cloud_token,
         create_time, update_time)
         values (#{cloudId,jdbcType=VARCHAR}, #{systemId,jdbcType=VARCHAR}, #{roleType,jdbcType=INTEGER},
-        #{avator,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{cloudToken,jdbcType=VARCHAR},
+        #{avatar,jdbcType=VARCHAR}, #{tag,jdbcType=VARCHAR}, #{cloudToken,jdbcType=VARCHAR},
         #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.ImToken">
@@ -58,8 +58,8 @@
             <if test="roleType != null">
                 role_type,
             </if>
-            <if test="avator != null">
-                avator,
+            <if test="avatar != null">
+                avatar,
             </if>
             <if test="tag != null">
                 tag,
@@ -84,8 +84,8 @@
             <if test="roleType != null">
                 #{roleType,jdbcType=INTEGER},
             </if>
-            <if test="avator != null">
-                #{avator,jdbcType=VARCHAR},
+            <if test="avatar != null">
+                #{avatar,jdbcType=VARCHAR},
             </if>
             <if test="tag != null">
                 #{tag,jdbcType=VARCHAR},
@@ -113,8 +113,8 @@
             <if test="roleType != null">
                 role_type = #{roleType,jdbcType=INTEGER},
             </if>
-            <if test="avator != null">
-                avator = #{avator,jdbcType=VARCHAR},
+            <if test="avatar != null">
+                avatar = #{avatar,jdbcType=VARCHAR},
             </if>
             <if test="tag != null">
                 tag = #{tag,jdbcType=VARCHAR},
@@ -136,7 +136,7 @@
     set cloud_id = #{cloudId,jdbcType=VARCHAR},
       system_id = #{systemId,jdbcType=VARCHAR},
       role_type = #{roleType,jdbcType=INTEGER},
-      avator = #{avator,jdbcType=VARCHAR},
+      avatar = #{avatar,jdbcType=VARCHAR},
       tag = #{tag,jdbcType=VARCHAR},
       cloud_token = #{cloudToken,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},

@@ -74,7 +74,7 @@ public class ImTokenServiceImpl implements ImTokenService {
 			default:
 				break;
 			}
-			imToken.setAvator(avatar);
+			imToken.setAvatar(avatar);
 			imToken.setTag(name);
 			SdkHttpResult result = null;
 			try {

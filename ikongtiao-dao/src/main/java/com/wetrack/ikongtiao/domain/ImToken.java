@@ -32,9 +32,9 @@ public class ImToken implements Serializable {
     private Integer roleType;
 
     /**
-     * avator:用户头像
+     * avatar:用户头像
      */
-    private String avator;
+    private String avatar;
 
     /**
      * tag:用户标签（用户名）
@@ -121,17 +121,17 @@ public class ImToken implements Serializable {
     }
 
     /**
-     * @return the value of avator
+     * @return the value of avatar
      */
-    public String getAvator() {
-        return avator;
+    public String getAvatar() {
+        return avatar;
     }
 
     /**
-     * @param avator the value for avator
+     * @param avatar the value for avatar
      */
-    public void setAvator(String avator) {
-        this.avator = avator == null ? null : avator.trim();
+    public void setAvatar(String avatar) {
+        this.avatar = avatar == null ? null : avatar.trim();
     }
 
     /**
@@ -203,7 +203,7 @@ public class ImToken implements Serializable {
         sb.append(", cloudId=").append(cloudId);
         sb.append(", systemId=").append(systemId);
         sb.append(", roleType=").append(roleType);
-        sb.append(", avator=").append(avator);
+        sb.append(", avatar=").append(avatar);
         sb.append(", tag=").append(tag);
         sb.append(", cloudToken=").append(cloudToken);
         sb.append(", createTime=").append(createTime);

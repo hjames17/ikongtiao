@@ -22,4 +22,5 @@ public interface ImMessageRepo {
 	int countMessageBySessionId(ImMessageSessionParam param);
 
 	List<ImMessage> listMessageBySessionId(ImMessageSessionParam param);
+
 }

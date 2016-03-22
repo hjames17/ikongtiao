@@ -218,9 +218,9 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
 				message.setReceiver(userInfo.getWechatOpenId());
 				message.setTitle("您有新的消息");
-				message.setContent("维大师客服给您消息，请点击查看");
+				message.setContent("你有新的消息，请点击查看");
 				message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
-				String url = String.format("%s%s?uid=%s&type=%d&peerId=%s",
+				String url = String.format("%s%s?uid=%s&type=%d&peerId=%d",
 						weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 0,
 						params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID));
 				message.setUrl(url);

@@ -47,6 +47,10 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
                 Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
+                if(mission == null){
+                    mission = new Mission();
+                    mission.setId((Integer) params.get(MessageParamKey.MISSION_ID));
+                }
                 message.setId(messageId);
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
                 message.setReceiver(Role.EDIT_MISSION.toString());
@@ -179,7 +183,7 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
         String result = Utils.get(HttpExecutor.class).post(hostAdmin + "/admin/socket/push")
                 .addFormParam("messageTo", webMessage.getReceiver())
                 .addFormParam("type", String.valueOf(webMessage.getType()))
-                .addFormParam("message", Jackson.mobile().writeValueAsString(message)).executeAsString();
+                .addFormParam("message", Jackson.mobile().writeValueAsString(webMessage)).executeAsString();
         LOGGER.info("websocketPush,发送给{},内容:{},结果:{}", webMessage.getReceiver(), message, result);
     }
 }

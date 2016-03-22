@@ -55,8 +55,10 @@ public class RepairOrderController {
         if(!repairOrder.getUserId().equals(form.getUserId())){
             throw new BusinessException("这不是您的维修单!");
         }
-        if(form.isDeny() && repairOrder.getRepairOrderState().equals(CLOSED.getCode())){
-            throw new BusinessException("不要重复关闭维修单!");
+        if(form.isDeny()){
+            if(repairOrder.getRepairOrderState().equals(CLOSED.getCode())) {
+                throw new BusinessException("不要重复关闭维修单!");
+            }
         }else if(form.getPayment() == null){
             throw new BusinessException("未选择支付方式!");
         }

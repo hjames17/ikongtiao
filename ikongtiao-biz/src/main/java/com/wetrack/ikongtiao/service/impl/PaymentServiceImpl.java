@@ -3,6 +3,9 @@ package com.wetrack.ikongtiao.service.impl;
 import com.wetrack.ikongtiao.domain.PaymentInfo;
 import com.wetrack.ikongtiao.repo.api.PaymentInfoRepo;
 import com.wetrack.ikongtiao.service.api.PaymentService;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhanghong on 16/3/10.
@@ -24,6 +29,9 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
 
     @Autowired
     WxMpService weixinService;
+
+    @Autowired
+    MessageService messageService;
 
 
     @Autowired
@@ -86,6 +94,8 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
             }
             PaymentInfo created = paymentInfoRepo.create(paymentInfo);
 
+            checkSendMessage(paymentInfo);
+
             return created;
         }catch (Exception e){
             throw e;
@@ -93,6 +103,15 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
             unlock(paymentKey);
         }
 
+    }
+
+    private void checkSendMessage(PaymentInfo paymentInfo){
+        if(paymentInfo.getState() == PaymentInfo.State.PAID) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            //TODO 目前只有一种订单类型，头部都是RO,以后可能会扩展
+            params.put(MessageParamKey.REPAIR_ORDER_ID, paymentInfo.getOutTradeNo().substring("RO".length()));
+            messageService.send(MessageId.REPAIR_ORDER_PAID, params);
+        }
     }
 
     @Override
@@ -108,6 +127,8 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
         }finally {
             unlock(paymentKey);
         }
+
+        checkSendMessage(paymentInfo);
     }
 
     @Override

@@ -30,14 +30,14 @@ public class ImTokenController {
 	@Resource
 	private RongCloudApiService rongCloudApiService;
 
-	@RequestMapping("/im/token/get")
+	@RequestMapping("/token/get")
 	@ResponseBody
-	public AjaxResult<ImToken> getToken(String systemUserId, Integer roleType) {
+	public AjaxResult<ImToken> getToken(Integer systemUserId, Integer roleType) {
 		return new AjaxResult<>(
 				imTokenService.getTokenBySystemIdAndRoleType(systemUserId, ImRoleType.parseCode(roleType)));
 	}
 
-	@RequestMapping("/im/cloud/id/get")
+	@RequestMapping("/cloud/id/get")
 	@ResponseBody
 	public AjaxResult<String> getCloudId(@RequestParam(value = "systemUserId", required = false) String systemUserId,
 			Integer roleType) {
@@ -54,7 +54,7 @@ public class ImTokenController {
 		return new AjaxResult<>(imRoleType.getPrex() + systemUserId);
 	}
 
-	@RequestMapping("/im/cloud/checkOnline")
+	@RequestMapping("/cloud/checkOnline")
 	@ResponseBody
 	public AjaxResult<String> checkCouldOnline(String cloudId) {
 		SdkHttpResult result = null;

@@ -52,8 +52,8 @@ public class FixerTest {
 //        form.setInService(false);
         form.setInsured(false);
         try {
-            int count = fixerRepo.countFixerByQueryParam(form);
-            Assert.assertEquals(0, count);
+            List<Fixer> fixers = fixerRepo.listFixerByQueryParam(form);
+            System.out.print("ok");
         } catch (Exception e) {
             Assert.fail("failed");
             e.printStackTrace();

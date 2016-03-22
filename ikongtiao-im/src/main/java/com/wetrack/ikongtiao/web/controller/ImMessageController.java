@@ -23,7 +23,7 @@ public class ImMessageController {
 	@Resource
 	private ImMessageService imMessageService;
 
-	@RequestMapping(value = "/im/message/save")
+	@RequestMapping(value = "/message/save")
 	@ResponseBody
 	public AjaxResult<ImMessage> newMessage(ImMessage imMessage) {
 		if (StringUtils.isEmpty(imMessage.getMessageUid()) ||
@@ -38,7 +38,7 @@ public class ImMessageController {
 		return new AjaxResult<>(imMessage);
 	}
 
-	@RequestMapping(value = "/im/message/list")
+	@RequestMapping(value = "/message/list")
 	@ResponseBody
 	public PageList<ImMessage> listImMessageBySessionId(ImMessageSessionParam param) {
 		if (param == null || param.getSessionId() == null) {

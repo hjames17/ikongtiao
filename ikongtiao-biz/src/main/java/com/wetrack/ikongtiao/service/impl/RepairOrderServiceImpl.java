@@ -274,7 +274,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		 */
 		if(deny){
 			//用户可能已经付款，要发起退款
-			if(repairOrder.getPayment() == 1){
+			if(repairOrder.getPayment() != null && repairOrder.getPayment() == 1){
 				paymentService.closed(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, repairOrder.getId().toString());
 			}
 		}else if(repairOrder.getPayment() == 1){

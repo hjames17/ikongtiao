@@ -1,5 +1,5 @@
 package com.wetrack.ikongtiao.exception;
-import com.wetrack.base.exception.ExceptionHandler;
+import com.wetrack.base.exception.AbstractExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by zhangsong on 15/7/5.
  */
-public class BusinessExceptionHandler implements ExceptionHandler {
+public class BusinessExceptionHandler extends AbstractExceptionHandler {
     private static Logger logger = LoggerFactory.getLogger(BusinessExceptionHandler.class);
 
     public BusinessExceptionHandler() {
@@ -21,7 +21,7 @@ public class BusinessExceptionHandler implements ExceptionHandler {
         if(ex instanceof BusinessException) {
             BusinessException e = (BusinessException)ex;
             String message = e.getMessage();
-            logger.info("业务处理错误：msg=[{}]", message);
+            logger.info("业务处理结果：msg=[{}]", message);
             return this.createJsonView("", message, ex, request);
         } else {
             return null;

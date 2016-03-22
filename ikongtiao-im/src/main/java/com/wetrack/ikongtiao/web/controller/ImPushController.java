@@ -23,7 +23,7 @@ public class ImPushController {
 	@Resource
 	private MessageService messageService;
 
-	@RequestMapping(value = "/im/push/notify")
+	@RequestMapping(value = "/push/notify")
 	public void pushNotify(PushNotifyDto pushNotifyDto) {
 		ImRoleType type = ImRoleType.parseCode(pushNotifyDto.getRoleType());
 

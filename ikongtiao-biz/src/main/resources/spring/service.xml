@@ -71,7 +71,7 @@
             <props>
                 <!-- 遇到AjaxException异常时，采用 ajaxExceptionHandler 处理 -->
                 <prop key="com.wetrack.base.result.AjaxException">handler:ajaxExceptionHandler</prop>
-                <prop key="com.wetrack.base.result.BusinessExceptionHandler">handler:businessExceptionHandler</prop>
+                <prop key="com.wetrack.ikongtiao.exception.BusinessException">handler:businessExceptionHandler</prop>
             </props>
         </property>
         <!-- 全局异常：在exceptionMappings里面找不到对应的异常时，采用 globalExceptionHandler 处理 -->

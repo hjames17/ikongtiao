@@ -370,6 +370,7 @@ public class FixerServiceImpl implements FixerService {
                 return tokenService.login(found.getId().toString(), password);
             }else{
                 throw new BusinessException("密码错误");
+//                throw new AjaxException(MissionErrorMessage.MISSION_LIST_PARAM_ERROR);
             }
         }else{
             throw new BusinessException("不存在的用户");

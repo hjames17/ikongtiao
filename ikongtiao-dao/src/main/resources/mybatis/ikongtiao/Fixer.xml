@@ -30,9 +30,11 @@
     <result column="electrician_state" property="electricianState" jdbcType="TINYINT" />
     <!--<result column="electrician_info_id" property="electricianInfoId" jdbcType="INTEGER" />-->
     <result column="deleted" property="deleted" jdbcType="TINYINT" />
+    <result column="orders" property="orders" jdbcType="INTEGER" />
+    <result column="missions" property="missions" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, password, avatar, phone, contacts, province_id, city_id,
+    fixer.id, name, password, avatar, phone, contacts, province_id, city_id,
     district_id, address, latitude, longitude, geohash, level, min_price,
     dw_create_time, dw_update_time, operate_id, in_service, certificate_state, insurance_state, welder_state, electrician_state
   </sql>
@@ -295,9 +297,14 @@
       set @lat2 = #{latitude} + (#{distance} / 111);
     </if>
     select
-    <include refid="Base_Column_List" />
-    from fixer
+    <include refid="Base_Column_List" /> , count(DISTINCT repair_order.id) as orders, count(DISTINCT mission.id) as missions
+    from fixer LEFT OUTER JOIN repair_order
+    ON fixer.id = repair_order.fixer_id
+    LEFT OUTER JOIN mission
+    ON fixer.id = mission.fixer_id
     <where>
+      repair_order.repair_order_state = 5
+      and mission.mission_state = 2
       <if test="inService!=null">
         and in_service = #{inService,jdbcType=TINYINT}
       </if>
@@ -327,18 +334,8 @@
         and latitude between @lat1 and @lat2
       </if>
     </where>
-    ORDER BY id
+    ORDER BY fixer.id
     limit #{start},#{pageSize}
-  </select>
-  <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >
-    select
-    <include refid="Base_Column_List" />
-    from fixer
-    WHERE id IN
-    <foreach collection="list" index="index" item="item"
-      open = "(" separator="," close=")">
-      #{item}
-    </foreach>
   </select>
 
   <select id="countByQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.FixerQueryForm" >
@@ -382,6 +379,18 @@
         and latitude between @lat1 and @lat2
       </if>
     </where>
+  </select>
+
+
+  <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >
+    select
+    <include refid="Base_Column_List" />
+    from fixer
+    WHERE id IN
+    <foreach collection="list" index="index" item="item"
+             open = "(" separator="," close=")">
+      #{item}
+    </foreach>
   </select>
 
 </mapper>

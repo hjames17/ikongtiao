@@ -23,7 +23,7 @@ public class ImSessionController {
 	@Resource
 	private ImSessionRepo imSessionRepo;
 
-	@RequestMapping(value = "/im/session/save")
+	@RequestMapping(value = "/session/save")
 	@ResponseBody
 	public AjaxResult<ImSession> newSession(@RequestBody ImSession imSession) {
 		if (StringUtils.isEmpty(imSession.getCloudId())) {
@@ -34,12 +34,12 @@ public class ImSessionController {
 		return new AjaxResult<>(imSession);
 	}
 
-	@RequestMapping(value = "/im/session/get")
+	@RequestMapping(value = "/session/get")
 	public AjaxResult<ImSession> checkSessionStatus(Integer sessionId) {
 		return new AjaxResult<>(imSessionRepo.getImSessionBySessionId(sessionId));
 	}
 
-	@RequestMapping(value = "/im/session/close")
+	@RequestMapping(value = "/session/close")
 	public AjaxResult<String> closeSession(Integer sessionId) {
 		ImSession imSession = imSessionRepo.getImSessionBySessionId(sessionId);
 		if (imSession == null) {

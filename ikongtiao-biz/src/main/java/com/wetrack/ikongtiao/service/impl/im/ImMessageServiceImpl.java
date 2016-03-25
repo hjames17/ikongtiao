@@ -13,6 +13,7 @@ import com.wetrack.ikongtiao.service.api.im.dto.ImSessionStatus;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -95,6 +96,8 @@ public class ImMessageServiceImpl implements ImMessageService {
 		if (totalSize > 0) {
 			List<ImMessage> imMessages = imMessageRepo.listMessageBySessionId(param);
 			page.setData(imMessages);
+		} else {
+			page.setData(Collections.EMPTY_LIST);
 		}
 		return page;
 	}

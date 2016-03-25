@@ -5,17 +5,19 @@ package com.wetrack.ikongtiao.aspect;
  */
 public class MissionStateAspect {
 
-    /**
-     * 切点切入任务创建，任务受理， 任务指派，任务维修， 任务完成
-     */
-    public void stateChanged(){
+    void createdLog(){
 
     }
 
-    /**
-     * 切点切入客服对任务进行处理的操作
-     */
-    public void kefuOperation(){
+    void acceptedLog(){
+
+    }
+
+    void dispatchedLog(){
+
+    }
+
+    void finishedLog(){
 
     }
 

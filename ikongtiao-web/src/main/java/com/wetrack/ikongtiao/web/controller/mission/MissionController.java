@@ -27,7 +27,7 @@ public class MissionController {
 
 	@RequestMapping("/mission/save")
 	@ResponseBody
-	public AjaxResult<Boolean> addMission(@RequestBody MissionSubmitParam param) {
+	public AjaxResult<Boolean> addMission(@RequestBody MissionSubmitParam param) throws Exception{
 		if (param == null || StringUtils.isEmpty(param.getPhone()) || StringUtils.isEmpty(param.getPhone())
 				|| param.getMachineTypeId() == null) {
 			throw new AjaxException(MissionErrorMessage.MISSION_SUBMIT_PARAM_ERROR);

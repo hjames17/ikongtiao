@@ -14,10 +14,21 @@
     <result column="operator" property="operator" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
+    <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
+    <result column="organization" property="organization" jdbcType="VARCHAR" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="district_id" property="districtId" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, user_id, machine_type_id, mission_desc, mission_state, is_need_more, fixer_id,
-    admin_user_id, operator, create_time, update_time
+    admin_user_id, operator, create_time, update_time,
+    organization, contacter_name, contacter_phone,
+    province_id, city_id, district_id, address, longitude, latitude
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -35,19 +46,6 @@
     delete from mission
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.Mission" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into mission (user_id, machine_type_id, mission_desc,
-      mission_state, is_need_more, fixer_id, 
-      admin_user_id, operator,
-      create_time, update_time)
-    values (#{userId,jdbcType=VARCHAR}, #{machineTypeId,jdbcType=INTEGER}, #{missionDesc,jdbcType=VARCHAR},
-      #{missionState,jdbcType=TINYINT}, #{isNeedMore,jdbcType=TINYINT}, #{fixerId,jdbcType=INTEGER}, 
-      #{adminUserId,jdbcType=INTEGER}, #{operator,jdbcType=VARCHAR},
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
-  </insert>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.Mission" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
@@ -75,9 +73,6 @@
       <if test="adminUserId != null" >
         admin_user_id,
       </if>
-      <!--<if test="missionAddressId != null" >-->
-        <!--mission_address_id,-->
-      <!--</if>-->
       <if test="operator != null" >
         operator,
       </if>
@@ -86,6 +81,33 @@
       </if>
       <if test="updateTime != null" >
         update_time,
+      </if>
+      <if test="organization != null" >
+        organization,
+      </if>
+      <if test="contacterName != null" >
+        contacter_name,
+      </if>
+      <if test="contacterPhone != null" >
+        contacter_phone,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="districtId != null" >
+        district_id,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="longitude != null" >
+        longitude,
+      </if>
+      <if test="latitude != null" >
+        latitude,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -122,6 +144,33 @@
       <if test="updateTime != null" >
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="organization != null" >
+        #{organization},
+      </if>
+      <if test="contacterName != null" >
+        #{contacterName},
+      </if>
+      <if test="contacterPhone != null" >
+        #{contacterPhone},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId},
+      </if>
+      <if test="cityId != null" >
+        #{cityId},
+      </if>
+      <if test="districtId != null" >
+        #{districtId},
+      </if>
+      <if test="address != null" >
+        #{address},
+      </if>
+      <if test="longitude != null" >
+        #{longitude},
+      </if>
+      <if test="latitude != null" >
+        #{latitude},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.Mission" >
@@ -148,9 +197,6 @@
       <if test="adminUserId != null" >
         admin_user_id = #{adminUserId,jdbcType=INTEGER},
       </if>
-      <!--<if test="missionAddressId != null" >-->
-        <!--mission_address_id = #{missionAddressId,jdbcType=INTEGER},-->
-      <!--</if>-->
       <if test="operator != null" >
         operator = #{operator,jdbcType=VARCHAR},
       </if>
@@ -160,21 +206,34 @@
       <if test="updateTime != null" >
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="organization != null" >
+        organization = #{organization},
+      </if>
+      <if test="contacterName != null" >
+        contacter_name = #{contacterName},
+      </if>
+      <if test="contacterPhone != null" >
+        contacter_phone = #{contacterPhone},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId},
+      </if>
+      <if test="districtId != null" >
+        district_id = #{districtId},
+      </if>
+      <if test="address != null" >
+        address = #{address},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude},
+      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.Mission" >
-    update mission
-    set user_id = #{userId,jdbcType=VARCHAR},
-      machine_type_id = #{machineTypeId,jdbcType=INTEGER},
-      mission_desc = #{missionDesc,jdbcType=VARCHAR},
-      mission_state = #{missionState,jdbcType=TINYINT},
-      is_need_more = #{isNeedMore,jdbcType=TINYINT},
-      fixer_id = #{fixerId,jdbcType=INTEGER},
-      admin_user_id = #{adminUserId,jdbcType=INTEGER},
-      operator = #{operator,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

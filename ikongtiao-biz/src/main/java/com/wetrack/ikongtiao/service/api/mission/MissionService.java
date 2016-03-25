@@ -2,7 +2,6 @@ package com.wetrack.ikongtiao.service.api.mission;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.MissionAddress;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
@@ -17,8 +16,8 @@ public interface MissionService {
 	 * @param param
 	 * @return
 	 */
-	Mission saveMission(MissionSubmitParam param);
-	Mission saveMission(Mission mission, MissionAddress missionAddress) throws Exception;
+	Mission saveMission(MissionSubmitParam param) throws Exception;
+	Mission saveMission(Mission mission) throws Exception;
 
 	/**
 	 * 用户或者管理员分页查询任务列表

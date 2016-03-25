@@ -52,12 +52,19 @@ public class UserController {
         return userInfoService.listInIds(ids);
     }
 
+    @SignTokenAuth(roleNameRequired = "VIEW_CUSTOMER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/{userId}" , method = {RequestMethod.GET})
+    public UserInfo get(@PathVariable String userId) throws Exception{
+        return userInfoService.getBasicInfoById(userId);
+    }
+
 
     @SignTokenAuth(roleNameRequired = "EDIT_CUSTOMER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST}, produces = MediaType.TEXT_PLAIN_VALUE)
     public String create(@RequestBody UserInfo userInfo) throws Exception{
-        if(StringUtils.isEmpty(userInfo.getAccountName())){
+        if(StringUtils.isEmpty(userInfo.getOrganization())){
             throw new BusinessException("客户单位名称未填");
         }
         if(StringUtils.isEmpty(userInfo.getContacterName())){

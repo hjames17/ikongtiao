@@ -6,7 +6,7 @@
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="INTEGER" />
-    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="account_email" property="accountEmail" jdbcType="VARCHAR" />
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
     <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
@@ -24,7 +24,7 @@
 
   </resultMap>
   <sql id="Base_Column_List" >
-    user_info.id, user_info.phone, user_info.avatar, user_info.type, user_info.account_name, user_info.account_email, user_info.auth_state,
+    user_info.id, user_info.phone, user_info.avatar, user_info.type, user_info.organization, user_info.account_email, user_info.auth_state,
     user_info.auth_img, user_info.license_no, user_info.create_time, user_info.contacter_name, user_info.contacter_phone,
     user_info.province_id, user_info.city_id, user_info.district_id, user_info.address, user_info.latitude, user_info.longitude
   </sql>
@@ -37,10 +37,16 @@
     ON mission.user_id = user_info.id
     <where>
       <if test="phone != null ">
-        and user_info.phone LIKE #{phone}
+        (
+          user_info.phone LIKE #{phone}
+          or user_info.contacter_phone LIKE #{phone}
+        )
       </if>
       <if test="userName != null ">
-        and user_info.account_name LIKE #{userName}
+        and (
+          user_info.organization LIKE #{userName}
+          or user_info.contacter_name LIKE #{userName}
+        )
       </if>
       <if test="address != null ">
         and user_info.address LIKE #{address}
@@ -56,10 +62,16 @@
     from user_info
     <where>
       <if test="phone != null ">
-        and phone LIKE #{phone}
+        (
+        phone LIKE #{phone}
+        or contacter_phone LIKE #{phone}
+        )
       </if>
       <if test="userName != null ">
-        and account_name LIKE #{userName}
+        and (
+          organization LIKE #{userName}
+          or contacter_name LIKE #{userName}
+        )
       </if>
       <if test="address != null ">
         and address LIKE #{address}

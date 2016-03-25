@@ -7,7 +7,7 @@
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="INTEGER" />
-    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="account_email" property="accountEmail" jdbcType="VARCHAR" />
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR"/>
     <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR"/>
@@ -24,7 +24,7 @@
     <result column="longitude" property="longitude" jdbcType="DECIMAL"/>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, wechat_open_id,phone, avatar, type, account_name, account_email, auth_state,
+    id, wechat_open_id,phone, avatar, type, organization, account_email, auth_state,
     province_id, city_id, district_id, address, latitude, longitude,
     contacter_name, contacter_phone,
     auth_img, license_no, create_time, update_time
@@ -77,8 +77,8 @@
       <if test="type != null" >
         type,
       </if>
-      <if test="accountName != null" >
-        account_name,
+      <if test="organization != null" >
+        organization,
       </if>
       <if test="accountEmail != null" >
         account_email,
@@ -116,6 +116,12 @@
       <if test="longitude != null">
         longitude ,
       </if>
+      <if test="contacterName != null">
+        contacter_name ,
+      </if>
+      <if test="contacterPhone != null">
+        contacter_phone ,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -133,8 +139,8 @@
       <if test="type != null" >
         #{type,jdbcType=INTEGER},
       </if>
-      <if test="accountName != null" >
-        #{accountName,jdbcType=VARCHAR},
+      <if test="organization != null" >
+        #{organization,jdbcType=VARCHAR},
       </if>
       <if test="accountEmail != null" >
         #{accountEmail,jdbcType=VARCHAR},
@@ -172,6 +178,12 @@
       <if test="longitude != null">
         #{longitude,jdbcType=DECIMAL},
       </if>
+      <if test="contacterName != null">
+        #{contacterName,jdbcType=VARCHAR},
+      </if>
+      <if test="contacterPhone != null">
+        #{contacterPhone,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo">
@@ -189,8 +201,8 @@
       <if test="type != null" >
         type = #{type,jdbcType=INTEGER},
       </if>
-      <if test="accountName != null" >
-        account_name = #{accountName,jdbcType=VARCHAR},
+      <if test="organization != null" >
+        organization = #{organization,jdbcType=VARCHAR},
       </if>
       <if test="accountEmail != null" >
         account_email = #{accountEmail,jdbcType=VARCHAR},
@@ -228,22 +240,13 @@
       <if test="longitude != null">
         longitude = #{longitude,jdbcType=DECIMAL},
       </if>
+      <if test="contacterName != null">
+        contacter_name = #{contacterName,jdbcType=VARCHAR},
+      </if>
+      <if test="contacterPhone != null">
+        contacter_phone = #{contacterPhone,jdbcType=VARCHAR},
+      </if>
     </set>
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo">
-    update user_info
-    set wechat_open_id = #{wechatOpenId,jdbcType=VARCHAR},
-      avatar = #{avatar,jdbcType=VARCHAR},
-      type = #{type,jdbcType=INTEGER},
-      account_name = #{accountName,jdbcType=VARCHAR},
-      account_email = #{accountEmail,jdbcType=VARCHAR},
-      account_phone = #{accountPhone,jdbcType=VARCHAR},
-      auth_state = #{authState,jdbcType=INTEGER},
-      auth_img = #{authImg,jdbcType=VARCHAR},
-      license_no = #{licenseNo,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >

@@ -19,8 +19,9 @@ public class MissionDto {
 	 */
 	private String userId;
 
-	String contactName;
-	String contactPhone;
+	String organization;
+	String contacterName;
+	String contacterPhone;
 	Integer provinceId;
 	Integer cityId;
 	Integer districtId;
@@ -87,6 +88,7 @@ public class MissionDto {
 //	Integer missionAddressId;
 
 	Integer adminUserId;
+	String adminName;
 
 	/**
 	 * operator:操作人
@@ -236,22 +238,6 @@ public class MissionDto {
 		this.repairOrderCount = repairOrderCount;
 	}
 
-	public String getContactName() {
-		return contactName;
-	}
-
-	public void setContactName(String contactName) {
-		this.contactName = contactName;
-	}
-
-	public String getContactPhone() {
-		return contactPhone;
-	}
-
-	public void setContactPhone(String contactPhone) {
-		this.contactPhone = contactPhone;
-	}
-
 	public Integer getProvinceId() {
 		return provinceId;
 	}
@@ -298,5 +284,37 @@ public class MissionDto {
 
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
+	}
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+
+	public String getContacterName() {
+		return contacterName;
+	}
+
+	public void setContacterName(String contacterName) {
+		this.contacterName = contacterName;
+	}
+
+	public String getContacterPhone() {
+		return contacterPhone;
+	}
+
+	public void setContacterPhone(String contacterPhone) {
+		this.contacterPhone = contacterPhone;
+	}
+
+	public String getAdminName() {
+		return adminName;
+	}
+
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
 	}
 }

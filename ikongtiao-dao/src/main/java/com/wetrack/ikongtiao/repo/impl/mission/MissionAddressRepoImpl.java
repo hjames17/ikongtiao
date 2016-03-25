@@ -29,4 +29,7 @@ public class MissionAddressRepoImpl implements MissionAddressRepo {
 	@Override public MissionAddress getMissionAddressById(Integer missionAddressId) {
 		return commonDao.mapper(MissionAddress.class).sql("selectByPrimaryKey").session().selectOne(missionAddressId);
 	}
+
+
+
 }

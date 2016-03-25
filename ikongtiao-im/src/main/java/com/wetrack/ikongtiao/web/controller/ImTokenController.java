@@ -32,7 +32,7 @@ public class ImTokenController {
 
 	@RequestMapping("/token/get")
 	@ResponseBody
-	public AjaxResult<ImToken> getToken(Integer systemUserId, Integer roleType) {
+	public AjaxResult<ImToken> getToken(String systemUserId, Integer roleType) {
 		return new AjaxResult<>(
 				imTokenService.getTokenBySystemIdAndRoleType(systemUserId, ImRoleType.parseCode(roleType)));
 	}

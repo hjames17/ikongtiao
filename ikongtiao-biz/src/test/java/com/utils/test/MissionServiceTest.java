@@ -1,6 +1,9 @@
 package com.utils.test;
 
+import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.dto.MissionDto;
+import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.junit.Before;
@@ -50,16 +53,17 @@ public class MissionServiceTest {
 //
 //
 //
-//	@Test
-//	public void testListMission(){
-//		AppMissionQueryParam param = new AppMissionQueryParam();
-//		param.setUserId("15121522052300000010");
+	@Test
+	public void testListMission(){
+		AppMissionQueryParam param = new AppMissionQueryParam();
+//		param.setUserId();
+		param.setUserId("16031018068700000038");
 //		param.setType(0);
-//		String s = Utils.get(HttpExecutor.class).post("http://localhost:8081/ikongtiao/mission/list").setEntity(new StringEntity(
-//				Jackson.base().writeValueAsString(param),"utf-8")).addHeader("Content-Type","application/json").executeAsString();
-//
-//		System.out.println(s);
-//	}
+		param.setPage(0);
+		param.setPageSize(10);
+		PageList<MissionDto> page = missionService.listMissionByAppQueryParam(param);
+		System.out.println("ok");
+	}
 
 //	@Test
 //	public void testAcceptMission() throws Exception{

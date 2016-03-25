@@ -16,4 +16,5 @@ public interface ImMessageService {
 	List<ImMessage> listImMessageByAminId(Integer adminId);*/
 
 	PageList<ImMessage> listImMessageBySessionId(ImMessageSessionParam param);
+
 }

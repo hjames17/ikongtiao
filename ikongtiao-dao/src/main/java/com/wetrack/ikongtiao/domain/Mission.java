@@ -8,6 +8,7 @@
 package com.wetrack.ikongtiao.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Mission implements Serializable {
@@ -20,6 +21,8 @@ public class Mission implements Serializable {
      * user_id:用户Id
      */
     private String userId;
+
+    private String organization;
 
     /**
      * machine_type_id:机器类型id
@@ -55,6 +58,39 @@ public class Mission implements Serializable {
      * mission_address_id:任务地址id
      */
 //    private Integer missionAddressId;
+
+    private String contacterName;
+    private String contacterPhone;
+
+    /**
+     * province_id:所在省份id
+     */
+    private Integer provinceId;
+
+    /**
+     * city_id:所在城市id
+     */
+    private Integer cityId;
+
+    /**
+     * district_id:所在区域id
+     */
+    private Integer districtId;
+
+    /**
+     * address:详细地址
+     */
+    private String address;
+
+    /**
+     * latitude:纬度
+     */
+    private BigDecimal latitude;
+
+    /**
+     * longitude:经度
+     */
+    private BigDecimal longitude;
 
     /**
      * operator:操作人
@@ -230,4 +266,79 @@ public class Mission implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    public Integer getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(Integer provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+
+    public Integer getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Integer districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public String getContacterName() {
+        return contacterName;
+    }
+
+    public void setContacterName(String contacterName) {
+        this.contacterName = contacterName;
+    }
+
+    public String getContacterPhone() {
+        return contacterPhone;
+    }
+
+    public void setContacterPhone(String contacterPhone) {
+        this.contacterPhone = contacterPhone;
+    }
 }

@@ -12,11 +12,13 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <!--<result column="mission_address_id" property="missionAddressId" jdbcType="INTEGER" />-->
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
+    <result column="name" property="adminName" jdbcType="VARCHAR" />
     <result column="operator" property="operator" jdbcType="VARCHAR" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="repair_order_count" property="repairOrderCount" jdbcType="INTEGER" />
-    <result column="name" property="contactName" jdbcType="VARCHAR" />
-    <result column="phone" property="contactPhone" jdbcType="VARCHAR" />
+    <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
+    <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
+    <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
     <result column="city_id" property="cityId" jdbcType="INTEGER" />
     <result column="district_id" property="districtId" jdbcType="INTEGER" />
@@ -31,8 +33,9 @@
   <sql id="Mission_Dto_List" >
     mission.id, mission.user_id, mission.machine_type_id, mission.mission_desc, mission.mission_state, mission.is_need_more, mission.fixer_id,
     mission.admin_user_id, mission.operator, mission.create_time, mission.update_time,
-    mission_address.name, mission_address.phone, mission_address.province_id, mission_address.city_id, mission_address.district_id,
-    mission_address.address, mission_address.longitude, mission_address.latitude
+    organization, contacter_name, contacter_phone,
+    province_id, city_id, district_id, address, longitude, latitude,
+    admin.name
   </sql>
 
 
@@ -40,8 +43,8 @@
     SELECT <include refid="Mission_Dto_List"/>, COUNT(repair_order.id) as repair_order_count
     from mission LEFT OUTER JOIN repair_order
     ON repair_order.mission_id = mission.id
-    LEFT OUTER JOIN mission_address
-    ON mission.id = mission_address.id
+    LEFT OUTER JOIN admin
+    ON admin.id = mission.admin_user_id
     WHERE mission.id = #{id}
   </select>
 
@@ -49,17 +52,21 @@
     SELECT DISTINCT <include refid="Mission_Dto_List"/> , COUNT(repair_order.id) as repair_order_count
     from mission LEFT OUTER JOIN repair_order
     ON repair_order.mission_id = mission.id
-    LEFT OUTER JOIN mission_address
-    ON mission.id = mission_address.id
+    LEFT OUTER JOIN admin
+    ON admin.id = mission.admin_user_id
     <where>
       <if test="userId!=null">
         and mission.user_id = #{userId,jdbcType=VARCHAR}
       </if>
       <if test="userName!=null">
-        and mission_address.name LIKE #{userName,jdbcType=VARCHAR}
+        and
+        (
+          mission.contacter_name LIKE #{userName,jdbcType=VARCHAR}
+          or mission.organization LIKE #{userName,jdbcType=VARCHAR}
+        )
       </if>
       <if test="phone!=null">
-        and mission_address.phone LIKE #{phone,jdbcType=VARCHAR}
+        and mission.contacter_phone LIKE #{phone,jdbcType=VARCHAR}
       </if>
       <if test="type!=null">
         <choose>
@@ -88,19 +95,19 @@
     select
     count(*) as totalSize
     from mission
-    <if test="userName!=null or phone!=null">
-      LEFT OUTER JOIN mission_address
-      ON mission.id = mission_address.id
-    </if>
     <where>
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
       </if>
       <if test="userName!=null">
-        and mission_address.name LIKE #{userName,jdbcType=VARCHAR}
+        and
+        (
+          mission.contacter_name LIKE #{userName,jdbcType=VARCHAR}
+          or mission.organization LIKE #{userName,jdbcType=VARCHAR}
+        )
       </if>
       <if test="phone!=null">
-        and mission_address.phone LIKE #{phone,jdbcType=VARCHAR}
+        and mission.contacter_phone LIKE #{phone,jdbcType=VARCHAR}
       </if>
       <if test="type!=null">
         <choose>
@@ -125,8 +132,8 @@
     SELECT DISTINCT <include refid="Mission_Dto_List"/> , COUNT(repair_order.id) as repair_order_count
     from mission LEFT OUTER JOIN repair_order
     ON repair_order.mission_id = mission.id
-    LEFT OUTER JOIN mission_address
-    ON mission.id = mission_address.id
+    LEFT OUTER JOIN admin
+    ON admin.id = mission.admin_user_id
     <where>
       (mission.fixer_id = #{fixerId,jdbcType=INTEGER}
       or repair_order.fixer_id = #{fixerId,jdbcType=INTEGER}
@@ -153,8 +160,6 @@
   SELECT COUNT(*) as totalSize
   from mission LEFT OUTER JOIN repair_order
   ON repair_order.mission_id = mission.id
-  LEFT OUTER JOIN mission_address
-  ON mission.id = mission_address.id
   <where>
     (mission.fixer_id = #{fixerId,jdbcType=INTEGER}
     or repair_order.fixer_id = #{fixerId,jdbcType=INTEGER}

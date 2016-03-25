@@ -38,9 +38,9 @@ public class UserInfo implements Serializable {
     private Integer type;
 
     /**
-     * account_name:账户名称
+     * organization:单位名称
      */
-    private String accountName;
+    private String organization;
 
     /**
      * account_email:账户邮箱
@@ -174,19 +174,6 @@ public class UserInfo implements Serializable {
         this.type = type;
     }
 
-    /**
-     * @return the value of account_name
-     */
-    public String getAccountName() {
-        return accountName;
-    }
-
-    /**
-     * @param accountName the value for account_name
-     */
-    public void setAccountName(String accountName) {
-        this.accountName = accountName == null ? null : accountName.trim();
-    }
 
     /**
      * @return the value of account_email
@@ -344,6 +331,14 @@ public class UserInfo implements Serializable {
         this.longitude = longitude;
     }
 
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
     /**
      * This method corresponds to the database table user_info
      */
@@ -357,7 +352,7 @@ public class UserInfo implements Serializable {
         sb.append(", wechatOpenId=").append(wechatOpenId);
         sb.append(", avatar=").append(avatar);
         sb.append(", type=").append(type);
-        sb.append(", accountName=").append(accountName);
+        sb.append(", organization=").append(organization);
         sb.append(", accountEmail=").append(accountEmail);
         sb.append(", phone=").append(phone);
         sb.append(", authState=").append(authState);

@@ -46,7 +46,7 @@ public class FixerController {
                                 @RequestParam(required = false, value = "page") Integer page,
                                 @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
         FixerQueryForm queryForm = new FixerQueryForm();
-        queryForm.setPage(page == null ? 0 : page);
+        queryForm.setPage(page == null ? 1 : page);
         queryForm.setPageSize(pageSize == null ? 10 : pageSize);
         queryForm.setPhone(phone);
         queryForm.setName(name);

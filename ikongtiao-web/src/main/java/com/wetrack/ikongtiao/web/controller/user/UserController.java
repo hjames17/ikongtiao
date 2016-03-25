@@ -55,7 +55,7 @@ public class UserController {
 		String id;
 		Integer type;
 		String avatar;
-		String accountName;
+		String organization;
 		String accountEmail;
 		String phone;
 		String contacterName;
@@ -91,12 +91,12 @@ public class UserController {
 			this.avatar = avatar;
 		}
 
-		public String getAccountName() {
-			return accountName;
+		public String getOrganization() {
+			return organization;
 		}
 
-		public void setAccountName(String accountName) {
-			this.accountName = accountName;
+		public void setOrganization(String organization) {
+			this.organization = organization;
 		}
 
 		public String getAccountEmail() {

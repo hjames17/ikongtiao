@@ -36,7 +36,7 @@ public class ImTokenServiceImpl implements ImTokenService {
 	@Resource
 	private RongCloudApiService rongCloudApiService;
 
-	@Override public ImToken getTokenBySystemIdAndRoleType(Object systemUserId,
+	@Override public ImToken getTokenBySystemIdAndRoleType(String systemUserId,
 			ImRoleType imRoleType) {
 		if (imRoleType == null) {
 			throw new AjaxException("TOKEN_ROLE_TYPE_IS_NULL", "获取token的角色为空");
@@ -52,7 +52,7 @@ public class ImTokenServiceImpl implements ImTokenService {
 			String avatar = "";
 			switch (imRoleType) {
 			case FIXER:
-				Fixer fixer = fixerRepo.getFixerById((Integer) systemUserId);
+				Fixer fixer = fixerRepo.getFixerById(Integer.valueOf(systemUserId));
 				if (fixer == null) {
 					throw new AjaxException(CommonErrorMessage.FIXER_IS_NOT_EXIST);
 				}
@@ -60,11 +60,11 @@ public class ImTokenServiceImpl implements ImTokenService {
 				avatar = fixer.getAvatar();
 				break;
 			case WECHAT:
-				UserInfo userInfo = userInfoRepo.getById(systemUserId.toString());
+				UserInfo userInfo = userInfoRepo.getById(systemUserId);
 				if (userInfo == null) {
 					throw new AjaxException(CommonErrorMessage.USER_IS_NOT_EXIST);
 				}
-				name = userInfo.getAccountName();
+				name = userInfo.getOrganization();
 				avatar = userInfo.getAvatar();
 				break;
 			case KEFU:

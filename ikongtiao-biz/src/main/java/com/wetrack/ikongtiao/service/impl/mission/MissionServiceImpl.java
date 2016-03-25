@@ -5,7 +5,6 @@ import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.MachineType;
 import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.MissionAddress;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
@@ -17,7 +16,6 @@ import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
 import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
-import com.wetrack.ikongtiao.repo.api.mission.MissionAddressRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -49,8 +47,8 @@ public class MissionServiceImpl implements MissionService {
 	@Resource
 	private MissionRepo missionRepo;
 
-	@Resource
-	MissionAddressRepo missionAddressRepo;
+//	@Resource
+//	MissionAddressRepo missionAddressRepo;
 
 	@Resource
 	private UserInfoRepo userInfoRepo;
@@ -75,55 +73,38 @@ public class MissionServiceImpl implements MissionService {
 
 
 
-	@Transactional
-	@Override public Mission saveMission(MissionSubmitParam param) {
+
+	@Override public Mission saveMission(MissionSubmitParam param) throws Exception{
 		UserInfo userInfo = userInfoRepo.getById(param.getUserId());
 		if (userInfo == null) {
 			throw new AjaxException(UserErrorMessage.USER_NOT_EXITS);
 		}
 		//用户手机为空，就绑定手机号
-		if (StringUtils.isEmpty(userInfo.getPhone())) {
+		if (StringUtils.isEmpty(userInfo.getContacterPhone())) {
 			UserInfo bindUserInfo = new UserInfo();
 			bindUserInfo.setId(userInfo.getId());
 			bindUserInfo.setContacterPhone(param.getPhone());
 			userInfoRepo.update(bindUserInfo);
 		}
 
-
-
-		Mission mission = null;
-		// 提交的手机号和已经绑定的手机号要一致
-
-//		if (userInfo.getPhone().equals(param.getPhone())) {
-		MachineType machineType = machineTypeRepo.getMachineTypeById(param.getMachineTypeId());
-		// 检查机器类型是否存在
-		if (machineType == null) {
-			throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
-		}
-		mission = new Mission();
+		Mission mission = new Mission();
 //		mission.setMissionAddressId(missionAddress.getId());
 		mission.setMachineTypeId(param.getMachineTypeId());
 		mission.setUserId(param.getUserId());
-		mission = missionRepo.save(mission);
+
+
+		mission = doSave(mission, userInfo);
 //		}
 
 
 		//创建一个地址信息
-		MissionAddress missionAddress = new MissionAddress();
-		missionAddress.setPhone(param.getPhone());
-		//如果没有指定故障单位名称，则按照默认顺序使用客户的 1 单位名称 2 联系人
-		if(!StringUtils.isEmpty(userInfo.getAccountName())){
-			missionAddress.setName(userInfo.getAccountName());
-		}else if(!StringUtils.isEmpty(userInfo.getContacterName())){
-			missionAddress.setName(userInfo.getContacterName());
-		}
-		missionAddress.setId(mission.getId());
-		missionAddressRepo.save(missionAddress);
+//		MissionAddress missionAddress = new MissionAddress();
+//		missionAddress.setPhone(param.getPhone());
+
+//		missionAddress.setId(mission.getId());
+//		missionAddressRepo.save(missionAddress);
 
 		//发送消息
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setMissionId(mission.getId());
-//		messageProcess.process(MessageType.NEW_COMMISSION,messageSimple);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, mission.getId());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
@@ -132,26 +113,58 @@ public class MissionServiceImpl implements MissionService {
 	}
 
 
-	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public Mission saveMission(Mission mission, MissionAddress address) throws Exception{
-		mission = missionRepo.save(mission);
-		GeoLocation geoLocation = null;
-		try {
-			geoLocation = GeoUtil.getGeoLocationFromAddress(address.getAddress());
-		} catch (UnsupportedEncodingException e) {
-			throw new BusinessException("地址内容编码错误");
+	public Mission saveMission(Mission mission) throws Exception{
+		UserInfo userInfo = userInfoRepo.getById(mission.getUserId());
+		if (userInfo == null) {
+			throw new AjaxException(UserErrorMessage.USER_NOT_EXITS);
 		}
-		if(geoLocation == null){
-			throw new BusinessException(String.format("地址:%s无法获取经纬度，需要重新填写!", address));
-		}else{
-			address.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
-			address.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
-		}
-		address.setId(mission.getId());
-		missionAddressRepo.save(address);
+		return doSave(mission, userInfo);
+	}
 
-		return mission;
+	private Mission doSave(Mission mission, UserInfo userInfo) throws Exception{
+		// 检查机器类型是否存在
+		MachineType machineType = machineTypeRepo.getMachineTypeById(mission.getMachineTypeId());
+		if (machineType == null) {
+			throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
+		}
+		//如果没有指定故障单位名称，则默认使用客户的单位名称
+		if(StringUtils.isEmpty(mission.getOrganization()) && !StringUtils.isEmpty(userInfo.getOrganization())) {
+			mission.setOrganization(userInfo.getOrganization());
+		}
+		//如果没有指定故障联系人，则默认使用客户的联系人
+		if(StringUtils.isEmpty(mission.getContacterName()) && !StringUtils.isEmpty(userInfo.getContacterName())) {
+			mission.setContacterName(userInfo.getContacterName());
+		}
+		//如果没有制定故障联系电话，则默认使用客户的联系人电话
+		if(StringUtils.isEmpty(mission.getContacterPhone()) && !StringUtils.isEmpty(userInfo.getContacterPhone())) {
+			mission.setContacterPhone(userInfo.getContacterPhone());
+		}
+		//如果有地址，验证地址有效性,否则，默认使用客户地址
+		if(!StringUtils.isEmpty(mission.getAddress())){
+			GeoLocation geoLocation = null;
+			try {
+				geoLocation = GeoUtil.getGeoLocationFromAddress(mission.getAddress());
+			} catch (UnsupportedEncodingException e) {
+				throw new BusinessException("地址内容编码错误");
+			}
+			if(geoLocation == null){
+				throw new BusinessException(String.format("地址:%s无法获取经纬度，需要重新填写!", mission.getAddress()));
+			}else{
+				mission.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
+				mission.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
+			}
+		}else{
+			mission.setAddress(userInfo.getAddress());
+			mission.setProvinceId(userInfo.getProvinceId());
+			mission.setCityId(userInfo.getCityId());
+			mission.setDistrictId(userInfo.getDistrictId());
+			mission.setLatitude(userInfo.getLatitude());
+			mission.setLongitude(userInfo.getLongitude());
+		}
+
+
+		return missionRepo.save(mission);
 	}
 
 	//TODO 缓存
@@ -214,12 +227,6 @@ public class MissionServiceImpl implements MissionService {
 		missionRepo.update(mission);
 
 		//发送消息
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setUserId(mission.getUserId());
-//		messageSimple.setMissionId(missionId);
-//		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-//		messageSimple.setUrl(url);
-//		messageProcess.process(MessageType.ACCEPT_MISSION, messageSimple);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, missionId);
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
@@ -244,11 +251,6 @@ public class MissionServiceImpl implements MissionService {
 		missionRepo.update(mission);
 
 		//发送消息
-//		MessageSimple pushData = new MessageSimple();
-//		pushData.setUserId(mission.getUserId());
-//		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-//		pushData.setUrl(url);
-//		messageProcess.process(MessageType.REJECT_MISSION, pushData);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, missionId);
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
@@ -270,13 +272,6 @@ public class MissionServiceImpl implements MissionService {
 		}
 
 		//发送消息
-//		MessageSimple pushData = new MessageSimple();
-//		pushData.setUserId(mission.getUserId());
-//		pushData.setFixerId(fixerId);
-//		pushData.setMissionId(missionId);
-//		String url = String.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_DETAIL, mission.getUserId(), mission.getId());
-//		pushData.setUrl(url);
-//		messageProcess.process(MessageType.ASSIGNED_MISSION, pushData);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, missionId);
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
@@ -293,47 +288,18 @@ public class MissionServiceImpl implements MissionService {
 			throw new BusinessException("不存在任务" + id);
 		}
 
-//		MissionAddress missionAddress = new MissionAddress();
-//		missionAddress.setId(mission.getMissionAddressId());
-		MissionAddress missionAddress = missionAddressRepo.getMissionAddressById(mission.getId());
-		boolean addressChanged = false;
-		if(name != null) {
-			missionAddress.setName(name);
-			addressChanged = true;
+		if(!StringUtils.isEmpty(name)) {
+			mission.setContacterName(name);
 		}
-		if(provinceId != null) {
-			missionAddress.setProvinceId(provinceId);
-			addressChanged = true;
-		}
-		if(cityId != null) {
-			missionAddress.setCityId(cityId);
-			addressChanged = true;
-		}
-		if(districtId != null) {
-			missionAddress.setDistrictId(districtId);
-			addressChanged = true;
-		}
-		if(address != null) {
-			missionAddress.setAddress(address);
-			GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(missionAddress.getAddress());
+		if(!StringUtils.isEmpty(address) && !address.equals(mission.getAddress())) {
+			GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(address);
 			if(geoLocation == null){
 				throw new BusinessException(String.format("任务%d地址:%s无法获取经纬度，需要重新填写!", id, address));
 			}else{
-				missionAddress.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
-				missionAddress.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
+				mission.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
+				mission.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
 			}
-			addressChanged = true;
-		}
-//		if(latitude != null) {
-//			missionAddress.setLatitude(BigDecimal.valueOf(latitude));
-//			addressChanged = true;
-//		}
-//		if(longitude != null) {
-//			missionAddress.setLongitude(BigDecimal.valueOf(longitude));
-//			addressChanged = true;
-//		}
-		if(addressChanged) {
-			missionAddressRepo.update(missionAddress);
+			mission.setAddress(address);
 		}
 		//修改状态
 		if(description != null) {
@@ -362,12 +328,6 @@ public class MissionServiceImpl implements MissionService {
 		missionRepo.update(mission);
 
 		//发送消息
-//		mission = missionRepo.getMissionById(missionId);
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setMissionId(missionId);
-//		messageSimple.setFixerId(mission.getFixerId());
-//		messageProcess.process(MessageType.COMPLETED_MISSION, messageSimple);
-
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, missionId);
 		params.put(MessageParamKey.USER_ID, mission.getUserId());

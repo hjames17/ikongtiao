@@ -30,14 +30,17 @@ public class UserInfoDto implements Serializable{
     private Integer type;
 
     /**
-     * account_name:账户名称
+     * organization:账户名称
      */
-    private String accountName;
+    private String organization;
 
     /**
      * account_email:账户邮箱
      */
     private String accountEmail;
+
+    String contacterName;
+    String contacterPhone;
 
     /**
      * auth_state:认证状态,0：待认证，1：认证中，2：认证成功；3:认证失败
@@ -143,15 +146,15 @@ public class UserInfoDto implements Serializable{
     /**
      * @return the value of account_name
      */
-    public String getAccountName() {
-        return accountName;
+    public String getOrganization() {
+        return organization;
     }
 
     /**
-     * @param accountName the value for account_name
+     * @param organization the value for account_name
      */
-    public void setAccountName(String accountName) {
-        this.accountName = accountName == null ? null : accountName.trim();
+    public void setOrganization(String organization) {
+        this.organization = organization == null ? null : organization.trim();
     }
 
     /**
@@ -287,6 +290,22 @@ public class UserInfoDto implements Serializable{
 
     public void setMissionCount(Integer missionCount) {
         this.missionCount = missionCount;
+    }
+
+    public String getContacterName() {
+        return contacterName;
+    }
+
+    public void setContacterName(String contacterName) {
+        this.contacterName = contacterName;
+    }
+
+    public String getContacterPhone() {
+        return contacterPhone;
+    }
+
+    public void setContacterPhone(String contacterPhone) {
+        this.contacterPhone = contacterPhone;
     }
 
     //    public List<Address> getContactsList() {

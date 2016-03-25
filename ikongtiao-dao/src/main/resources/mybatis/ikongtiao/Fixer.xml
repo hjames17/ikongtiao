@@ -34,8 +34,8 @@
     <result column="missions" property="missions" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    fixer.id, name, password, avatar, phone, contacts, province_id, city_id,
-    district_id, address, latitude, longitude, geohash, level, min_price,
+    fixer.id, name, password, avatar, phone, fixer.province_id, fixer.city_id,
+    fixer.district_id, fixer.address, fixer.latitude, fixer.longitude, geohash, level, min_price,
     dw_create_time, dw_update_time, operate_id, in_service, certificate_state, insurance_state, welder_state, electrician_state
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -55,24 +55,6 @@
     delete from fixer
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.Fixer" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into fixer (name, avatar, phone, 
-      contacts, province_id, city_id,
-      district_id, address, latitude, 
-      longitude, geohash, level, 
-      min_price, dw_create_time, dw_update_time, 
-      operate_id)
-    values (#{name,jdbcType=VARCHAR}, #{avatar,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
-      #{contacts,jdbcType=VARCHAR}, #{provinceName,jdbcType=VARCHAR}, #{provinceId,jdbcType=INTEGER}, 
-      #{cityName,jdbcType=VARCHAR}, #{cityId,jdbcType=VARCHAR}, #{districtName,jdbcType=VARCHAR}, 
-      #{districtId,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, 
-      #{longitude,jdbcType=DECIMAL}, #{geohash,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT}, 
-      #{minPrice,jdbcType=DECIMAL}, #{dwCreateTime,jdbcType=TIMESTAMP}, #{dwUpdateTime,jdbcType=TIMESTAMP}, 
-      #{operateId,jdbcType=INTEGER})
-  </insert>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.Fixer" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
@@ -87,9 +69,6 @@
       </if>
       <if test="phone != null" >
         phone,
-      </if>
-      <if test="contacts != null" >
-        contacts,
       </if>
       <if test="provinceId != null" >
         province_id,
@@ -140,9 +119,6 @@
       </if>
       <if test="phone != null" >
         #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="contacts != null" >
-        #{contacts,jdbcType=VARCHAR},
       </if>
       <if test="provinceId != null" >
         #{provinceId,jdbcType=INTEGER},
@@ -199,9 +175,6 @@
       </if>
       <if test="phone != null" >
         phone = #{phone,jdbcType=VARCHAR},
-      </if>
-      <if test="contacts != null" >
-        contacts = #{contacts,jdbcType=VARCHAR},
       </if>
       <if test="provinceId != null" >
         province_id = #{provinceId,jdbcType=INTEGER},
@@ -269,26 +242,6 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.Fixer" >
-    update fixer
-    set name = #{name,jdbcType=VARCHAR},
-      avatar = #{avatar,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      contacts = #{contacts,jdbcType=VARCHAR},
-      province_id = #{provinceId,jdbcType=INTEGER},
-      city_id = #{cityId,jdbcType=INTEGER},
-      district_id = #{districtId,jdbcType=INTEGER},
-      address = #{address,jdbcType=VARCHAR},
-      latitude = #{latitude,jdbcType=DECIMAL},
-      longitude = #{longitude,jdbcType=DECIMAL},
-      geohash = #{geohash,jdbcType=VARCHAR},
-      level = #{level,jdbcType=TINYINT},
-      min_price = #{minPrice,jdbcType=DECIMAL},
-      dw_create_time = #{dwCreateTime,jdbcType=TIMESTAMP},
-      dw_update_time = #{dwUpdateTime,jdbcType=TIMESTAMP},
-      operate_id = #{operateId,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
   <select id="listByQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.FixerQueryForm" >
     <if test="longitude!=null and latitude!=null">
       set @lon1 = #{longitude} - #{distance} / abs(cos(radians(#{latitude})) * 111);
@@ -299,12 +252,10 @@
     select
     <include refid="Base_Column_List" /> , count(DISTINCT repair_order.id) as orders, count(DISTINCT mission.id) as missions
     from fixer LEFT OUTER JOIN repair_order
-    ON fixer.id = repair_order.fixer_id
+    ON fixer.id = repair_order.fixer_id and repair_order.repair_order_state = 5
     LEFT OUTER JOIN mission
-    ON fixer.id = mission.fixer_id
+    ON fixer.id = mission.fixer_id and mission.mission_state = 2
     <where>
-      repair_order.repair_order_state = 5
-      and mission.mission_state = 2
       <if test="inService!=null">
         and in_service = #{inService,jdbcType=TINYINT}
       </if>
@@ -327,13 +278,14 @@
         and  name LIKE #{name}
       </if>
       <if test="address != null ">
-        and address LIKE #{address}
+        and fixer.address LIKE #{address}
       </if>
       <if test="longitude!=null and latitude!=null">
-        and longitude between @lon1 and @lon2
-        and latitude between @lat1 and @lat2
+        and fixer.longitude between @lon1 and @lon2
+        and fixer.latitude between @lat1 and @lat2
       </if>
     </where>
+    GROUP BY fixer.id
     ORDER BY fixer.id
     limit #{start},#{pageSize}
   </select>

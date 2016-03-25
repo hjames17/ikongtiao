@@ -9,6 +9,7 @@ import com.wetrack.ikongtiao.repo.api.im.dto.ImMessageSessionParam;
 import com.wetrack.ikongtiao.service.api.im.ImMessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -25,7 +26,7 @@ public class ImMessageController {
 
 	@RequestMapping(value = "/message/save")
 	@ResponseBody
-	public AjaxResult<ImMessage> newMessage(ImMessage imMessage) {
+	public AjaxResult<ImMessage> newMessage(@RequestBody ImMessage imMessage) {
 		if (StringUtils.isEmpty(imMessage.getMessageUid()) ||
 				StringUtils.isEmpty(imMessage.getMessageFrom()) ||
 				StringUtils.isEmpty(imMessage.getMessageTo()) ||

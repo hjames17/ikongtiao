@@ -8,24 +8,31 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class RepairOrderStateAspect {
 
-    /**
-     * 切点切入维修单创建，维修单报价， 维修单确认，维修单配件就绪， 维修单指派， 维修单完成
-     */
-    public void stateChanged(){
+    void roCreatedLog(){
 
     }
 
-    /**
-     * 切点切入客服对维修单进行的操作
-     */
-    public void kefuOperation(){
+    void roSetCostLog(){
 
     }
 
-    /**
-     * 切点切入维修单支付消息
-     */
-    public void paymentMessage(){
+    void roEditLog(){
+
+    }
+
+    void roPreparedLog(){
+
+    }
+
+    void roConfirmedLog(){
+
+    }
+
+    void roDispatchedLog(){
+
+    }
+
+    void roFinishedLog(){
 
     }
 }

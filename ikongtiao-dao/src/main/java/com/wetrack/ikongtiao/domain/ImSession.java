@@ -22,6 +22,11 @@ public class ImSession implements Serializable {
     private String cloudId;
 
     /**
+     * cloud_id:融云id,会话从属第二id
+     */
+    private String toCloudId;
+
+    /**
      * status:会话状态，0:新建，1:完结
      */
     private Integer status;
@@ -74,6 +79,14 @@ public class ImSession implements Serializable {
      */
     public void setCloudId(String cloudId) {
         this.cloudId = cloudId == null ? null : cloudId.trim();
+    }
+
+    public String getToCloudId() {
+        return toCloudId;
+    }
+
+    public void setToCloudId(String toCloudId) {
+        this.toCloudId = toCloudId;
     }
 
     /**

@@ -8,5 +8,5 @@ import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
  */
 public interface ImTokenService {
 
-	ImToken getTokenBySystemIdAndRoleType(Object systemUserId, ImRoleType imRoleType);
+	ImToken getTokenBySystemIdAndRoleType(String systemUserId, ImRoleType imRoleType);
 }

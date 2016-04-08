@@ -62,7 +62,7 @@ public class RepairOrderController {
         }else if(form.getPayment() == null){
             throw new BusinessException("未选择支付方式!");
         }
-        repairOrderService.confirm(form.getRepairOrderId(), form.isDeny(), form.getPayment(), form.isNeedInvoice(), form.getInvoiceTitle());
+        repairOrderService.confirm(form.getRepairOrderId(), form.isDeny(), form.getPayment(), form.isNeedInvoice(), form.getInvoiceTitle(), form.getTaxNo());
     }
 
     @ResponseBody
@@ -87,6 +87,7 @@ public class RepairOrderController {
         boolean deny;
         boolean needInvoice;
         String invoiceTitle;//发票抬头
+        String taxNo;//税号
 
         public Long getRepairOrderId() {
             return repairOrderId;
@@ -134,6 +135,14 @@ public class RepairOrderController {
 
         public void setInvoiceTitle(String invoiceTitle) {
             this.invoiceTitle = invoiceTitle;
+        }
+
+        public String getTaxNo() {
+            return taxNo;
+        }
+
+        public void setTaxNo(String taxNo) {
+            this.taxNo = taxNo;
         }
     }
 }

@@ -41,8 +41,13 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
-    public User getByAdminId(String email) {
+    public User getByEmail(String email) {
         return adminRepo.findByEmail(email);
+    }
+
+    @Override
+    public User getById(Integer id) {
+        return adminRepo.findById(id);
     }
 
 

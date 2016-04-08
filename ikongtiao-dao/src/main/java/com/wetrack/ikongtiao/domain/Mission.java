@@ -27,7 +27,7 @@ public class Mission implements Serializable {
     /**
      * machine_type_id:机器类型id
      */
-    private Integer machineTypeId;
+//    private Integer machineTypeId;
 
     /**
      * mission_desc:任务描述
@@ -61,6 +61,8 @@ public class Mission implements Serializable {
 
     private String contacterName;
     private String contacterPhone;
+
+    String faultType;
 
     /**
      * province_id:所在省份id
@@ -142,14 +144,6 @@ public class Mission implements Serializable {
      */
     public void setUserId(String userId) {
         this.userId = userId == null ? null : userId.trim();
-    }
-
-    public Integer getMachineTypeId() {
-        return machineTypeId;
-    }
-
-    public void setMachineTypeId(Integer machineTypeId) {
-        this.machineTypeId = machineTypeId;
     }
 
     /**
@@ -339,6 +333,15 @@ public class Mission implements Serializable {
     }
 
     public void setContacterPhone(String contacterPhone) {
+
         this.contacterPhone = contacterPhone;
+    }
+
+    public String getFaultType() {
+        return faultType;
+    }
+
+    public void setFaultType(String faultType) {
+        this.faultType = faultType;
     }
 }

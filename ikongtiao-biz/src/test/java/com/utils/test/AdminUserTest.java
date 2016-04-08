@@ -35,7 +35,7 @@ public class AdminUserTest {
     @Test
     public void get(){
         try {
-            User user = adminService.getByAdminId("linchangmao@wetrack.studio");
+            User user = adminService.getByEmail("linchangmao@wetrack.studio");
             Assert.assertTrue(true);
         } catch (Exception e) {
             e.printStackTrace();

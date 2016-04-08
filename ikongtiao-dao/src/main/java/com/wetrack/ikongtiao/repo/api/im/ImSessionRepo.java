@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.repo.api.im;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.ImMessage;
 import com.wetrack.ikongtiao.domain.ImSession;
+import com.wetrack.ikongtiao.domain.ImSessionCount;
 import com.wetrack.ikongtiao.repo.api.im.dto.ImMessageUserParam;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface ImSessionRepo {
 	List<ImSession> listImSessionByMessage(ImMessage imMessage);
 
 	PageList<ImSession> listImMessageUserByParam(ImMessageUserParam param);
+
+	List<ImSessionCount> countActiveSessionsForKefus(List<String> kefuCloudIdList);
 }

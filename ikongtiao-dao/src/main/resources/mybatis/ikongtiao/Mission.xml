@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.Mission" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
-    <result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />
+    <result column="fault_type" property="faultType" jdbcType="VARCHAR" />
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
     <result column="mission_state" property="missionState" jdbcType="INTEGER" />
     <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
@@ -25,7 +25,7 @@
     <result column="latitude" property="latitude" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, machine_type_id, mission_desc, mission_state, is_need_more, fixer_id,
+    id, user_id, fault_type, mission_desc, mission_state, is_need_more, fixer_id,
     admin_user_id, operator, create_time, update_time,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude
@@ -52,12 +52,7 @@
     </selectKey>
     insert into mission
     <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="userId != null" >
-        user_id,
-      </if>
-      <if test="machineTypeId != null" >
-        machine_type_id,
-      </if>
+        user_id, fault_type,
       <if test="missionDesc != null" >
         mission_desc,
       </if>
@@ -111,12 +106,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="userId != null" >
-        #{userId,jdbcType=VARCHAR},
-      </if>
-      <if test="machineTypeId != null" >
-        #{machineTypeId,jdbcType=INTEGER},
-      </if>
+        #{userId},
+        #{faultType},
       <if test="missionDesc != null" >
         #{missionDesc,jdbcType=VARCHAR},
       </if>
@@ -179,8 +170,8 @@
       <if test="userId != null" >
         user_id = #{userId,jdbcType=VARCHAR},
       </if>
-      <if test="machineTypeId != null" >
-        machine_type_id = #{machineTypeId,jdbcType=INTEGER},
+      <if test="faultType != null" >
+        fault_type = #{faultType},
       </if>
       <if test="missionDesc != null" >
         mission_desc = #{missionDesc,jdbcType=VARCHAR},

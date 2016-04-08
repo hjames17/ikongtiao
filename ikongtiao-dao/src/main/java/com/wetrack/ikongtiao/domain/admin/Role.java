@@ -41,6 +41,9 @@ public enum Role {
     VIEW_STATISTICS_CUSTOMER("VIEW_STATISTICS_CUSTOMER"),
     VIEW_STATISTICS_FIXER("VIEW_STATISTICS_FIXER"),
     CHAT("CHAT"),
+    JK_LEVEL_1("JK_LEVEL_1"),//集控系统用户级权限
+    JK_LEVEL_2("JK_LEVEL_2"),//集控系统维护级权限
+    JK_LEVEL_3("JK_LEVEL_3"),//集控系统厂商级权限
     ;
 
     private final String roleName;

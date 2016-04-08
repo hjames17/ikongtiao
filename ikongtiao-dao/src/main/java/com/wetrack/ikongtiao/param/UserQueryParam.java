@@ -16,6 +16,21 @@ public class UserQueryParam extends BaseCondition {
 	String phone;
 	String address;
 
+	/**
+	 * province_id:
+	 */
+	private Integer provinceId;
+
+	/**
+	 * city_id:
+	 */
+	private Integer cityId;
+
+	/**
+	 * district_id:区
+	 */
+	private Integer districtId;
+
 	Date createTimeStart;
 	Date createTimeEnd;
 
@@ -66,5 +81,29 @@ public class UserQueryParam extends BaseCondition {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getProvinceId() {
+		return provinceId;
+	}
+
+	public void setProvinceId(Integer provinceId) {
+		this.provinceId = provinceId;
+	}
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getDistrictId() {
+		return districtId;
+	}
+
+	public void setDistrictId(Integer districtId) {
+		this.districtId = districtId;
 	}
 }

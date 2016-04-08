@@ -29,7 +29,7 @@ public class MissionDto {
 	String longitude;
 	String latitude;
 
-
+	String faultType;
 	/**
 	 * mission_desc:任务描述
 	 */
@@ -62,27 +62,27 @@ public class MissionDto {
 	/**
 	 * 机器类型id
 	 */
-	private Integer machineTypeId;
+//	private Integer machineTypeId;
 	/**
 	 * 机器类型父id
 	 */
-	private Integer machineTypeParentId;
+//	private Integer machineTypeParentId;
 
 	/**
 	 * name:机器名字
 	 */
-	private String machineName;
+//	private String machineName;
 
 	/**
 	 * img:机器图片地址
 	 * TODO : 图片应该有多张
 	 */
-	private String machineImg;
+//	private String machineImg;
 
 	/**
 	 * remark:机器描述
 	 */
-	private String machineRemark;
+//	private String machineRemark;
 
 
 //	Integer missionAddressId;
@@ -158,45 +158,45 @@ public class MissionDto {
 		this.createTime = createTime;
 	}
 
-	public Integer getMachineTypeId() {
-		return machineTypeId;
-	}
-
-	public void setMachineTypeId(Integer machineTypeId) {
-		this.machineTypeId = machineTypeId;
-	}
-
-	public Integer getMachineTypeParentId() {
-		return machineTypeParentId;
-	}
-
-	public void setMachineTypeParentId(Integer machineTypeParentId) {
-		this.machineTypeParentId = machineTypeParentId;
-	}
-
-	public String getMachineName() {
-		return machineName;
-	}
-
-	public void setMachineName(String machineName) {
-		this.machineName = machineName;
-	}
-
-	public String getMachineImg() {
-		return machineImg;
-	}
-
-	public void setMachineImg(String machineImg) {
-		this.machineImg = machineImg;
-	}
-
-	public String getMachineRemark() {
-		return machineRemark;
-	}
-
-	public void setMachineRemark(String machineRemark) {
-		this.machineRemark = machineRemark;
-	}
+//	public Integer getMachineTypeId() {
+//		return machineTypeId;
+//	}
+//
+//	public void setMachineTypeId(Integer machineTypeId) {
+//		this.machineTypeId = machineTypeId;
+//	}
+//
+//	public Integer getMachineTypeParentId() {
+//		return machineTypeParentId;
+//	}
+//
+//	public void setMachineTypeParentId(Integer machineTypeParentId) {
+//		this.machineTypeParentId = machineTypeParentId;
+//	}
+//
+//	public String getMachineName() {
+//		return machineName;
+//	}
+//
+//	public void setMachineName(String machineName) {
+//		this.machineName = machineName;
+//	}
+//
+//	public String getMachineImg() {
+//		return machineImg;
+//	}
+//
+//	public void setMachineImg(String machineImg) {
+//		this.machineImg = machineImg;
+//	}
+//
+//	public String getMachineRemark() {
+//		return machineRemark;
+//	}
+//
+//	public void setMachineRemark(String machineRemark) {
+//		this.machineRemark = machineRemark;
+//	}
 
 //	public Integer getMissionAddressId() {
 //		return missionAddressId;
@@ -316,5 +316,13 @@ public class MissionDto {
 
 	public void setAdminName(String adminName) {
 		this.adminName = adminName;
+	}
+
+	public String getFaultType() {
+		return faultType;
+	}
+
+	public void setFaultType(String faultType) {
+		this.faultType = faultType;
 	}
 }

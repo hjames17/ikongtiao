@@ -8,16 +8,11 @@ import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AdminQueryForm;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
-import com.wetrack.ikongtiao.socket.NotificationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -62,7 +57,7 @@ public class AdminController {
         out.setToken(token.getToken());
         out.setId(token.getUser().getId());
         adminService.dutyOn(Integer.valueOf(token.getUser().getId()), true);
-        User user = adminService.getByAdminId(loginForm.getEmail());
+        User user = adminService.getByEmail(loginForm.getEmail());
         user.setPassword(null);
         out.setUserInfo(user);
 //        out.setRoleString(user.getRolesString());
@@ -110,22 +105,22 @@ public class AdminController {
         adminService.delete(id);
     }
 
-    @ResponseBody
-    @RequestMapping("/socket/test")
-    public String test(@RequestParam(value = "name")String name) throws IOException {
-        TextMessage textMessage = new TextMessage(name);
-        Iterator<WebSocketSession> iterator = NotificationHandler.sessions.iterator();
-
-        while (iterator.hasNext()){
-            WebSocketSession session = iterator.next();
-            if(session.isOpen()){
-                session.sendMessage(textMessage);
-            }else{
-                iterator.remove();
-            }
-        }
-        return "ok客户端数:" +NotificationHandler.sessions.size() ;
-    }
+//    @ResponseBody
+//    @RequestMapping("/socket/test")
+//    public String test(@RequestParam(value = "name")String name) throws IOException {
+//        TextMessage textMessage = new TextMessage(name);
+//        Iterator<WebSocketSession> iterator = NotificationHandler.sessions.iterator();
+//
+//        while (iterator.hasNext()){
+//            WebSocketSession session = iterator.next();
+//            if(session.isOpen()){
+//                session.sendMessage(textMessage);
+//            }else{
+//                iterator.remove();
+//            }
+//        }
+//        return "ok客户端数:" +NotificationHandler.sessions.size() ;
+//    }
 
     static class LoginOut {
         String token;

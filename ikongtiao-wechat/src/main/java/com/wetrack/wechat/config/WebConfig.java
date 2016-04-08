@@ -1,5 +1,6 @@
 package com.wetrack.wechat.config;
 
+import com.wetrack.wechat.weixinHandlers.ClickEventHandler;
 import com.wetrack.wechat.weixinHandlers.SubscriptionHandler;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
@@ -18,6 +19,9 @@ public class WebConfig {
 
     @Autowired
     SubscriptionHandler subscriptionHandler;
+
+    @Autowired
+    ClickEventHandler clickEventHandler;
 
 //    @Autowired
 //    WechatPublicAccountService wechatPublicAccountService;
@@ -49,7 +53,8 @@ public class WebConfig {
     WxMpMessageRouter getWeixinMessageRouter(WxMpService weixinService){
         WxMpMessageRouter wxMpMessageRouter = new WxMpMessageRouter(weixinService);
         wxMpMessageRouter
-                .rule().async(false).msgType(WxConsts.XML_MSG_EVENT).event(WxConsts.EVT_SUBSCRIBE).handler(subscriptionHandler).end();
+                .rule().async(false).msgType(WxConsts.XML_MSG_EVENT).event(WxConsts.EVT_SUBSCRIBE).handler(subscriptionHandler).end()
+                .rule().async(false).msgType(WxConsts.XML_MSG_EVENT).event(WxConsts.EVT_CLICK).handler(clickEventHandler).end();
 
         return wxMpMessageRouter;
     }

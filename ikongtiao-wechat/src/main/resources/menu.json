@@ -31,7 +31,7 @@
           {
             "type":"view",
             "name":"关于我们",
-            "url":"http://weixin.ikongtiao.wetrack.studio/about.html?v=1"
+            "url":"http://weixin.ikongtiao.wetrack.studio/news/about.html?v=1"
           },
           {
             "type":"click",

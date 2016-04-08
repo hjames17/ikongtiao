@@ -3,14 +3,12 @@ package com.wetrack.message;
 import com.wetrack.message.messages.WebNotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhangsong on 16/2/4.
@@ -20,16 +18,22 @@ public class WebSocketManager {
 
 	private static volatile Map<String, Map<String, WebSocketSession>> sessions = new HashMap<>();
 
-	public static void put(String role, String adminId, WebSocketSession session) {
+	public static void put(Collection<? extends GrantedAuthority> roles, String adminId, WebSocketSession session){
 		synchronized (WebSocketManager.class) {
-			Map<String, WebSocketSession> datas = sessions.get(role);
-			if (datas == null) {
-				datas = new HashMap<>();
+			for (GrantedAuthority authority : roles) {
+				WebSocketManager.put(authority.getAuthority(), adminId, session);
 			}
-			datas.put(adminId, session);
-			LOGGER.info("webSocketKey{};{}",adminId,role);
-			sessions.put(role, datas);
 		}
+	}
+
+	public static void put(String role, String adminId, WebSocketSession session) {
+		Map<String, WebSocketSession> datas = sessions.get(role);
+		if (datas == null) {
+			datas = new HashMap<>();
+		}
+		datas.put(adminId, session);
+		LOGGER.info("webSocketKey {};{}",adminId,role);
+		sessions.put(role, datas);
 	}
 
 	public static Map<String, Map<String, WebSocketSession>> get() {

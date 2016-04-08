@@ -33,6 +33,7 @@ public class ImSessionController {
 		if (StringUtils.isEmpty(imSession.getCloudId()) || StringUtils.isEmpty(imSession.getToCloudId())) {
 			throw new AjaxException(CommonErrorMessage.IM_CLOUD_IS_NULL);
 		}
+		//TODO 一对用户，不应该起两个会话
 		imSession.setStatus(ImSessionStatus.NEW_SISSION.getCode());
 		imSession = imSessionRepo.save(imSession);
 		return new AjaxResult<>(imSession);

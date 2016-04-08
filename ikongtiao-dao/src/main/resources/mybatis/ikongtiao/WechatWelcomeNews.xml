@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.wechat.WechatWelcomeNews" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.wechat.WechatWelcomeNews" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="pic_url" property="picUrl" jdbcType="VARCHAR" />
+    <result column="ordinal" property="ordinal" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, description, url, pic_url, ordinal
+  </sql>
+  <select id="findAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from wechat_welcome_news
+    ORDER BY ordinal
+  </select>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.wechat.WechatWelcomeNews" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into wechat_welcome_news (title, description, url, pic_url, ordinal)
+    values (#{title}, #{description}, #{url}, #{picUrl}, #{ordinal,jdbcType=INTEGER})
+  </insert>
+</mapper>

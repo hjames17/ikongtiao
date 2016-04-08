@@ -3,11 +3,10 @@ package com.wetrack.ikongtiao.service.impl.mission;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.constant.MissionState;
-import com.wetrack.ikongtiao.domain.MachineType;
+import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.MissionDto;
-import com.wetrack.ikongtiao.error.CommonErrorMessage;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.geo.GeoLocation;
@@ -15,7 +14,7 @@ import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.param.MissionSubmitParam;
-import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
+import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -24,6 +23,7 @@ import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -53,8 +53,8 @@ public class MissionServiceImpl implements MissionService {
 	@Resource
 	private UserInfoRepo userInfoRepo;
 
-	@Resource
-	private MachineTypeRepo machineTypeRepo;
+//	@Resource
+//	private MachineTypeRepo machineTypeRepo;
 
 	@Resource
 	MessageService messageService;
@@ -89,7 +89,8 @@ public class MissionServiceImpl implements MissionService {
 
 		Mission mission = new Mission();
 //		mission.setMissionAddressId(missionAddress.getId());
-		mission.setMachineTypeId(param.getMachineTypeId());
+//		mission.setMachineTypeId(param.getMachineTypeId());
+		mission.setFaultType(param.getFaultType());
 		mission.setUserId(param.getUserId());
 
 
@@ -124,10 +125,10 @@ public class MissionServiceImpl implements MissionService {
 
 	private Mission doSave(Mission mission, UserInfo userInfo) throws Exception{
 		// 检查机器类型是否存在
-		MachineType machineType = machineTypeRepo.getMachineTypeById(mission.getMachineTypeId());
-		if (machineType == null) {
-			throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
-		}
+//		MachineType machineType = machineTypeRepo.getMachineTypeById(mission.getMachineTypeId());
+//		if (machineType == null) {
+//			throw new AjaxException(CommonErrorMessage.MACHINE_TYPE_NOT_EXITS);
+//		}
 		//如果没有指定故障单位名称，则默认使用客户的单位名称
 		if(StringUtils.isEmpty(mission.getOrganization()) && !StringUtils.isEmpty(userInfo.getOrganization())) {
 			mission.setOrganization(userInfo.getOrganization());
@@ -177,14 +178,14 @@ public class MissionServiceImpl implements MissionService {
 		page.setTotalSize(missionRepo.countMissionByAppQueryParam(param));
 		// 获取内容
 		List<MissionDto> missionDtos = missionRepo.listMissionByAppQueryParam(param);
-		for(MissionDto missionDto:missionDtos){
-			//填充机器类型
-			MachineType machineType = machineTypeRepo.getMachineTypeById(missionDto.getMachineTypeId());
-			missionDto.setMachineImg(machineType.getImg());
-			missionDto.setMachineName(machineType.getName());
-			missionDto.setMachineRemark(machineType.getRemark());
-			missionDto.setMachineTypeParentId(machineType.getParentId());
-		}
+//		for(MissionDto missionDto:missionDtos){
+//			//填充机器类型
+//			MachineType machineType = machineTypeRepo.getMachineTypeById(missionDto.getMachineTypeId());
+//			missionDto.setMachineImg(machineType.getImg());
+//			missionDto.setMachineName(machineType.getName());
+//			missionDto.setMachineRemark(machineType.getRemark());
+//			missionDto.setMachineTypeParentId(machineType.getParentId());
+//		}
 		page.setData(missionDtos);
 		return page;
 	}
@@ -304,9 +305,9 @@ public class MissionServiceImpl implements MissionService {
 		//修改状态
 		if(description != null) {
 			mission.setMissionDesc(description);
-			missionRepo.update(mission);
 		}
 
+		missionRepo.update(mission);
 	}
 
 	@Override
@@ -332,6 +333,7 @@ public class MissionServiceImpl implements MissionService {
 		params.put(MessageParamKey.MISSION_ID, missionId);
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
+		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
 		params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
 		messageService.send(MessageId.COMPLETED_MISSION, params);
 	}
@@ -339,5 +341,13 @@ public class MissionServiceImpl implements MissionService {
 	@Override
 	public void update(Mission mission) {
 		missionRepo.update(mission);
+	}
+
+
+	@Autowired
+	FaultTypeRepo faultTypeRepo;
+	@Override
+	public List<FaultType> listFaultType() {
+		return faultTypeRepo.findAll();
 	}
 }

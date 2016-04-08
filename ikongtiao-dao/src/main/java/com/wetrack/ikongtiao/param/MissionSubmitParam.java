@@ -18,7 +18,9 @@ public class MissionSubmitParam {
 	/**
 	 * 机器类型id
 	 */
-	private Integer machineTypeId;
+//	private Integer machineTypeId;
+
+	private String faultType;
 
 
 	public String getUserId() {
@@ -37,11 +39,11 @@ public class MissionSubmitParam {
 		this.phone = phone;
 	}
 
-	public Integer getMachineTypeId() {
-		return machineTypeId;
+	public String getFaultType() {
+		return faultType;
 	}
 
-	public void setMachineTypeId(Integer machineTypeId) {
-		this.machineTypeId = machineTypeId;
+	public void setFaultType(String faultType) {
+		this.faultType = faultType;
 	}
 }

@@ -185,4 +185,9 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                 .pushNotification(getui.getReceiver(), getui.getTitle(), getui.getContent(),
                         Jackson.mobile().writeValueAsString(getui.getData()));
     }
+
+    @Override
+    public String getName() {
+        return "getui";
+    }
 }

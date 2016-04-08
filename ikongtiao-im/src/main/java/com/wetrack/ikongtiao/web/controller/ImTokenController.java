@@ -37,21 +37,27 @@ public class ImTokenController {
 				imTokenService.getTokenBySystemIdAndRoleType(systemUserId, ImRoleType.parseCode(roleType)));
 	}
 
+	/**
+	 * 为请求者分配一个聊天对象（就是客服人员)
+	 * @param systemUserId
+	 * @param roleType
+	 * @return
+	 */
 	@RequestMapping("/cloud/id/get")
 	@ResponseBody
 	public AjaxResult<String> getCloudId(@RequestParam(value = "systemUserId", required = false) String systemUserId,
-			Integer roleType) {
+			Integer roleType) throws Exception{
 		ImRoleType imRoleType = ImRoleType.parseCode(roleType);
 		if (imRoleType == null) {
-			throw new AjaxException("CLOUD_ROLE_TYPE_IS_NULL", "获取融云角色id为空");
+			throw new AjaxException("CLOUD_ROLE_TYPE_IS_NULL", "获取角色id为空");
 		}
 		if (StringUtils.isEmpty(systemUserId)) {
-			// 默认选择一个空闲的客服
-			//  todo
-			systemUserId = "1";
+			systemUserId = imTokenService.allocateKefuForRole(imRoleType);
+		}else{
+			systemUserId = imRoleType.getPrex() + systemUserId;
 		}
 		// todo 检查用户是否存在
-		return new AjaxResult<>(imRoleType.getPrex() + systemUserId);
+		return new AjaxResult<>(systemUserId);
 	}
 
 	@RequestMapping("/cloud/checkOnline")

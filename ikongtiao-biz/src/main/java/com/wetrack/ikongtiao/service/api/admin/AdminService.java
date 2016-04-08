@@ -12,7 +12,9 @@ public interface AdminService {
 
     PageList<User> listWithParams(AdminQueryForm queryForm) throws Exception;
 
-    User getByAdminId(String email);
+    User getByEmail(String email);
+
+    User getById(Integer id);
 
     Token login(String email, String password) throws Exception;
 

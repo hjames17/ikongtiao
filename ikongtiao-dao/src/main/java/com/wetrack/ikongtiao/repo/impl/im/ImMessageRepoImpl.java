@@ -36,6 +36,11 @@ public class ImMessageRepoImpl implements ImMessageRepo {
 		return commonDao.mapper(ImMessage.class).sql("listImMessageBySessionId").session().selectList(param);
 	}
 
+	@Override
+	public ImMessage getById(String messageUid) {
+		return commonDao.mapper(ImMessage.class).sql("selectByUid").session().selectOne(messageUid);
+	}
+
 /*
 	@Override public List<ImMessage> listMessageByParam(ImMessageQueryParam param) {
 		return commonDao.mapper(ImMessage.class).sql("listImMessageByParam").session().selectList(param);

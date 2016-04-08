@@ -13,20 +13,15 @@ import com.wetrack.base.result.AjaxResult;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.FixerDevice;
 import com.wetrack.ikongtiao.service.api.fixer.PushBindService;
-import com.wetrack.ikongtiao.socket.NotificationHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * Created by zhangsong on 16/1/30.
@@ -126,22 +121,22 @@ public class CommonController {
 		return template;
 	}
 
-	@ResponseBody
-	@RequestMapping("/socket/test")
-	public String test(@RequestParam(value = "name")String name) throws IOException {
-		TextMessage textMessage = new TextMessage(name);
-		Iterator<WebSocketSession> iterator = NotificationHandler.sessions.iterator();
-
-		while (iterator.hasNext()){
-			WebSocketSession session = iterator.next();
-			if(session.isOpen()){
-				session.sendMessage(textMessage);
-			}else{
-				iterator.remove();
-			}
-		}
-		return "ok客户端数:" +NotificationHandler.sessions.size() ;
-	}
+//	@ResponseBody
+//	@RequestMapping("/socket/test")
+//	public String test(@RequestParam(value = "name")String name) throws IOException {
+//		TextMessage textMessage = new TextMessage(name);
+//		Iterator<WebSocketSession> iterator = NotificationHandler.sessions.iterator();
+//
+//		while (iterator.hasNext()){
+//			WebSocketSession session = iterator.next();
+//			if(session.isOpen()){
+//				session.sendMessage(textMessage);
+//			}else{
+//				iterator.remove();
+//			}
+//		}
+//		return "ok客户端数:" +NotificationHandler.sessions.size() ;
+//	}
 	@RequestMapping("/socket/test/page")
 	public String testPage(){
 

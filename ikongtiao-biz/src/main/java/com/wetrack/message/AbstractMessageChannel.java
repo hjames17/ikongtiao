@@ -58,7 +58,11 @@ public abstract class AbstractMessageChannel implements MessageChannel{
                 if (adapterMap.get(messageRaw.id) != null) {
                     Message message = adapterMap.get(messageRaw.id).build(messageRaw.id, messageRaw.params);
                     if(message != null) {
-                        doSend(message);
+                        try {
+                            doSend(message);
+                        }catch (Exception e){
+                            logger.error("发送消息{}失败，messageChannel {}, 原因:",message.getId(),  this.getName(), e.getMessage());
+                        }
                     }
                 }
             } catch (InterruptedException e) {

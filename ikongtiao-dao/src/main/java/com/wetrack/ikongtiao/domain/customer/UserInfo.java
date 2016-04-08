@@ -16,6 +16,14 @@ public class UserInfo implements Serializable {
      * id:
      */
     private String id;
+    /**
+     * 另一个关联的账户id
+     * 考虑到集控系统需要创建用户账号
+     * 而该客户又有可能通过维大师的公众号直接为自己创建账号
+     * 因此同一个客户可能存在两个账号
+     * 两个账号在通过微信绑定操作互相关联之后，在这个字段上互为引用
+     */
+    private String referenceId;
 
     /**
      * wechat_open_id:微信openId
@@ -46,6 +54,10 @@ public class UserInfo implements Serializable {
      * account_email:账户邮箱
      */
     private String accountEmail;
+    /**
+     * 密码可空，对于非集控系统用户来说
+     */
+    private String password;
 
     String contacterName;
     String contacterPhone;

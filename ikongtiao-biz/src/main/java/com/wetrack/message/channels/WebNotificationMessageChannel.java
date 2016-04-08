@@ -3,11 +3,13 @@ package com.wetrack.message.channels;
 import com.wetrack.base.utils.Utils;
 import com.wetrack.base.utils.http.HttpExecutor;
 import com.wetrack.base.utils.jackson.Jackson;
+import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
-import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.admin.Role;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
+import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,7 +30,7 @@ import java.util.Map;
  */
 @Service
 public class WebNotificationMessageChannel extends AbstractMessageChannel {
-    private Logger LOGGER = LoggerFactory.getLogger(WebNotificationMessageChannel.class);
+    private static Logger logger = LoggerFactory.getLogger(WebNotificationMessageChannel.class);
 
     @Autowired
     UserInfoRepo userInfoRepo;
@@ -40,6 +43,9 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
 
     @Autowired
     RepairOrderRepo repairOrderRepo;
+
+    @Autowired
+    FaultTypeRepo faultTypeRepo;
 
     WebNotificationMessageChannel(){
         registerAdapter(MessageId.NEW_COMMISSION, new MessageAdapter() {
@@ -67,7 +73,7 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setId(messageId);
-                message.setReceiver(mission.getAdminUserId().toString());
+                message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("任务已完成");
                 message.setContent(String.format("由维修员%s维修的任务已经完成了", fixer.getName()));
@@ -81,14 +87,23 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 WebNotificationMessage message = new WebNotificationMessage();
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 RepairOrder repairOrder = null;
-                try {
-                    repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
-                } catch (Exception e) {
-                    LOGGER.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
-                    return null;
+                int retryCount = 0;
+                while (repairOrder == null && retryCount < 3) {
+                    try {
+                        Thread.sleep(500);
+                        retryCount ++;
+                    } catch (InterruptedException e) {
+                        logger.error("repair order not exist, id %d", params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    }
+                    try {
+                        repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    }catch(Exception e){
+                        logger.error("repair order not exist, id %d", params.get(MessageParamKey.REPAIR_ORDER_ID));
+                        return null;
+                    }
                 }
                 message.setId(messageId);
-                message.setReceiver(repairOrder.getAdminUserId().toString());
+                message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有新的维修单提交");
                 message.setContent(String.format("维修员%s提交了新的维修单", fixer.getName()));
@@ -104,11 +119,11 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 try {
                     repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                 } catch (Exception e) {
-                    LOGGER.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    logger.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                     return null;
                 }
                 message.setId(messageId);
-                message.setReceiver(repairOrder.getAdminUserId().toString());
+                message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有维修单被确认了");
                 message.setContent(String.format("维修单%d已被客户确认", repairOrder.getId()));
@@ -126,15 +141,31 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 try {
                     repairOrder = repairOrderRepo.getById((Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                 } catch (Exception e) {
-                    LOGGER.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    logger.error("repair order not exist, id %d", (Long) params.get(MessageParamKey.REPAIR_ORDER_ID));
                     return null;
                 }
                 message.setId(messageId);
-                message.setReceiver(repairOrder.getAdminUserId().toString());
+                message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有维修单被取消了");
                 message.setContent(String.format("维修单%d被用户%s取消了", repairOrder.getId(), userInfo.getPhone()));
                 message.setData(repairOrder);
+                return message;
+            }
+        });
+
+
+        registerAdapter(MessageId.TEST, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                WebNotificationMessage message = new WebNotificationMessage();
+                List<FaultType> faultTypeList =faultTypeRepo.findAll();
+                message.setId(messageId);
+                message.setReceiver(Role.VIEW_MISSION.toString());
+                message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
+                message.setTitle("testtest");
+                message.setContent(String.format("lenth %d", faultTypeList.size()));
+                logger.debug("test message : " + Jackson.mobile().writeValueAsString(faultTypeList));
                 return message;
             }
         });
@@ -179,11 +210,16 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
     @Override
     protected void doSend(Message message) {
         WebNotificationMessage webMessage = (WebNotificationMessage)message;
-        LOGGER.info("websocketPush,发送给:{};对应的消息内容为:{}", webMessage.getReceiver(), webMessage.getData());
+        logger.info("websocketPush,发送给:{};对应的消息内容为:{}", webMessage.getReceiver(), webMessage.getData());
         String result = Utils.get(HttpExecutor.class).post(hostAdmin + "/admin/socket/push")
                 .addFormParam("messageTo", webMessage.getReceiver())
                 .addFormParam("type", String.valueOf(webMessage.getType()))
                 .addFormParam("message", Jackson.mobile().writeValueAsString(webMessage)).executeAsString();
-        LOGGER.info("websocketPush,发送给{},内容:{},结果:{}", webMessage.getReceiver(), message, result);
+        logger.info("websocketPush,发送给{},内容:{},结果:{}", webMessage.getReceiver(), message, result);
+    }
+
+    @Override
+    public String getName() {
+        return "web notification";
     }
 }

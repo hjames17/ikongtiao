@@ -9,4 +9,6 @@ import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
 public interface ImTokenService {
 
 	ImToken getTokenBySystemIdAndRoleType(String systemUserId, ImRoleType imRoleType);
+
+	String allocateKefuForRole(ImRoleType imRoleType) throws Exception;
 }

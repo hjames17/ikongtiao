@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.dto.MissionDto" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
-    <result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />
+    <!--<result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />-->
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
     <result column="mission_state" property="missionState" jdbcType="TINYINT" />
     <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
@@ -19,6 +19,7 @@
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
     <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
+    <result column="fault_type" property="faultType" jdbcType="VARCHAR" />
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
     <result column="city_id" property="cityId" jdbcType="INTEGER" />
     <result column="district_id" property="districtId" jdbcType="INTEGER" />
@@ -27,11 +28,11 @@
     <result column="latitude" property="latitude" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, machine_type_id, mission_desc, mission_state, is_need_more, fixer_id,
+    id, user_id, mission_desc, mission_state, is_need_more, fixer_id, fault_type
     admin_user_id, operator, create_time, update_time
   </sql>
   <sql id="Mission_Dto_List" >
-    mission.id, mission.user_id, mission.machine_type_id, mission.mission_desc, mission.mission_state, mission.is_need_more, mission.fixer_id,
+    mission.id, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.is_need_more, mission.fixer_id,
     mission.admin_user_id, mission.operator, mission.create_time, mission.update_time,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude,

@@ -19,6 +19,7 @@
     <result column="labor_cost" property="laborCost" jdbcType="INTEGER" />
     <result column="need_invoice" property="needInvoice" jdbcType="TINYINT" />
     <result column="invoice_title" property="invoiceTitle" jdbcType="VARCHAR" />
+    <result column="tax_no" property="taxNo" jdbcType="VARCHAR" />
     <result column="tax_amount" property="taxAmount" jdbcType="INTEGER" />
     <result column="discount" property="discount" jdbcType="FLOAT" />
     <result column="payment" property="payment" jdbcType="TINYINT" />
@@ -68,7 +69,7 @@
 
   <sql id="Base_Column_List" >
     id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
-    update_time, name_plate_img, labor_cost, discount, accessory_content, user_id, payment, need_invoice, invoice_title, tax_amount, make_order_num
+    update_time, name_plate_img, labor_cost, discount, accessory_content, user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num
   </sql>
 
   <select id="selectImages" resultMap="RoImageMap" parameterType="java.lang.Long">
@@ -181,6 +182,9 @@
       </if>
       <if test="invoiceTitle != null" >
         invoice_title = #{invoiceTitle},
+      </if>
+      <if test="taxNo != null" >
+        tax_no = #{taxNo},
       </if>
       <if test="taxAmount != null" >
         tax_amount = #{taxAmount},

@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WechatConfig {
 
-//    @Value("${wechat.app.token}")
-//    String token;
+//    @Value("${wechat.app.exist}")
+//    String exist;
 //    @Value("${wechat.app.appSecret}")
 //    String appSecret;
 //    @Value("${wechat.app.appId}")
@@ -48,7 +48,7 @@ public class WechatConfig {
         wxMpConfigStorage.setPartnerKey("weidashizhiaikongtiaodelta160310");
 //        wxMpConfigStorage.setAppId(appId);
 //        wxMpConfigStorage.setSecret(appSecret);
-//        wxMpConfigStorage.setToken(token);
+//        wxMpConfigStorage.setToken(exist);
 //        wxMpConfigStorage.setAesKey(aesKey);
         return wxMpConfigStorage;
     }

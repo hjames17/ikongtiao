@@ -51,6 +51,15 @@
       <if test="address != null ">
         and user_info.address LIKE #{address}
       </if>
+      <if test="provinceId != null">
+        and user_info.province_id = #{provinceId}
+      </if>
+      <if test="cityId != null">
+        and user_info.city_id = #{cityId}
+      </if>
+      <if test="districtId != null">
+        and user_info.district_id = #{districtId}
+      </if>
     </where>
     GROUP BY user_info.id
     limit #{start},#{pageSize}

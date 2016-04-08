@@ -17,6 +17,8 @@ public interface AdminRepo {
 
     User findByEmailOrPhone(String email, String phone);
 
+    User findById(Integer id);
+
     User create(User user)throws Exception;
 
     void update(User user)throws Exception;

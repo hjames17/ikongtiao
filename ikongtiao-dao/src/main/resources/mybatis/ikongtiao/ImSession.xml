@@ -11,6 +11,10 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
     </resultMap>
+    <resultMap id="SessionCountMap" type="com.wetrack.ikongtiao.domain.ImSessionCount">
+        <result column="peer_id" property="peerId" jdbcType="VARCHAR"/>
+        <result column="count" property="count" jdbcType="INTEGER"/>
+    </resultMap>
     <sql id="Base_Column_List">
         id, cloud_id,to_cloud_id, status, remark, tag, create_time, end_time
   </sql>
@@ -21,17 +25,16 @@
         where id = #{id,jdbcType=INTEGER}
     </select>
     <select id="findSessionByParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
-        select * from im_session1 where id in(
-        select session_id from im_message1 where
-        (message_from = #{messageFrom} and message_to =#{ messageTo}) or
-        (message_from = #{messageTo} and message_to = #{messageFrom}))
+        select * from im_session1
+        where ((cloud_id = #{messageFrom} and to_cloud_id = #{messageTo})
+        or (cloud_id = #{messageTo} and to_cloud_id = #{messageFrom}))
+        and status = 0
         order by id desc limit 1;
     </select>
     <select id="findSessionByMessage" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.ImMessage">
-        select * from im_session1 where id in(
-        select session_id from im_message1 where
-        (message_from = #{messageFrom} and message_to =#{ messageTo}) or
-        (message_from = #{messageTo} and message_to = #{messageFrom}))
+        select * from im_session1
+        where ((cloud_id = #{messageFrom} and to_cloud_id = #{messageTo})
+        or (cloud_id = #{messageTo} and to_cloud_id = #{messageFrom}))
         and status = 0
         order by id desc;
     </select>
@@ -151,5 +154,27 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       end_time = #{endTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=INTEGER}
-  </update>
+    </update>
+    <select id="countSessionOfCloudIds" resultMap="SessionCountMap" parameterType="java.util.List">
+      select cloud_id as peer_id, count(id) as count
+      FROM im_session1
+      WHERE status = 0
+      and cloud_id IN
+        <foreach collection="list" index="index" item="item"
+                 open = "(" separator="," close=")">
+            #{item}
+        </foreach>
+      GROUP BY cloud_id
+    </select>
+    <select id="countSessionOfToCloudIds" resultMap="SessionCountMap" parameterType="java.util.List">
+      select to_cloud_id as peer_id, count(id) as count
+      FROM im_session1
+      WHERE status = 0
+      and to_cloud_id IN
+        <foreach collection="list" index="index" item="item"
+                 open = "(" separator="," close=")">
+            #{item}
+        </foreach>
+      GROUP BY to_cloud_id
+    </select>
 </mapper>

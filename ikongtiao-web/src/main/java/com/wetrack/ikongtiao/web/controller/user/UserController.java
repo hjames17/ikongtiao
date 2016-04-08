@@ -1,5 +1,8 @@
 package com.wetrack.ikongtiao.web.controller.user;
 
+import com.wetrack.auth.domain.Token;
+import com.wetrack.auth.filter.SignTokenAuth;
+import com.wetrack.auth.service.TokenService;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 /**
@@ -22,6 +26,8 @@ public class UserController {
 	UserInfoService userInfoService;
 	@Autowired
 	FixerService fixerService;
+	@Autowired
+	TokenService tokenService;
 
 	@ResponseBody
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET) UserInfo info(
@@ -41,15 +47,88 @@ public class UserController {
 
 	}
 
-//	@ResponseBody
-//	@RequestMapping(value = "/address/create", method = RequestMethod.POST) String createAddress(
-//			@RequestBody Address address) throws Exception {
-//		if (address == null || address.getUserId() == null) {
-//			throw new Exception("无效地址信息");
-//		}
-//		Address created = userInfoService.createAddress(address);
-//		return created.getId().toString();
-//	}
+	// 登录需要提供用户名，密码，密码是md5加密过的
+	@ResponseBody
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	LoginOut login(@RequestBody LoginForm loginForm) throws Exception{
+		Token token = userInfoService.login(loginForm.getEmail(), loginForm.getPassword());
+		LoginOut out = new LoginOut();
+		out.setToken(token.getToken());
+		return out;
+	}
+
+	@SignTokenAuth
+	@ResponseBody
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
+	void login(@RequestBody LoginOut form, HttpServletRequest request) throws Exception{
+		tokenService.logout(form.getToken());
+	}
+
+
+
+	/**
+	 * TODO 请求发送绑定邮件
+	 * @param userId 微信公众号注册的用户id
+	 * @param email 集控系统的用户邮箱
+	 */
+	void getBindingCode(String userId, String email){
+
+	}
+
+	/**
+	 * TODO
+	 * 把通过微信公众号注册的用户和集控系统的用户绑定起来
+	 * @param userId 用户id
+	 * @param email 集控系统的用户邮箱
+	 * @param code 集控系统的用户邮箱收到的绑定码
+	 */
+	void bind(String userId, String email, String code){
+
+	}
+
+
+	static class LoginOut {
+		String token;
+		String id;
+
+		public String getToken() {
+			return token;
+		}
+
+		public void setToken(String token) {
+			this.token = token;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+	}
+
+	static class LoginForm{
+		String email;
+		String password;
+
+		public String getEmail() {
+			return email;
+		}
+
+		public void setEmail(String email) {
+			this.email = email;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+	}
 
 	static class UpdateForm {
 		String id;

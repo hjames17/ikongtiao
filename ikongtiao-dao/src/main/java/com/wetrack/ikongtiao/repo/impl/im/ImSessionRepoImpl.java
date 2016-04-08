@@ -4,12 +4,13 @@ import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.ImMessage;
 import com.wetrack.ikongtiao.domain.ImSession;
+import com.wetrack.ikongtiao.domain.ImSessionCount;
 import com.wetrack.ikongtiao.repo.api.im.ImSessionRepo;
 import com.wetrack.ikongtiao.repo.api.im.dto.ImMessageUserParam;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by zhangsong on 16/3/9.
@@ -60,6 +61,41 @@ public class ImSessionRepoImpl implements ImSessionRepo {
 			page.setData(listMessageUserByCloudId(param));
 		}
 		return page;
+	}
+
+	@Override
+	public List<ImSessionCount> countActiveSessionsForKefus(List<String> kefuCloudIdList) {
+		List<ImSessionCount> list1 = commonDao.mapper(ImSession.class).sql("countSessionOfCloudIds").session().selectList(kefuCloudIdList);
+		List<ImSessionCount> list2 = commonDao.mapper(ImSession.class).sql("countSessionOfToCloudIds").session().selectList(kefuCloudIdList);
+
+		//合并两个列表的数量
+		Map<String, ImSessionCount> map = new HashMap<String, ImSessionCount>();
+		if(list1 != null && list1.size() > 0){
+			for(ImSessionCount item : list1){
+				map.put(item.getPeerId(), item);
+			}
+		}
+		if(list2 != null && list2.size() > 0){
+			for(ImSessionCount item : list2){
+				ImSessionCount itemExist = map.get(item.getPeerId());
+				if(itemExist != null){
+					itemExist.setCount(itemExist.getCount() + item.getCount());
+				}else{
+					map.put(item.getPeerId(), item);
+				}
+			}
+		}
+
+		//排序
+		Collection<ImSessionCount> collection = map.values();
+		List<ImSessionCount> list = new ArrayList<ImSessionCount>(collection);
+		list.sort(new Comparator<ImSessionCount>() {
+			@Override
+			public int compare(ImSessionCount o1, ImSessionCount o2) {
+				return o1.getCount() - o2.getCount();
+			}
+		});
+		return list;
 	}
 
 	private List<ImSession> listMessageUserByCloudId(ImMessageUserParam param) {

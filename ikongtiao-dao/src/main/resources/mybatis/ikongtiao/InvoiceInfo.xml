@@ -6,11 +6,12 @@
     <result column="order_id" property="orderId" jdbcType="BIGINT" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="tax_no" property="taxNo" jdbcType="VARCHAR" />
     <result column="amount" property="amount" jdbcType="INTEGER" />
     <result column="date" property="date" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, title, name, order_id, amount, date
+    id, title, tax_no, name, order_id, amount, date
   </sql>
   <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -26,12 +27,18 @@
     <if test="date!=null">
       ,date
     </if>
+    <if test="taxNo!=null">
+      ,tax_no
+    </if>
     )
     values (
      #{orderId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
       #{title,jdbcType=VARCHAR}, #{amount,jdbcType=INTEGER}
     <if test="date!=null">
       ,#{date,jdbcType=TIMESTAMP}
+    </if>
+    <if test="taxNo!=null">
+      ,#{taxNo,jdbcType=VARCHAR}
     </if>
   </insert>
 </mapper>

@@ -12,6 +12,7 @@ public class InvoiceInfo {
     String name; //服务名称
     Integer amount; //开票金额，单位为分
     Date date;//开票时间
+    String taxNo;//税号
 
     public Long getId() {
         return id;
@@ -59,5 +60,13 @@ public class InvoiceInfo {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getTaxNo() {
+        return taxNo;
+    }
+
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
     }
 }

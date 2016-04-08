@@ -73,6 +73,11 @@ public class AdminRepoImpl implements AdminRepo {
     }
 
     @Override
+    public User findById(Integer id) {
+        return commonDao.mapper(User.class).sql("selectByPrimaryKey").session().selectOne(id);
+    }
+
+    @Override
     public User create(User user) throws Exception {
         int count = commonDao.mapper(User.class).sql("insertSelective").session().insert(user);
         if(count != 1){

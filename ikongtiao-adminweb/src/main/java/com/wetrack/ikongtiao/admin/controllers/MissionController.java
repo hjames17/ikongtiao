@@ -4,10 +4,12 @@ import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.constant.MissionState;
+import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
+import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -54,8 +57,8 @@ public class MissionController {
     public Integer addMission(@RequestBody Mission param, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
         if (param == null || StringUtils.isEmpty(param.getUserId())
-                ||StringUtils.isEmpty(param.getAddress()) || StringUtils.isEmpty(param.getMissionDesc())
-                || param.getMachineTypeId() == null) {
+                ||StringUtils.isEmpty(param.getFaultType())
+                ||StringUtils.isEmpty(param.getAddress()) || StringUtils.isEmpty(param.getMissionDesc())) {
             throw new BusinessException("任务参数缺失");
         }
         param.setAdminUserId(Integer.valueOf(user.getId()));
@@ -137,6 +140,21 @@ public class MissionController {
         checkValid(mission.getId(), mission.getAdminUserId());
 
         missionService.update(mission);
+    }
+
+    @ResponseBody
+    @RequestMapping("/faultType")
+    public List<FaultType> listFaultType(){
+        return missionService.listFaultType();
+    }
+
+    @Autowired
+    FaultTypeRepo faultTypeRepo;
+    @ResponseBody
+    @RequestMapping(value = "/faultType/add", method = RequestMethod.POST)
+    public String addFaultType(@RequestParam(value = "name") String name){
+        faultTypeRepo.create(name, 18);
+        return name;
     }
 
     void checkValid(Integer missionId, Integer adminUserId) throws Exception{

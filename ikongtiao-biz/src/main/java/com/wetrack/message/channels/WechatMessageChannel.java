@@ -2,11 +2,16 @@ package com.wetrack.message.channels;
 
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.Fixer;
+import com.wetrack.ikongtiao.domain.ImMessage;
 import com.wetrack.ikongtiao.domain.RepairOrder;
+import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
+import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
+import com.wetrack.ikongtiao.repo.api.im.ImMessageRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
 import com.wetrack.message.*;
 import com.wetrack.message.messages.WechatMessage;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -29,6 +34,12 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 
 	@Autowired
 	UserInfoRepo userInfoRepo;
+
+	@Autowired
+	AdminRepo adminRepo;
+
+	@Autowired
+	ImMessageRepo imMessageRepo;
 
 	@Autowired
 	FixerRepo fixerRepo;
@@ -217,12 +228,36 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				WechatMessage message = new WechatMessage();
 				UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
 				message.setReceiver(userInfo.getWechatOpenId());
-				message.setTitle("您有新的消息");
-				message.setContent("你有新的消息，请点击查看");
+				Integer fromRole = (Integer)params.get(MessageParamKey.IM_PUSH_NOTIFY_FROM_RLE);
+
+				String sender = "";
+				if(fromRole.equals(ImRoleType.FIXER.getCode())){
+					Fixer fixer = fixerRepo.getFixerById(Integer.valueOf((String) params.get(MessageParamKey.IM_PUSH_NOTIFY_SENDER_ID)));
+					sender = "维修员" + fixer.getName();
+				}else{
+					User kefu = adminRepo.findById(Integer.valueOf((String) params.get(MessageParamKey.IM_PUSH_NOTIFY_SENDER_ID)));
+					sender = "客服" + kefu.getName();
+				}
+				message.setTitle(sender + "给您发消息");
+				String content = "你有新的消息，请点击查看";
+				String imMessageId = (String) params.get(MessageParamKey.IM_PUSH_NOTIFY_MESSAGE_UID);
+				Integer sessionId = 0;
+				if(imMessageId != null){
+					ImMessage imMessage = imMessageRepo.getById(imMessageId);
+					if(imMessage != null){
+						sessionId = imMessage.getSessionId();
+						if(imMessage.getMessageType() == 0) {
+							content = "消息<" + imMessage.getMessageContent() + ">。请点击回复!";
+						}else if(imMessage.getMessageType() == 1){
+							content = sender + "发来一张图片。请点击查看!";
+						}
+					}
+				}
+				message.setContent(content);
 				message.setPicUrl(staticHost + "/images/ikongtiao/2.png");
-				String url = String.format("%s%s?uid=%s&type=%d&peerId=%d",
-						weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), 0,
-						params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID));
+				String url = String.format("%s%s?uid=%s&type=%d&peerId=%d&sessionId=%d",
+						weixinPageHost, weixinImPage, params.get(MessageParamKey.USER_ID), fromRole,
+						params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID), sessionId);
 				message.setUrl(url);
 				return message;
 			}
@@ -253,5 +288,10 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 					Jackson.mobile().writeValueAsString(wxMpCustomMessage));
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "wechat";
 	}
 }

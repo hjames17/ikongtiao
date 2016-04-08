@@ -111,6 +111,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			params.put(MessageParamKey.USER_ID, mission.getUserId());
 			params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
 			params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
+			params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
 			messageService.send(MessageId.NEW_FIX_ORDER, params);
 		}catch (Exception e){
 			//ignore
@@ -246,7 +247,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle) throws Exception {
+	public void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle, String taxNo) throws Exception {
 
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		repairOrder.setId(repairOrderId);
@@ -255,6 +256,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		} else {
 			if(needInvoice){
 				repairOrder.setInvoiceTitle(invoiceTitle);
+				repairOrder.setTaxNo(taxNo);
 				List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
 				Integer accessoryMoney = 0;
 				if(accessories != null) {
@@ -295,6 +297,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
 		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+		params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
 		if(!deny) {
 			messageService.send(MessageId.CONFIRM_FIX_ORDER, params);
 		}else{

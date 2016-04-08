@@ -8,5 +8,6 @@ import java.util.Map;
 public interface MessageChannel {
     void registerAdapter(int messageId, MessageAdapter adapter);
     void sendMessage(int messageId, Map<String, Object> params);
+    String getName();
 
 }

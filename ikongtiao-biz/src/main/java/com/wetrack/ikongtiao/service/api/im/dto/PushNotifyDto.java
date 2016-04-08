@@ -19,7 +19,11 @@ public class PushNotifyDto implements Serializable {
 	/**
 	 * 发推送人 的融云id
 	 */
-	private String cloudUserId;
+	private String fromUserId;
+
+	private Integer fromRoleType;
+
+	private String messageUid;
 
 	/**
 	 * 聊天对应的会话id
@@ -34,12 +38,12 @@ public class PushNotifyDto implements Serializable {
 		this.systemUserId = systemUserId;
 	}
 
-	public String getCloudUserId() {
-		return cloudUserId;
+	public String getFromUserId() {
+		return fromUserId;
 	}
 
-	public void setCloudUserId(String cloudUserId) {
-		this.cloudUserId = cloudUserId;
+	public void setFromUserId(String fromUserId) {
+		this.fromUserId = fromUserId;
 	}
 
 	public Integer getRoleType() {
@@ -56,5 +60,21 @@ public class PushNotifyDto implements Serializable {
 
 	public void setSessionId(Integer sessionId) {
 		this.sessionId = sessionId;
+	}
+
+	public Integer getFromRoleType() {
+		return fromRoleType;
+	}
+
+	public void setFromRoleType(Integer fromRoleType) {
+		this.fromRoleType = fromRoleType;
+	}
+
+	public String getMessageUid() {
+		return messageUid;
+	}
+
+	public void setMessageUid(String messageUid) {
+		this.messageUid = messageUid;
 	}
 }

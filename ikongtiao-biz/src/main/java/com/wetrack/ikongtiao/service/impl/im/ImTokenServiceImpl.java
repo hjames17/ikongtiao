@@ -3,10 +3,15 @@ package com.wetrack.ikongtiao.service.impl.im;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.Fixer;
+import com.wetrack.ikongtiao.domain.ImSessionCount;
 import com.wetrack.ikongtiao.domain.ImToken;
+import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.error.CommonErrorMessage;
+import com.wetrack.ikongtiao.param.AdminQueryForm;
+import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
+import com.wetrack.ikongtiao.repo.api.im.ImSessionRepo;
 import com.wetrack.ikongtiao.repo.api.im.ImTokenRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
@@ -14,9 +19,12 @@ import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
 import com.wetrack.rong.RongCloudApiService;
 import com.wetrack.rong.models.FormatType;
 import com.wetrack.rong.models.SdkHttpResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,8 +36,14 @@ public class ImTokenServiceImpl implements ImTokenService {
 	@Resource
 	private ImTokenRepo imTokenRepo;
 
+	@Autowired
+	ImSessionRepo imSessionRepo;
+
 	@Resource
 	private FixerRepo fixerRepo;
+
+	@Autowired
+	AdminRepo adminRepo;
 
 	@Resource
 	private UserInfoRepo userInfoRepo;
@@ -68,8 +82,12 @@ public class ImTokenServiceImpl implements ImTokenService {
 				avatar = userInfo.getAvatar();
 				break;
 			case KEFU:
+				User kefu = adminRepo.findById(Integer.valueOf(systemUserId));
 				name = "维大师客服";
-				avatar = "";
+				if(kefu != null){
+					name = kefu.getName();
+					avatar = kefu.getAvatar();
+				}
 				break;
 			default:
 				break;
@@ -91,5 +109,28 @@ public class ImTokenServiceImpl implements ImTokenService {
 		}
 		return imToken;
 	}
+
+
+
+	@Override
+	public String allocateKefuForRole(ImRoleType imRoleType) throws Exception{
+		//获取在线客服列表
+		AdminQueryForm queryForm = new AdminQueryForm();
+		queryForm.setInService(true);
+		List<User> kefuList = adminRepo.listWithParams(queryForm);
+		List<String> kefuCloudIdList = new ArrayList<String>();
+		for(User kefu : kefuList){
+			kefuCloudIdList.add("kefu_"+kefu.getId());
+		}
+		//获取列表中客服的当前活跃会话数
+		List<ImSessionCount> sessionCountList = imSessionRepo.countActiveSessionsForKefus(kefuCloudIdList);
+		//返回第一个客服
+		if(sessionCountList != null && sessionCountList.size() > 0){
+			return sessionCountList.get(0).getPeerId();
+		}
+		return null;
+	}
+
+
 
 }

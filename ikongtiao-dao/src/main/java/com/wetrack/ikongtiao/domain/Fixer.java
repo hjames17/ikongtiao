@@ -29,6 +29,11 @@ public class Fixer implements Serializable {
     private String name;
 
     /**
+     * 该维修员是否集控系统的维保人员
+     */
+    boolean jkMaintainer;
+
+    /**
      * avatar:维修员头像
      */
     private String avatar;

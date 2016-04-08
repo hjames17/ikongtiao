@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.FaultType" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.FaultType" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="ordinal" property="ordinal" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, ordinal
+  </sql>
+  <select id="findAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from fault_type
+    ORDER BY ordinal
+  </select>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.FaultType" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into fault_type (name, ordinal)
+    values (#{name,jdbcType=VARCHAR}, #{ordinal,jdbcType=INTEGER})
+  </insert>
+</mapper>

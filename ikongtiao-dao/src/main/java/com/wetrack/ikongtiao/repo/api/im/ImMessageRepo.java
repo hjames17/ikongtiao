@@ -23,4 +23,5 @@ public interface ImMessageRepo {
 
 	List<ImMessage> listMessageBySessionId(ImMessageSessionParam param);
 
+	ImMessage getById(String messageUid);
 }

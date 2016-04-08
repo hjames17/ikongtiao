@@ -68,6 +68,13 @@ public class MessageId {
     public static final int FIXER_NOTIFY_WECHAT = 302;
     public static final int WECHAT_NOTIFY_FIXER = 304;
 
+    /**
+     * 登录
+     */
+    public static final int LOGIN_OVERLOAD = 400; //在其他地方登录
+
+    public static final int TEST = 600; //在其他地方登录
+
 
     //维修员认证类型
 //    public static final int FIXER_AUDIT_TYPE_CERT = 1;

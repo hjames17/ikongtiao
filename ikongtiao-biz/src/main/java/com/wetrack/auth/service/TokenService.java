@@ -6,7 +6,9 @@ import com.wetrack.base.utils.common.UUIDGenerator;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by zhanghong on 15/11/18.
@@ -22,6 +24,12 @@ public class TokenService {
     @Resource(name="defaultTokenStorageService")
     TokenStorageService tokenStorageService;
 
+    /**
+     * true，只允许一个同时登录的人， false， 允许多个登录
+     * 默认为true
+     */
+    boolean onlyOnePermitted = true;
+
     public Token login(User user){
         return doLogin(user);
     }
@@ -34,21 +42,28 @@ public class TokenService {
     }
 
     private Token doLogin(User user){
-        //found one valid token for this user
-        Collection<Token> tokens = tokenStorageService.findAllByUserId(user.getId());
-        if(tokens != null){
-            for(Token token : tokens){
-                if(!token.isExpired() && !token.isLoggedout()){
-                    return token;
-                }else{
-                    tokenStorageService.removeByTokenString(token.getToken());
-                }
-            }
-        }
-        //otherwise, create one
+
+        //found exist token list for this user
+        Collection<Token> tokens =  tokenStorageService.findAllByUserId(user.getId());
+        List<Token> copiedTokens = new ArrayList<Token>();
+        copiedTokens.addAll(tokens);
+
+        //create new token
         String tokenString = UUIDGenerator.generate().toUpperCase();
         Token token = new Token(tokenString, user);
         addToken(token);
+
+        //remove existing tokens by condition
+        if(tokens != null){
+            for(Token exist : copiedTokens){
+//                if(!exist.isExpired() && !exist.isLoggedout()){
+//                    return exist;
+//                }else{
+                if(exist.isExpired() || exist.isLoggedout() || isOnlyOnePermitted()){
+                    tokenStorageService.removeByTokenString(exist.getToken());
+                }
+            }
+        }
         return token;
     }
 
@@ -72,5 +87,11 @@ public class TokenService {
         return tokenStorageService.findAllByUserId(userId);
     }
 
+    public boolean isOnlyOnePermitted() {
+        return onlyOnePermitted;
+    }
 
+    public void setOnlyOnePermitted(boolean onlyOnePermitted) {
+        this.onlyOnePermitted = onlyOnePermitted;
+    }
 }

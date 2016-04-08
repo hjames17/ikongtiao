@@ -1,5 +1,6 @@
 package com.wetrack.ikongtiao.service.impl.user;
 
+import com.wetrack.auth.domain.Token;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
@@ -129,5 +130,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public List<UserInfo> listInIds(List<String> ids) {
 		return userInfoRepo.listInIds(ids);
+	}
+
+	@Override
+	public Token login(String email, String password) throws Exception {
+		return null;
 	}
 }

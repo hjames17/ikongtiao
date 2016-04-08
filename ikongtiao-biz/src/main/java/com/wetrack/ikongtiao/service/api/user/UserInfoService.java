@@ -1,5 +1,6 @@
 package com.wetrack.ikongtiao.service.api.user;
 
+import com.wetrack.auth.domain.Token;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
@@ -27,5 +28,7 @@ public interface UserInfoService {
     PageList<UserInfoDto> listUserByQueryParam(UserQueryParam param) throws Exception;
 
     List<UserInfo> listInIds(List<String> ids);
+
+    Token login(String email, String password) throws Exception;;
 }
 

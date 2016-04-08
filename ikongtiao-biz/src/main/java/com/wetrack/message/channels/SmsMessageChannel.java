@@ -221,4 +221,9 @@ public class SmsMessageChannel extends AbstractMessageChannel {
         SmsMessage sms = (SmsMessage)message;
         boolean success = SendWeSms.send(sms.getReceiver(), sms.getText());
     }
+
+    @Override
+    public String getName() {
+        return "sms";
+    }
 }

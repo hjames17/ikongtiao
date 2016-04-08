@@ -108,6 +108,11 @@ public class RepairOrder implements Serializable {
     String invoiceTitle;
 
     /**
+     * 税号， 开增值税发票需要
+     */
+    String taxNo;
+
+    /**
      * 发票税额
      */
     Integer taxAmount; //单位为分
@@ -384,7 +389,16 @@ public class RepairOrder implements Serializable {
     }
 
     public void setTaxAmount(Integer taxAmount) {
+
         this.taxAmount = taxAmount;
+    }
+
+    public String getTaxNo() {
+        return taxNo;
+    }
+
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
     }
 
     /**

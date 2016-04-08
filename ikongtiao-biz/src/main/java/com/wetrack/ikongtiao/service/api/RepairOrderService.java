@@ -34,7 +34,7 @@ public interface RepairOrderService {
 
     boolean deleteAccessory(Long accessoryId) throws Exception;
 
-    void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle) throws Exception;
+    void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle, String taxNo) throws Exception;
 
     void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception;
 }

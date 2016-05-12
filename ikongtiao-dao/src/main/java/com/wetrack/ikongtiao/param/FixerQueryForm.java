@@ -10,12 +10,14 @@ public class FixerQueryForm extends BaseCondition {
     Boolean inService;
     Boolean certificated;
     Boolean insured;
+    Boolean jkMaintainer;
     String phone;
     String name;
     String address;
     Double longitude;
     Double latitude;
     Float distance; //范围，公里
+
 
     public Boolean isInsured() {
         return insured;
@@ -88,5 +90,13 @@ public class FixerQueryForm extends BaseCondition {
 
     public void setDistance(Float distance) {
         this.distance = distance;
+    }
+
+    public Boolean isJkMaintainer() {
+        return jkMaintainer;
+    }
+
+    public void setJkMaintainer(Boolean jkMaintainer) {
+        this.jkMaintainer = jkMaintainer;
     }
 }

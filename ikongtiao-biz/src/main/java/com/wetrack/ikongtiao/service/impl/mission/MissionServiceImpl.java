@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.service.impl.mission;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
+import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
@@ -13,11 +14,11 @@ import com.wetrack.ikongtiao.geo.GeoLocation;
 import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
-import com.wetrack.ikongtiao.param.MissionSubmitParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
+import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
@@ -73,8 +74,10 @@ public class MissionServiceImpl implements MissionService {
 
 
 
+	@Autowired
+	TaskMonitorService taskMonitorService;
 
-	@Override public Mission saveMission(MissionSubmitParam param) throws Exception{
+	@Override public Mission saveMissionFromUser(Mission param) throws Exception{
 		UserInfo userInfo = userInfoRepo.getById(param.getUserId());
 		if (userInfo == null) {
 			throw new AjaxException(UserErrorMessage.USER_NOT_EXITS);
@@ -83,18 +86,18 @@ public class MissionServiceImpl implements MissionService {
 		if (StringUtils.isEmpty(userInfo.getContacterPhone())) {
 			UserInfo bindUserInfo = new UserInfo();
 			bindUserInfo.setId(userInfo.getId());
-			bindUserInfo.setContacterPhone(param.getPhone());
+			bindUserInfo.setContacterPhone(param.getContacterPhone());
 			userInfoRepo.update(bindUserInfo);
 		}
 
-		Mission mission = new Mission();
+//		Mission mission = new Mission();
 //		mission.setMissionAddressId(missionAddress.getId());
 //		mission.setMachineTypeId(param.getMachineTypeId());
-		mission.setFaultType(param.getFaultType());
-		mission.setUserId(param.getUserId());
+//		mission.setFaultType(param.getFaultType());
+//		mission.setUserId(param.getUserId());
 
 
-		mission = doSave(mission, userInfo);
+		Mission mission = doSave(param, userInfo);
 //		}
 
 
@@ -110,6 +113,8 @@ public class MissionServiceImpl implements MissionService {
 		params.put(MessageParamKey.MISSION_ID, mission.getId());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		messageService.send(MessageId.NEW_COMMISSION, params);
+		//加入提醒任务
+		taskMonitorService.putTask(Constants.TASK_MISSION + mission.getId());
 		return mission;
 	}
 
@@ -170,6 +175,7 @@ public class MissionServiceImpl implements MissionService {
 
 	//TODO 缓存
 	@Override public PageList<MissionDto> listMissionByAppQueryParam(AppMissionQueryParam param) {
+
 		PageList<MissionDto> page = new PageList<>();
 		page.setPage(param.getPage());
 		page.setPageSize(param.getPageSize());
@@ -223,6 +229,7 @@ public class MissionServiceImpl implements MissionService {
 			throw new BusinessException("任务已经被受理");
 		}
 		//修改状态
+		mission.setAdminUserId(adminUserId);
 		mission.setMissionState(MissionState.ACCEPT.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);

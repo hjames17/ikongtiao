@@ -40,12 +40,8 @@ public class FixerTest {
 
     @Test
     public void get(){
-        List<Integer> ids = new ArrayList<>();
-        ids.add(1);
-        ids.add(2);
         try {
-            List<Fixer> fixers = fixerService.listInIds(ids);
-            System.out.println("Ok");
+            fixerService.createAccount("13111111111", "tttt", "123123123");
         } catch (Exception e) {
             e.printStackTrace();
         }

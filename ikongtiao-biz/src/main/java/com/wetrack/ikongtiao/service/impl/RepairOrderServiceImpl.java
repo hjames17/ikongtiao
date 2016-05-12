@@ -1,5 +1,7 @@
 package com.wetrack.ikongtiao.service.impl;
 
+import com.wetrack.base.page.PageList;
+import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.Mission;
@@ -9,11 +11,14 @@ import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.exception.BusinessException;
+import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
+import com.wetrack.ikongtiao.repo.api.fixer.FixerIncomeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.*;
 import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.SettingsService;
+import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
@@ -23,10 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by zhanghong on 16/1/7.
@@ -54,6 +57,9 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	@Autowired
 	RepairOrderImageRepo repairOrderImageRepo;
 
+	@Autowired
+	TaskMonitorService taskMonitorService;
+
 	@Override
 	public List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception {
 		List<RepairOrder> list = repairOrderRepo.listForMission(missionId);
@@ -64,6 +70,18 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public PageList<RepairOrder> list(RepairOrderQueryParam param) {
+		PageList<RepairOrder> page = new PageList<RepairOrder>();
+		page.setPage(param.getPage());
+		page.setPageSize(param.getPageSize());
+		param.setStart(page.getStart());
+		// 设置总数量
+		page.setTotalSize(repairOrderRepo.countByParam(param));
+		page.setData(repairOrderRepo.listByQueryParam(param));
+		return page;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -113,6 +131,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
 			params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
 			messageService.send(MessageId.NEW_FIX_ORDER, params);
+			//添加通知任务
+			taskMonitorService.putTask(Constants.TASK_REPAIR_ORDER + repairOrder.getId());
 		}catch (Exception e){
 			//ignore
 		}
@@ -199,8 +219,12 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		if(autoAudit){
 			//通知
 			sendCostFinishEvent(repairOrder.getId());
+		}else{
+			sendWaitingForAuditEvent(repairOrder.getId());
 		}
 	}
+
+
 
 	@Override
 	public void setPrepared(Integer adminUserId, Long repairOrderId) throws Exception {
@@ -214,6 +238,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 
 //	static final String ACTION_COMMENT = "comment";
+	@Autowired
+	FixerIncomeRepo fixerIncomeRepo;
 	@Override
 	public void setFinished(Long repairOrderId) throws Exception {
 		RepairOrder repairOrder = new RepairOrder();
@@ -231,6 +257,12 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 //						repairOrder.getUserId(), repairOrderId);
 //		messageSimple.setUrl(url);
 //		messageProcess.process(MessageType.COMPLETED_FIX_ORDER,messageSimple);
+
+		/**
+		 * 创建维修员收入记录
+		 * TODO 失败的话，记录后重试
+		 */
+		fixerIncomeRepo.save(repairOrder.getFixerId(), repairOrder.getId(), repairOrder.getLaborCost() == null ? 0 : repairOrder.getLaborCost());
 
 
 
@@ -340,6 +372,44 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	}
 
 	@Override
+	public void update(RepairOrder newOrder, RepairOrder oldOrder) throws Exception {
+		boolean imageUpdated = updateImages(newOrder, oldOrder);
+		repairOrderRepo.update(newOrder);
+	}
+
+	private boolean updateImages(RepairOrder newOrder, RepairOrder oldOrder){
+		//把维修单中的images数组的url字段放入集合中
+		Set<String> oldSet = new HashSet<String>();
+		if(oldSet != null)
+			oldSet.addAll(oldOrder.getImages().stream().map(RoImage::getUrl).collect(Collectors.toSet()));
+
+		Set<String> newSet = new HashSet<String>();
+		if(newSet != null)
+			newSet.addAll(newOrder.getImages().stream().map(RoImage::getUrl).collect(Collectors.toSet()));
+
+		//分别创建一个移除图片和增加图片的列表
+		Set<String> removingSet = new HashSet<String>(oldSet);
+		Set<String> addingSet = new HashSet<String>(newSet);
+
+		//存在在新的列表里的图片不用删除，从移除队列中移出
+		removingSet.removeAll(newSet);
+		//存在在老的列表里的图片不用增加,从增加队列中移出
+		addingSet.removeAll(oldSet);
+
+		if(removingSet.size() > 0) {
+			//删除图片
+			repairOrderImageRepo.removeIn(removingSet, oldOrder.getId());
+		}
+		if(addingSet.size() > 0) {
+			//增加图片
+			repairOrderImageRepo.insert(addingSet, newOrder.getId());
+		}
+
+		return ((removingSet.size() > 0) && (addingSet.size() > 0));
+
+	}
+
+	@Override
 	public RepairOrder getById(Long id, boolean brief) throws Exception {
 		RepairOrder repairOrder = repairOrderRepo.getById(id);
 		if (!brief) {
@@ -399,14 +469,6 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	private void sendCostFinishEvent(Long repairOrderId) {
 		try {
 			RepairOrder order = repairOrderRepo.getById(repairOrderId);
-//			Mission mission = missionRepo.getMissionById(order.getMissionId());
-//			MessageSimple pushData = new MessageSimple();
-//			pushData.setUserId(mission.getUserId());
-//			String url = String
-//					.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_CONFIRMATION,
-//							mission.getUserId(), repairOrderId);
-//			pushData.setUrl(url);
-//			messageProcess.process(MessageType.WAITING_CONFIRM_FIX_ORDER, pushData);
 
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put(MessageParamKey.MISSION_ID, order.getMissionId());
@@ -415,6 +477,23 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			messageService.send(MessageId.WAITING_CONFIRM_FIX_ORDER, params);
 		} catch (Exception e) {
 			logger.error("发送报价完成消息失败"+e.getMessage());
+		}
+	}
+
+	private void sendWaitingForAuditEvent(Long repairOrderId) {
+		try {
+			RepairOrder order = repairOrderRepo.getById(repairOrderId);
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put(MessageParamKey.MISSION_ID, order.getMissionId());
+			params.put(MessageParamKey.USER_ID, order.getUserId());
+			params.put(MessageParamKey.REPAIR_ORDER_ID, order.getId());
+			params.put(MessageParamKey.ADMIN_ID, order.getAdminUserId());
+			messageService.send(MessageId.WAITING_AUDIT_REPAIR_ORDER, params);
+
+			//添加通知任务
+			taskMonitorService.putTask(Constants.TASK_REPAIR_ORDER + order.getId());
+		} catch (Exception e) {
+			logger.error("发送报价待审核消息失败"+e.getMessage());
 		}
 	}
 }

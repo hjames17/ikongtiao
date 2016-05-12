@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.auth;
 /**
  * Created by zhanghong on 15/12/17.
  */
+@Deprecated
 public class Roles {
 
     public static final String FULL = "full";

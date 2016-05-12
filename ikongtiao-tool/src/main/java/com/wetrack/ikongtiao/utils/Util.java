@@ -676,4 +676,20 @@ public class Util {
 		}
 		return (int) ((random * num));
 	}
+
+
+	public static String createPassword(String prefix, int count) {
+		String value = "";
+		if (StringUtils.isNotBlank(prefix)) {
+			value = value + prefix;
+		}
+		char[] codes = { '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+				'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R',
+				'S', 'T', 'U', 'V', 'W', 'X', 'Y' };
+		Random r = new Random();
+		for (int i = 0; i < count; i++) {
+			value += codes[r.nextInt(codes.length)];
+		}
+		return value;
+	}
 }

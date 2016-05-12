@@ -90,5 +90,6 @@
         <module>../ikongtiao-web</module>
         <module>../ikongtiao-adminweb</module>
         <module>../ikongtiao-im</module>
+        <module>../ikongtiao-notification</module>
     </modules>
 </project>

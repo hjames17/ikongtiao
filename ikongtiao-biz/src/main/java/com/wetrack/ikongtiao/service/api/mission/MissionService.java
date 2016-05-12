@@ -6,7 +6,6 @@ import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
-import com.wetrack.ikongtiao.param.MissionSubmitParam;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ public interface MissionService {
 	 * @param param
 	 * @return
 	 */
-	Mission saveMission(MissionSubmitParam param) throws Exception;
+	Mission saveMissionFromUser(Mission param)throws Exception;
 	Mission saveMission(Mission mission) throws Exception;
 
 	/**

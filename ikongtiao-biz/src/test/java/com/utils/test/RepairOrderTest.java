@@ -1,6 +1,7 @@
 package com.utils.test;
 
 import com.wetrack.ikongtiao.domain.RepairOrder;
+import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by zhanghong on 16/1/7.
  */
@@ -16,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(
         locations = {"classpath*:spring/*.xml"}
 )
+
 public class RepairOrderTest {
 
     @Autowired
@@ -35,11 +40,35 @@ public class RepairOrderTest {
     @Test
     public void get(){
         try {
-            RepairOrder repairOrder = repairOrderService.getById(34L, false);
+//            RepairOrderQueryParam queryParam = new RepairOrderQueryParam();
+//            queryParam.setType(0);
+//            queryParam.setNotForAdminUserId(1);
+            List<RepairOrder> orders = repairOrderService.listForMission(157, false);
+//            PageList<RepairOrder> page = repairOrderService.list(queryParam);
             Assert.assertTrue(true);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
+        }
+    }
+
+    @Test
+    public void update(){
+        RepairOrder repairOrder = new RepairOrder();
+        repairOrder.setId(210L);
+        List<RoImage> images = new ArrayList<>();
+        RoImage image = new RoImage();
+        image.setUrl("/test/image/url1");
+        images.add(image);
+        RoImage image1 = new RoImage();
+        image1.setUrl("/test/image/url3");
+        images.add(image1);
+        repairOrder.setImages(images);
+        try {
+            repairOrderService.update(repairOrder, repairOrderService.getById(210L, true));
+            System.out.println("ok");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

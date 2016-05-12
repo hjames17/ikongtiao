@@ -66,7 +66,7 @@ public class GeoUtil {
 
     public static GeoLocation getGeoLocationFromAddress(String address) throws UnsupportedEncodingException {
         BaiduLocatonResult baiDuResult = GeoUtil.generaterLocationFromBaidu(address);
-        if(baiDuResult==null||baiDuResult.getStatus()!=0||baiDuResult.getResult().getConfidence()<50){
+        if(baiDuResult==null||baiDuResult.getStatus()!=0||baiDuResult.getResult().getConfidence()<5){
             //百度地址不可用，尝试高德
             GaoDeLocation result=GeoUtil.generaterLocationFromGaoDe(address, 0);
             if (result == null || (!result.getStatus().equals("E0")) || result.getList()== null||result.getList().size()==0) {

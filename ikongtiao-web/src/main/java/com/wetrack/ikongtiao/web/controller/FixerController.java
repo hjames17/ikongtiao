@@ -3,14 +3,11 @@ package com.wetrack.ikongtiao.web.controller;
 import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
-import com.wetrack.fileupload.FileUploadService;
-import com.wetrack.fileupload.form.Base64ImageForm;
+import com.wetrack.auth.service.TokenService;
 import com.wetrack.ikongtiao.domain.Fixer;
-import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
-import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
-import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
-import com.wetrack.ikongtiao.domain.fixer.GetuiClientId;
+import com.wetrack.ikongtiao.domain.fixer.*;
 import com.wetrack.ikongtiao.exception.BusinessException;
+import com.wetrack.ikongtiao.service.api.fixer.FixerIncomeService;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.fixer.GetuiClientIdService;
 import com.wetrack.ikongtiao.utils.RegExUtil;
@@ -26,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,8 +35,8 @@ import java.util.Map;
 public class FixerController {
 
 
-    @Value("${file.location.images}")
-    String imageLocation;
+//    @Value("${file.location.images}")
+//    String imageLocation;
 
     @Value("${host.static}")
     String host;
@@ -76,8 +74,18 @@ public class FixerController {
         Token token = fixerService.login(loginForm.getPhone(), loginForm.getPassword());
         LoginOut out = new LoginOut();
         out.setToken(token.getToken());
-        out.setId(token.getUser().getId());
+        out.setId(fixerService.getFixerIdFromTokenUser(token.getUser()).toString());
         return out;
+    }
+
+    @Autowired
+    TokenService tokenService;
+
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/logout", method = RequestMethod.POST)
+    void logout(@RequestBody LoginOut form, HttpServletRequest request) throws Exception{
+        tokenService.logout(form.getToken());
     }
 
 
@@ -88,18 +96,18 @@ public class FixerController {
         return "ok";
     }
 
-    @Autowired
-    FileUploadService fileUploadService;
+//    @Autowired
+//    FileUploadService fileUploadService;
 
-    @SignTokenAuth
-    @ResponseBody
-    @RequestMapping(value = "/upload/image", method = RequestMethod.POST)
-    String uploadImage(@RequestBody Base64ImageForm form) throws Exception{
-
-        String fileName = String.format("%s%s.%s",System.currentTimeMillis(),Thread.currentThread().getId(), form.getType());
-        return fileUploadService.uploadBase64Image(form, imageLocation, fileName);
-
-    }
+//    @SignTokenAuth
+//    @ResponseBody
+//    @RequestMapping(value = "/upload/image", method = RequestMethod.POST)
+//    String uploadImage(@RequestBody Base64ImageForm form) throws Exception{
+//
+//        String fileName = String.format("%s%s.%s",System.currentTimeMillis(),Thread.currentThread().getId(), form.getType());
+//        return fileUploadService.uploadBase64Image(form, imageLocation, fileName);
+//
+//    }
 
     @SignTokenAuth
 //    @AjaxResponseWrapper
@@ -107,7 +115,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/certificate/submit", method = RequestMethod.POST)
     void certificateSubmit(@RequestBody FixerCertInfo fixerCertInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        fixerCertInfo.setFixerId(Integer.valueOf(user.getId()));
+        fixerCertInfo.setFixerId(fixerService.getFixerIdFromTokenUser(user));
         if(StringUtils.isEmpty(fixerCertInfo.getIdNum())){
             throw new BusinessException("身份证号码必须填写!");
         }
@@ -125,7 +133,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/insurance/submit", method = RequestMethod.POST)
     void insuranceSubmit(@RequestBody FixerInsuranceInfo insuranceInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        insuranceInfo.setFixerId(Integer.valueOf(user.getId()));
+        insuranceInfo.setFixerId(fixerService.getFixerIdFromTokenUser(user));
 
         if(StringUtils.isEmpty(insuranceInfo.getInsuranceNum())){
             throw new BusinessException("保险单号码必须填写!");
@@ -150,7 +158,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/profession/submit", method = RequestMethod.POST)
     void professSubmit(@RequestBody FixerProfessionInfo professionInfo, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        professionInfo.setFixerId(Integer.valueOf(user.getId()));
+        professionInfo.setFixerId(fixerService.getFixerIdFromTokenUser(user));
 
         if(professionInfo.getProfessType() == null){
             throw new BusinessException("技能类型未选择");
@@ -169,7 +177,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/certificate", method = RequestMethod.GET)
     FixerCertInfo certInfo(HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        return fixerService.getCertificateInfo(Integer.valueOf(user.getId()));
+        return fixerService.getCertificateInfo(fixerService.getFixerIdFromTokenUser(user));
     }
 
     @SignTokenAuth
@@ -177,7 +185,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/insurance", method = RequestMethod.GET)
     FixerInsuranceInfo insuranceInfo(HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        return fixerService.getInsuranceInfo(Integer.valueOf(user.getId()));
+        return fixerService.getInsuranceInfo(fixerService.getFixerIdFromTokenUser(user));
     }
 
     @SignTokenAuth
@@ -186,8 +194,8 @@ public class FixerController {
     Map<String, FixerProfessionInfo> professInfo(HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
         Map<String, FixerProfessionInfo> map = new HashMap<String, FixerProfessionInfo>();
-        map.put("electrician", fixerService.getProfessInfo(Integer.valueOf(user.getId()), 0));
-        map.put("welder", fixerService.getProfessInfo(Integer.valueOf(user.getId()), 1));
+        map.put("electrician", fixerService.getProfessInfo(fixerService.getFixerIdFromTokenUser(user), 0));
+        map.put("welder", fixerService.getProfessInfo(fixerService.getFixerIdFromTokenUser(user), 1));
         return map;
     }
 
@@ -197,7 +205,7 @@ public class FixerController {
     Fixer info(HttpServletRequest request, @RequestParam(required = false, value = "fixerId") Integer fixerId) throws Exception{
         if(fixerId == null) {
             User user = (User) request.getAttribute("user");
-            fixerId = Integer.valueOf(user.getId());
+            fixerId = fixerService.getFixerIdFromTokenUser(user);
         }
         Fixer fixer = fixerService.getFixer(fixerId);
         if(fixer != null){
@@ -214,7 +222,7 @@ public class FixerController {
         Fixer fixer = new Fixer();
         BeanUtils.copyProperties(form, fixer);
         fixer.setInService(form.isInService());
-        fixer.setId(Integer.valueOf(user.getId()));
+        fixer.setId(fixerService.getFixerIdFromTokenUser(user));
         if(fixer.isInService() != null && fixer.isInService() == true){
             Fixer current = fixerService.getFixer(fixer.getId());
             if(current.getInsuranceState() != null && current.getInsuranceState().equals(2)
@@ -243,7 +251,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/phone/bind", method = RequestMethod.POST)
     String bindPhone(HttpServletRequest request , @RequestBody BindForm form) throws Exception{
         User user = (User)request.getAttribute("user");
-        Fixer fixer = fixerService.getFixer(Integer.valueOf(user.getId()));
+        Fixer fixer = fixerService.getFixer(fixerService.getFixerIdFromTokenUser(user));
         if(fixer.getPhone() != null){
             throw new BusinessException("已经绑定过了电话，不能重复绑定");
         }
@@ -258,7 +266,7 @@ public class FixerController {
         }
 
         Fixer fixer1 = new Fixer();
-        fixer1.setId(Integer.valueOf(user.getId()));
+        fixer1.setId(fixerService.getFixerIdFromTokenUser(user));
         fixer1.setPhone(form.getPhone());
         fixerService.updateInfo(fixer1);
         return "ok";
@@ -269,7 +277,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/phone/rebind", method = RequestMethod.POST)
     String rebindPhone(HttpServletRequest request , @RequestBody BindForm form) throws Exception{
         User user = (User)request.getAttribute("user");
-        Fixer fixer = fixerService.getFixer(Integer.valueOf(user.getId()));
+        Fixer fixer = fixerService.getFixer(fixerService.getFixerIdFromTokenUser(user));
         if(fixer.getPhone() == null){
             throw new BusinessException("未绑定过手机，不能换绑");
         }
@@ -296,7 +304,7 @@ public class FixerController {
         }
 
         Fixer fixer1 = new Fixer();
-        fixer1.setId(Integer.valueOf(user.getId()));
+        fixer1.setId(fixerService.getFixerIdFromTokenUser(user));
         fixer1.setPhone(form.getPhone());
         fixerService.updateInfo(fixer1);
         return "ok";
@@ -310,7 +318,7 @@ public class FixerController {
     @RequestMapping(value = BASE_PATH + "/getui/regcid", method = RequestMethod.POST)
     String regCid(HttpServletRequest request , @RequestBody GetuiClientId form) throws Exception{
         User user = (User)request.getAttribute("user");
-        form.setUid(Integer.valueOf(user.getId()));
+        form.setUid(fixerService.getFixerIdFromTokenUser(user));
         getuiClientIdService.registerClientId(form.getUid(), form.getClientId());
         return "ok";
     }
@@ -322,7 +330,7 @@ public class FixerController {
     void changePass(HttpServletRequest request , @RequestBody ChangeForm form) throws Exception{
         User user = (User)request.getAttribute("user");
 
-        fixerService.changePassword(Integer.valueOf(user.getId()), form.getOldPass(), form.getNewPass());
+        fixerService.changePassword(fixerService.getFixerIdFromTokenUser(user), form.getOldPass(), form.getNewPass());
     }
 
     @ResponseBody
@@ -337,6 +345,26 @@ public class FixerController {
             throw new BusinessException("验证码无效");
         }
         fixerService.resetPassword(fixer.getId(), form.getNewPass());
+    }
+
+
+    public static final long ONE_MONTH = 31L*24*3600*1000;
+    @Autowired
+    FixerIncomeService fixerIncomeService;
+    @SignTokenAuth
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/income", method = RequestMethod.GET)
+    List<FixerIncome> listIncome(HttpServletRequest request ,
+                                 @RequestParam (required = true) Long startDate,
+                                 @RequestParam (required = true) Long endDate,
+                                 @RequestParam(required = false) boolean withPaymentInfo) throws Exception{
+        User user = (User)request.getAttribute("user");
+        if((endDate - startDate) >= ONE_MONTH){
+            throw new BusinessException("最多只能查询一个月的收入明细");
+        }
+        System.currentTimeMillis();
+        return fixerIncomeService.listIncome(fixerService.getFixerIdFromTokenUser(user), new Date(startDate), new Date(endDate), withPaymentInfo);
+
     }
 
 

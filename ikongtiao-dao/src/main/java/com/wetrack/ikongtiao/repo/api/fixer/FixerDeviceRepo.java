@@ -9,6 +9,8 @@ public interface FixerDeviceRepo {
 
 	FixerDevice getFixerDeviceByFixerId(Integer fixerId);
 
+	FixerDevice getByClientId(String clientId);
+
 	FixerDevice save(FixerDevice fixerDevice);
 
 	int update(FixerDevice fixerDevice);

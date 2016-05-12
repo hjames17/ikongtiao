@@ -10,6 +10,7 @@ package com.wetrack.ikongtiao.domain;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
+import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -140,7 +141,7 @@ public class RepairOrder implements Serializable {
     /**
      * 关联表, repair_order_image
      */
-    List<String> images;
+    List<RoImage> images;
 
 
     /**
@@ -399,6 +400,14 @@ public class RepairOrder implements Serializable {
 
     public void setTaxNo(String taxNo) {
         this.taxNo = taxNo;
+    }
+
+    public List<RoImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<RoImage> images) {
+        this.images = images;
     }
 
     /**

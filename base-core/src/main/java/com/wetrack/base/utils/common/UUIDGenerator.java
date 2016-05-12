@@ -71,13 +71,13 @@ public class UUIDGenerator {
 	}
 
 	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		StringBuffer sf = new StringBuffer();
-		for(int i=0; i<1000; i++){
-			sf.append(generate(TYPE_STANDARD)).append("\n");
-		}
-		System.out.println(sf.toString());
-		long time = System.currentTimeMillis() - start;
-		System.out.println("耗时 : " + time + " ms");
+//		long start = System.currentTimeMillis();
+//		StringBuffer sf = new StringBuffer();
+//		for(int i=0; i<1000; i++){
+//			sf.append(generate(TYPE_STANDARD)).append("\n");
+//		}
+//		System.out.println(sf.toString());
+//		long time = System.currentTimeMillis() - start;
+//		System.out.println("耗时 : " + time + " ms");
 	}
 }

@@ -17,6 +17,7 @@ public class MessageParamKey {
     public static final String IM_PUSH_NOTIFY_SESSION_ID = "sessionId";
     public static final String IM_PUSH_NOTIFY_FROM_RLE = "fromRoleType";
     public static final String IM_PUSH_NOTIFY_MESSAGE_UID = "messageId";
+    public static final String PASSWORD = "password";
 
 
 

@@ -1,15 +1,22 @@
 package com.wetrack.wechat.controller;
 
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.wechat.domain.WxKefuOut;
 import com.wetrack.wechat.service.KefuService;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
+import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -18,13 +25,16 @@ import java.util.List;
 @Controller
 //@AjaxResponseWrapper
 @ResponseBody
-public class KefuController {
+public class KefuController implements InitializingBean{
 
     private static final Logger log = LoggerFactory.getLogger(KefuController.class);
 
     static final String BASE_PATH = "/kefu";
     @Autowired
     KefuService kefuService;
+
+    @Autowired
+    WxMpService wxMpService;
 
     /**
      * 客服账号微信限制最多添加10个
@@ -54,6 +64,39 @@ public class KefuController {
         return "修改成功!";
     }
 
+
+    @Value("${store.dir}${store.dir.image.weixin}")
+    String mediaPath;
+    @Value("${store.dir.image.weixin}")
+    String accessPath;
+
+
+    @RequestMapping(value = BASE_PATH + "/convertMediaUrl", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+    String convertImgToLocal(@RequestParam(value = "mediaId") String mediaId) throws Exception{
+        try {
+            File img = wxMpService.mediaDownload(mediaId);
+            File f = new File(mediaPath, img.getName());
+            File d = new File(mediaPath);
+            if(!d.exists()){
+                boolean dir = d.mkdirs();
+                if(!dir){
+                    throw new BusinessException("无法创建存放的目录:" + mediaPath);
+                }
+            }
+
+            f.setLastModified(System.currentTimeMillis());
+            FileCopyUtils.copy(img, f);
+            img.delete();
+            return accessPath + "/" + img.getName();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+            throw new BusinessException("微信接口获取图片错误: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BusinessException("文件本地保存出错：" + e.getMessage());
+        }
+    }
+
 //    @RequestMapping(value = BASE_PATH + "/password" , method = {RequestMethod.POST})
 //    public String password(@RequestParam(value = "account") String account,
 //                         @RequestParam(value = "nickName") String nickName,
@@ -79,6 +122,12 @@ public class KefuController {
 
     @RequestMapping(value = BASE_PATH + "/sendMessage" , method = {RequestMethod.POST})
     public void sendMessage() throws Exception{
+
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
 
     }
 

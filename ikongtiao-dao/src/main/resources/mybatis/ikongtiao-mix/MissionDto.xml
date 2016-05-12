@@ -84,6 +84,13 @@
       <if test="adminUserId!=null">
         and  mission.admin_user_id = #{adminUserId}
       </if>
+      <if test="notForAdminUserId!=null">
+        and mission.admin_user_id != 0
+        and mission.admin_user_id != #{notForAdminUserId}
+      </if>
+      <if test="fixerId!=null">
+        and mission.fixer_id = #{fixerId}
+      </if>
       <if test="missionState!=null">
         and  mission_state = #{missionState}
       </if>
@@ -107,8 +114,18 @@
           or mission.organization LIKE #{userName,jdbcType=VARCHAR}
         )
       </if>
+      <if test="adminUserId!=null">
+        and  mission.admin_user_id = #{adminUserId}
+      </if>
+      <if test="notForAdminUserId!=null">
+        and mission.admin_user_id != 0
+        and mission.admin_user_id != #{notForAdminUserId}
+      </if>
       <if test="phone!=null">
         and mission.contacter_phone LIKE #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="fixerId!=null">
+        and mission.fixer_id = #{fixerId}
       </if>
       <if test="type!=null">
         <choose>

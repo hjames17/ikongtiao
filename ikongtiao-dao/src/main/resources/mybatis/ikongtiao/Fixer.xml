@@ -32,9 +32,10 @@
     <result column="deleted" property="deleted" jdbcType="TINYINT" />
     <result column="orders" property="orders" jdbcType="INTEGER" />
     <result column="missions" property="missions" jdbcType="INTEGER" />
+    <result column="jk_maintainer" property="jkMaintainer" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    fixer.id, name, password, avatar, phone, fixer.province_id, fixer.city_id,
+    fixer.id, name, password, avatar, phone, fixer.province_id, fixer.city_id, fixer.jk_maintainer,
     fixer.district_id, fixer.address, fixer.latitude, fixer.longitude, geohash, level, min_price,
     dw_create_time, dw_update_time, operate_id, in_service, certificate_state, insurance_state, welder_state, electrician_state
   </sql>
@@ -109,6 +110,9 @@
       <if test="password != null">
         password,
       </if>
+      <if test="jkMaintainer != null">
+        jk_maintainer,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="name != null" >
@@ -158,6 +162,9 @@
       </if>
       <if test="password != null" >
         #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="jkMaintainer != null">
+        #{jkMaintainer},
       </if>
     </trim>
   </insert>
@@ -218,27 +225,18 @@
       <if test="certificateState != null" >
         certificate_state = #{certificateState,jdbcType=TINYINT},
       </if>
-      <!--<if test="certInfoId != null" >-->
-        <!--cert_info_id = #{certInfoId,jdbcType=INTEGER},-->
-      <!--</if>-->
       <if test="insuranceState != null" >
         insurance_state = #{insuranceState,jdbcType=TINYINT},
       </if>
-      <!--<if test="insuranceInfoId != null" >-->
-        <!--insurance_info_id = #{insuranceInfoId,jdbcType=INTEGER},-->
-      <!--</if>-->
       <if test="welderState != null" >
         welder_state = #{welderState,jdbcType=TINYINT},
       </if>
-      <!--<if test="welderInfoId != null" >-->
-        <!--welder_info_id = #{welderInfoId,jdbcType=INTEGER},-->
-      <!--</if>-->
       <if test="electricianState != null" >
         electrician_state = #{electricianState,jdbcType=TINYINT},
       </if>
-      <!--<if test="electricianInfoId != null" >-->
-        <!--electrician_info_id = #{electricianInfoId,jdbcType=INTEGER},-->
-      <!--</if>-->
+      <if test="jkMaintainer!=null">
+        and jk_maintainer = #{jkMaintainer}
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -251,6 +249,12 @@
     </if>
     select
     <include refid="Base_Column_List" /> , count(DISTINCT repair_order.id) as orders, count(DISTINCT mission.id) as missions
+    <if test="longitude!=null and latitude!=null">
+      , POWER(SIN((fixer.latitude - ABS(#{latitude})) * PI()/180 / 2), 2) +
+      COS(fixer.latitude /180) *
+      COS(ABS(#{latitude})/180) *
+      POWER(SIN((fixer.longitude - #{longitude}) * PI()/180 / 2), 2) as adist
+    </if>
     from fixer LEFT OUTER JOIN repair_order
     ON fixer.id = repair_order.fixer_id and repair_order.repair_order_state = 5
     LEFT OUTER JOIN mission
@@ -258,6 +262,9 @@
     <where>
       <if test="inService!=null">
         and in_service = #{inService,jdbcType=TINYINT}
+      </if>
+      <if test="jkMaintainer!=null">
+        and jk_maintainer = #{jkMaintainer}
       </if>
       <if test="certificated == false ">
         and  certificate_state != 1
@@ -286,7 +293,12 @@
       </if>
     </where>
     GROUP BY fixer.id
-    ORDER BY fixer.id
+    ORDER BY
+    <if test="longitude!=null and latitude!=null">
+--       //isnull会让adist为null的值为1，而非null为0，所以1会排在0后面，然后对排在前面的非null的adist，进行从小到大的排序
+    isnull(adist), adist,
+    </if>
+    fixer.id ASC
     limit #{start},#{pageSize}
   </select>
 
@@ -329,6 +341,9 @@
       <if test="longitude!=null and latitude!=null">
         and longitude between @lon1 and @lon2
         and latitude between @lat1 and @lat2
+      </if>
+      <if test="jkMaintainer!=null">
+        and jk_maintainer = #{jkMaintainer}
       </if>
     </where>
   </select>

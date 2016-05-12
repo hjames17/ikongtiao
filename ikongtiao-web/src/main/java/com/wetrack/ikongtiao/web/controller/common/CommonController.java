@@ -12,7 +12,9 @@ import com.wetrack.base.result.AjaxException;
 import com.wetrack.base.result.AjaxResult;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.domain.FixerDevice;
+import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.fixer.PushBindService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,13 +35,16 @@ public class CommonController {
 	@Resource
 	private PushBindService pushBindService;
 
+	@Autowired
+	FixerService fixerService;
+
 	@RequestMapping("/push/bind")
 	@ResponseBody
 	@SignTokenAuth(token = true)
 	public AjaxResult<String> pushBind(HttpServletRequest request, @RequestBody PushBindForm pushBindForm) {
 		FixerDevice fixerDevice = new FixerDevice();
 		User user = (User) request.getAttribute("user");
-		pushBindForm.setFixerId(Integer.valueOf(user == null ? "0" : user.getId()));
+		pushBindForm.setFixerId(fixerService.getFixerIdFromTokenUser(user));
 		if (pushBindForm.getFixerId() == null) {
 			throw new AjaxException("1", "参数错误");
 		}

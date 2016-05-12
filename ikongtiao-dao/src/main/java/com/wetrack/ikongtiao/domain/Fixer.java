@@ -31,7 +31,7 @@ public class Fixer implements Serializable {
     /**
      * 该维修员是否集控系统的维保人员
      */
-    boolean jkMaintainer;
+    Boolean jkMaintainer;
 
     /**
      * avatar:维修员头像
@@ -572,6 +572,14 @@ public class Fixer implements Serializable {
 
     public void setOrders(Integer orders) {
         this.orders = orders;
+    }
+
+    public Boolean isJkMaintainer() {
+        return jkMaintainer;
+    }
+
+    public void setJkMaintainer(Boolean jkMaintainer) {
+        this.jkMaintainer = jkMaintainer;
     }
 
     /**

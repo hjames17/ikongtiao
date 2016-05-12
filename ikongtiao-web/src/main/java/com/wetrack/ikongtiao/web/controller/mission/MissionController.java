@@ -10,7 +10,6 @@ import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
-import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,7 +34,7 @@ public class MissionController {
 		if (param == null || StringUtils.isEmpty(param.getContacterPhone()) || StringUtils.isEmpty(param.getFaultType())) {
 			throw new BusinessException("任务参数缺失");
 		}
-		Mission mission = missionService.saveMission(param);
+		Mission mission = missionService.saveMissionFromUser(param);
 		return mission.getId();
 	}
 
@@ -81,13 +80,12 @@ public class MissionController {
 	FaultTypeRepo faultTypeRepo;
 	@Autowired
 	MessageService messageService;
-	@ResponseBody
-	@RequestMapping(value = "/faultType/add", method = RequestMethod.POST)
-	public String addFaultType(@RequestParam(value = "name") String name){
-		faultTypeRepo.create(name, 18);
-		messageService.send(MessageId.TEST, null);
-		return name;
-	}
+//	@ResponseBody
+//	@RequestMapping(value = "/faultType/add", method = RequestMethod.POST)
+//	public String addFaultType(@RequestParam(value = "name") String name){
+//		faultTypeRepo.create(name, 18);
+//		return name;
+//	}
 
 	static class UpdateForm {
 		Integer missionId;

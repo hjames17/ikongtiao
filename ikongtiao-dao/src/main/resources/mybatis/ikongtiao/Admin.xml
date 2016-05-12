@@ -97,10 +97,13 @@
         in_service = #{inService,jdbcType=TINYINT},
       </if>
       <if test="deleted != null" >
-        deleted = #{deleted,jdbcType=TINYINT}
+        deleted = #{deleted,jdbcType=TINYINT},
       </if>
       <if test="disabled != null" >
-        disabled = #{disabled,jdbcType=TINYINT}
+        disabled = #{disabled,jdbcType=TINYINT},
+      </if>
+      <if test="adminType != null" >
+        admin_type = #{adminType,jdbcType=VARCHAR}
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -138,6 +141,9 @@
       </if>
       <if test="email != null ">
         and  email LIKE #{email}
+      </if>
+      <if test="adminType != null" >
+        admin_type = #{adminType,jdbcType=VARCHAR}
       </if>
 
     </where>

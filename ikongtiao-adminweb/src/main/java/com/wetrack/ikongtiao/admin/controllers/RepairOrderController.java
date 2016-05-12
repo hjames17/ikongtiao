@@ -2,10 +2,12 @@ package com.wetrack.ikongtiao.admin.controllers;
 
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
+import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.exception.BusinessException;
+import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,13 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
     public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
         return repairOrderService.listForMission(missionId, true);
+    }
+
+    @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
+    @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.POST})
+    public PageList<RepairOrder> list(@RequestBody RepairOrderQueryParam param) throws Exception{
+
+        return repairOrderService.list(param);
     }
 
     @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
@@ -119,6 +128,20 @@ public class RepairOrderController {
         repairOrderService.setPrepared(Integer.valueOf(user.getId()), form.getRepairOrderId());
     }
 
+    /**
+     * 代客户确认维修单，用于客户自己无法确认维修单的情况
+     * @param form
+     * @param request
+     * @throws Exception
+     */
+    @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
+    @RequestMapping(value = BASE_PATH + "/confirm" , method = {RequestMethod.POST})
+    public void confirm(@RequestBody ConfirmationForm form, HttpServletRequest request) throws Exception {
+//        User user = (User)request.getAttribute("user");
+
+        repairOrderService.confirm(form.getRepairOrderId(), form.isDeny(), form.getPayment(), form.isNeedInvoice(), form.getInvoiceTitle(), form.getTaxNo());
+    }
+
     @SignTokenAuth(roleNameRequired = "AUDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/audit" , method = {RequestMethod.POST})
     public void audit(@RequestBody AuditForm form, HttpServletRequest request) throws Exception {
@@ -127,6 +150,72 @@ public class RepairOrderController {
             throw new BusinessException("审核不通过的原因没有填");
         }
         repairOrderService.audit(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.isPass(), form.getReason());
+    }
+
+    static class ConfirmationForm{
+        String userId;
+        Long repairOrderId;
+        Integer payment; //0线下， 1 线上
+        boolean deny;
+        boolean needInvoice;
+        String invoiceTitle;//发票抬头
+        String taxNo;//税号
+
+        public Long getRepairOrderId() {
+            return repairOrderId;
+        }
+
+        public void setRepairOrderId(Long repairOrderId) {
+            this.repairOrderId = repairOrderId;
+        }
+
+        public boolean isDeny() {
+            return deny;
+        }
+
+        public void setDeny(boolean deny) {
+            this.deny = deny;
+        }
+
+        public Integer getPayment() {
+            return payment;
+        }
+
+        public void setPayment(Integer payment) {
+            this.payment = payment;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public boolean isNeedInvoice() {
+            return needInvoice;
+        }
+
+        public void setNeedInvoice(boolean needInvoice) {
+            this.needInvoice = needInvoice;
+        }
+
+        public String getInvoiceTitle() {
+            return invoiceTitle;
+        }
+
+        public void setInvoiceTitle(String invoiceTitle) {
+            this.invoiceTitle = invoiceTitle;
+        }
+
+        public String getTaxNo() {
+            return taxNo;
+        }
+
+        public void setTaxNo(String taxNo) {
+            this.taxNo = taxNo;
+        }
     }
 
     public static class AuditForm{

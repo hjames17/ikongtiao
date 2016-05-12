@@ -41,6 +41,7 @@ public class MissionController {
         if (param == null) {
             throw new BusinessException("查询任务参数为空");
         }
+
         return missionService.listMissionByAppQueryParam(param);
     }
 
@@ -73,6 +74,14 @@ public class MissionController {
 //        missionAddress.setName(param.getContacterName());
         Mission created = missionService.saveMission(param);
         return created.getId();
+    }
+
+    @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/finish/{id}", method = {RequestMethod.POST})
+    public void finishMission(@PathVariable(value = "id") int id ) throws Exception{
+        //TODO 操作纪录
+        missionService.finishMission(id);
     }
 
     @ResponseBody

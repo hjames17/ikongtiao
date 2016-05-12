@@ -2,9 +2,12 @@ package com.wetrack.ikongtiao.web.controller;
 
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
+import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
+import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,15 +35,33 @@ public class RepairOrderController {
     @Autowired
     RepairOrderService repairOrderService;
 
+    @Autowired
+    FixerService fixerService;
 
     @SignTokenAuth
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        RepairOrder repairOrder = repairOrderService.create(Integer.valueOf(user.getId()), form.getMissionId(),
+        RepairOrder repairOrder = repairOrderService.create(fixerService.getFixerIdFromTokenUser(user), form.getMissionId(),
                 form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(),
                 form.getImages());
         return repairOrder.getId().toString();
+    }
+
+    @SignTokenAuth
+
+    @RequestMapping(value = BASE_PATH + "/update" , method = {RequestMethod.POST})
+    public void update(@RequestBody RepairOrder repairOrder, HttpServletRequest request) throws Exception{
+//        User user = (User)request.getAttribute("user");
+        RepairOrder current = repairOrderService.getById(repairOrder.getId(), true);
+        if(current == null){
+            throw new BusinessException("维修单不存在");
+        }
+        if(current.getRepairOrderState().compareTo(RepairOrderState.AUDIT_READY.getCode()) >= 0){
+            throw new BusinessException("维修单已经完成报价，不能修改，请联系客服!");
+        }
+        repairOrder.setRepairOrderState(null);//不能改，设null
+        repairOrderService.update(repairOrder, current);
     }
 
     @SignTokenAuth

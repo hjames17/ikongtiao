@@ -4,15 +4,24 @@ import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
+import com.wetrack.base.utils.encrypt.MD5;
+import com.wetrack.ikongtiao.domain.admin.AdminType;
 import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AdminQueryForm;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
+import com.wetrack.ikongtiao.utils.Util;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -29,6 +38,9 @@ public class AdminController {
 
     @Autowired
     AdminService adminService;
+
+    @Autowired
+    MessageService messageService;
 
     @ResponseBody
     @RequestMapping(value = "/list" , method = {RequestMethod.GET})
@@ -48,6 +60,14 @@ public class AdminController {
         return adminService.listWithParams(queryForm);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/{id}" , method = {RequestMethod.GET})
+    public User get(@PathVariable(value = "id") Integer id) throws Exception{
+        User user = adminService.getById(id);
+        user.setPassword(null);
+        return user;
+    }
+
 
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -62,6 +82,21 @@ public class AdminController {
         out.setUserInfo(user);
 //        out.setRoleString(user.getRolesString());
 //        out.setAdminType(user.getAdminType());
+        return out;
+    }
+    @ResponseBody
+    @RequestMapping(value = "/loginjk", method = RequestMethod.POST)
+    LoginOut loginjk(@RequestBody LoginForm loginForm) throws Exception{
+        Token token = adminService.login(loginForm.getEmail(), loginForm.getPassword());
+        User user = adminService.getByEmail(loginForm.getEmail());
+        if(!user.getAdminType().equals(AdminType.MANAGER)){
+            throw new BusinessException("无效的用户，不允许登录");
+        }
+        LoginOut out = new LoginOut();
+        out.setToken(token.getToken());
+        out.setId(token.getUser().getId());
+        user.setPassword(null);
+        out.setUserInfo(user);
         return out;
     }
 
@@ -82,15 +117,53 @@ public class AdminController {
         adminService.dutyOn(Integer.valueOf(user.getId()), on);
     }
 
+//    @ResponseBody
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    String add(@RequestBody User form) throws Exception{
+//        User user = adminService.create(form);
+//        return user.getId().toString();
+//    }
+
+    /**
+     * @param form
+     * @return
+     * @throws Exception
+     */
     @ResponseBody
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    String add(@RequestBody User form) throws Exception{
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    String create(@RequestBody User form) throws Exception{
+        if(StringUtils.isEmpty(form.getEmail())){
+            throw new BusinessException("email不能为空");
+        }else if(StringUtils.isEmpty(form.getName())){
+            throw new BusinessException("名字不能为空");
+        }else if(form.getAdminType() == null){
+            throw new BusinessException("后台账号类型没有指定");
+        }
+
+        String initPass = null;
+        if(StringUtils.isEmpty(form.getPassword())){
+            initPass = Util.createPassword("MGR", 8);
+            form.setPassword(MD5.encryptHex(initPass));
+
+        }
+
         User user = adminService.create(form);
+
+        if(initPass != null) {
+            try {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put(MessageParamKey.ADMIN_ID, user.getId());
+                params.put(MessageParamKey.PASSWORD, initPass);
+                messageService.send(MessageId.ADMIN_INITIAL_PASSWORD, params);
+            }catch (Exception e){
+                //ignore
+            }
+        }
         return user.getId().toString();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/modify", method = RequestMethod.POST)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     void modify(@RequestBody User form) throws Exception{
         if(form.getId() == null){
             throw new BusinessException("id为空");

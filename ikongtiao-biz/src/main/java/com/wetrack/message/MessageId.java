@@ -20,6 +20,7 @@ public class MessageId {
      * 维修单相关消息
      */
     public static final int NEW_FIX_ORDER = 101;
+    public static final int WAITING_AUDIT_REPAIR_ORDER = 109;
     public static final int WAITING_CONFIRM_FIX_ORDER = 102;
     public static final int CONFIRM_FIX_ORDER = 103;
     public static final int CANCEL_FIX_ORDER = 104;
@@ -27,6 +28,7 @@ public class MessageId {
     public static final int COMPLETED_FIX_ORDER = 106;
     public static final int COMMENT_REPAIR_ORDER = 107;
     public static final int REPAIR_ORDER_PAID = 108;
+    public static final int REPAIR_ORDER_UPDATE = 109;
 
     /**
      * 认证提交
@@ -63,17 +65,21 @@ public class MessageId {
     public static final int USER_CERT_AUDIT_PASS = 252;
     public static final int USER_CERT_AUDIT_DENY = 253;
 
+    /**
+     * 聊天相关推送
+     */
     public static final int IM_NOTIFY_WECHAT = 301;
     public static final int IM_NOTIFY_FIXER = 303;
     public static final int FIXER_NOTIFY_WECHAT = 302;
     public static final int WECHAT_NOTIFY_FIXER = 304;
 
     /**
-     * 登录
+     * 账号消息
      */
     public static final int LOGIN_OVERLOAD = 400; //在其他地方登录
+    public static final int ADMIN_INITIAL_PASSWORD = 401; //初始密码发送
+    public static final int FIXER_INITIAL_PASSWORD = 402; //初始密码发送
 
-    public static final int TEST = 600; //在其他地方登录
 
 
     //维修员认证类型

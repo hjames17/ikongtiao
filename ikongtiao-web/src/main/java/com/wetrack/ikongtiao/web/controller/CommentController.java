@@ -7,6 +7,7 @@ import com.wetrack.ikongtiao.domain.repairOrder.Comment;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.CommentQueryParam;
 import com.wetrack.ikongtiao.service.api.CommentService;
+import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,9 @@ public class CommentController {
 
     @Autowired
     CommentService commentService;
+
+    @Autowired
+    FixerService fixerService;
 
 
     @SignTokenAuth
@@ -61,7 +65,7 @@ public class CommentController {
         param.setPageSize(pageSize);
 
         User user = (User)request.getAttribute("user");
-        param.setFixerId(Integer.valueOf(user.getId()));
+        param.setFixerId(fixerService.getFixerIdFromTokenUser(user));
         param.setMissionId(missionId);
         param.setRepairOrderId(repairOrderId);
 

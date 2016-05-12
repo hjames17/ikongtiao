@@ -1,6 +1,7 @@
 package com.wetrack.ikongtiao.service.api.fixer;
 
 import com.wetrack.auth.domain.Token;
+import com.wetrack.auth.domain.User;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
@@ -15,7 +16,10 @@ import java.util.List;
  */
 public interface FixerService {
 
+    Integer getFixerIdFromTokenUser(User user);
+
     Fixer createAccount(String phone, String name, String password) throws Exception;
+    Fixer createJKAccount(String phone, String name, String password) throws Exception;
 
     Token login(String phone, String password) throws Exception;
 

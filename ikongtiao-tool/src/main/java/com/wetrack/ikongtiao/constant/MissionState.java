@@ -29,4 +29,25 @@ public enum MissionState {
 	public String getMessage() {
 		return message;
 	}
+
+	public static MissionState fromCode(Integer code){
+		switch (code){
+			case 0:
+				return NEW;
+			case 1:
+				return ACCEPT;
+			case 2:
+				return DISPATCHED;
+			case 3:
+				return FIXING;
+			case 4:
+				return CLOSED;
+			case 10:
+				return COMPLETED;
+			case -1:
+				return REJECT;
+			default:
+				return null;
+		}
+	}
 }

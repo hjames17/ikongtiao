@@ -25,6 +25,12 @@
     from fixer_device
     where fixer_id = #{fixerId,jdbcType=INTEGER}
   </select>
+  <select id="selectByClientId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from fixer_device
+    where client_id = #{clientId}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from fixer_device
     where id = #{id,jdbcType=INTEGER}

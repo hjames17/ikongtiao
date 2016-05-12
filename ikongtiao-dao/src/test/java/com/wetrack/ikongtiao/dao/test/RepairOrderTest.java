@@ -31,7 +31,7 @@ public class RepairOrderTest {
 
     @Test
     public void list(){
-        RepairOrder order = repo.getById(144L);
+        RepairOrder order = repo.getById(208L);
         System.out.println("ok");
     }
 

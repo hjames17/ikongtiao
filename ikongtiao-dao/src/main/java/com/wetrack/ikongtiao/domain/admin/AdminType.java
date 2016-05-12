@@ -37,4 +37,8 @@ public enum AdminType {
         }
         return rolesStringArray;
     }
+
+    public String getName(){
+        return name;
+    }
 }

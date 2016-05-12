@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.admin.controllers;
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
+import com.wetrack.base.utils.encrypt.MD5;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
@@ -10,6 +11,9 @@ import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +35,9 @@ public class FixerController {
     @Autowired
     FixerService fixerService;
 
+    @Autowired
+    MessageService messageService;
+
     @SignTokenAuth(roleNameRequired = "VIEW_FIXER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.GET})
@@ -43,6 +50,7 @@ public class FixerController {
                                 @RequestParam(required = false, value = "name") String name,
                                 @RequestParam(required = false, value = "phone") String phone,
                                 @RequestParam(required = false, value = "address") String address,
+                                @RequestParam(required = false, value = "jkMaintainer") Boolean jkMaintainer,
                                 @RequestParam(required = false, value = "page") Integer page,
                                 @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
         FixerQueryForm queryForm = new FixerQueryForm();
@@ -51,6 +59,7 @@ public class FixerController {
         queryForm.setPhone(phone);
         queryForm.setName(name);
         queryForm.setAddress(address);
+        queryForm.setJkMaintainer(jkMaintainer);
         queryForm.setInService(inService);
         queryForm.setCertificated(certificated);
         queryForm.setInsured(insured);
@@ -80,6 +89,43 @@ public class FixerController {
         return fixerService.getFixer(id);
     }
 
+    @SignTokenAuth(roleNameRequired = "EDIT_FIXER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
+    public Fixer create(@RequestBody SignUpForm form) throws Exception{
+        //默认密码，电话号码后六位
+        String pass = form.getPhone().substring(form.getPhone().length() - 6);
+        Fixer fixer = null;
+        if(form.isJkMaintainer()) {
+            fixer = fixerService.createJKAccount(form.getPhone(), form.getName(), MD5.encryptHex(pass));
+        }else{
+            fixer = fixerService.createAccount(form.getPhone(), form.getName(), MD5.encryptHex(pass));
+        }
+
+        try {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put(MessageParamKey.FIXER_ID, fixer.getId());
+            params.put(MessageParamKey.PASSWORD, pass);
+            messageService.send(MessageId.FIXER_INITIAL_PASSWORD, params);
+        }catch (Exception e){
+            //ignore
+        }
+        return fixer;
+    }
+
+    @SignTokenAuth(roleNameRequired = "EDIT_FIXER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/update", method = RequestMethod.POST)
+    public void update(HttpServletRequest request , @RequestBody Fixer form) throws Exception{
+        form.setCertificateState(null);
+        form.setCertInfoId(null);
+        form.setDwCreateTime(null);
+        form.setElectricianState(null);
+        form.setElectricianInfoId(null);
+        form.setWelderState(null);
+        form.setWelderInfoId(null);
+        fixerService.updateInfo(form);
+    }
 //    @ResponseBody
 //    @RequestMapping(value = BASE_PATH + "search", method = {RequestMethod.GET})
 //    public PageList<Fixer> search() throws Exception{
@@ -179,6 +225,36 @@ public class FixerController {
 
         public void setAdminUserId(Integer adminUserId) {
             this.adminUserId = adminUserId;
+        }
+    }
+
+    static class SignUpForm{
+        String phone;
+        String name;
+        Boolean jkMaintainer;
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Boolean isJkMaintainer() {
+            return jkMaintainer;
+        }
+
+        public void setJkMaintainer(Boolean jkMaintainer) {
+            this.jkMaintainer = jkMaintainer;
         }
     }
 }

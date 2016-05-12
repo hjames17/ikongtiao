@@ -1,5 +1,7 @@
 package com.wetrack.wechat.config;
 
+import com.wetrack.message.MessageService;
+import com.wetrack.message.MessageServiceProxy;
 import com.wetrack.wechat.weixinHandlers.ClickEventHandler;
 import com.wetrack.wechat.weixinHandlers.SubscriptionHandler;
 import me.chanjar.weixin.common.api.WxConsts;
@@ -59,5 +61,10 @@ public class WebConfig {
         return wxMpMessageRouter;
     }
 
+    @Bean
+    MessageService configMessageService(){
+
+        return new MessageServiceProxy();
+    }
 
 }

@@ -1,8 +1,10 @@
 package com.wetrack.ikongtiao.service.api;
 
+import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
+import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 
 import java.util.List;
 
@@ -11,6 +13,7 @@ import java.util.List;
  */
 public interface RepairOrderService {
     List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception;
+    PageList<RepairOrder> list(RepairOrderQueryParam param);
 
     RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg,
                        String makeOrderNum, String repairOrderDesc, String accessoryContent, List<RoImage> images) throws Exception;
@@ -37,4 +40,6 @@ public interface RepairOrderService {
     void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle, String taxNo) throws Exception;
 
     void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception;
+
+    void update(RepairOrder newOrder, RepairOrder oldOrder) throws Exception;
 }

@@ -1,8 +1,10 @@
 package com.wetrack.ikongtiao.repo.impl.repairOrder;
 
 import com.wetrack.base.dao.api.CommonDao;
+import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,36 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
         }
 
         return list;
+    }
+
+    @Override
+    public List<RepairOrder> listByQueryParam(RepairOrderQueryParam param) {
+
+        if(param.getPhone() != null){
+            //加上sql like查询通配符
+            param.setPhone("%" + param.getPhone() + "%");
+        }
+        if(param.getUserName() != null){
+            //加上sql like查询通配符
+            param.setUserName("%" + param.getUserName() + "%");
+        }
+
+        return commonDao.mapper(RepairOrder.class).sql("listByQueryParam").session().selectList(param);
+    }
+
+    @Override public int countByParam(RepairOrderQueryParam param) {
+        if(param.getPhone() != null){
+            //加上sql like查询通配符
+            param.setPhone("%" + param.getPhone() + "%");
+        }
+        if(param.getUserName() != null){
+            //加上sql like查询通配符
+            param.setUserName("%" + param.getUserName() + "%");
+        }
+        BaseCondition baseCondition = commonDao.mapper(RepairOrder.class).sql("countByQueryParam").session()
+                .selectOne(param);
+        Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
+        return count == null ? 0 : count;
     }
 
     @Override

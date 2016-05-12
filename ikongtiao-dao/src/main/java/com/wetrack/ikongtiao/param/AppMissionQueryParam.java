@@ -18,6 +18,8 @@ public class AppMissionQueryParam extends BaseCondition {
 	private String userId;
 
 	private Integer adminUserId;
+	private Integer notForAdminUserId;
+	private Integer fixerId;
 
 	Integer missionState;
 
@@ -89,5 +91,21 @@ public class AppMissionQueryParam extends BaseCondition {
 
 	public void setCreateTimeEnd(Date createTimeEnd) {
 		this.createTimeEnd = createTimeEnd;
+	}
+
+	public Integer getNotForAdminUserId() {
+		return notForAdminUserId;
+	}
+
+	public void setNotForAdminUserId(Integer notForAdminUserId) {
+		this.notForAdminUserId = notForAdminUserId;
+	}
+
+	public Integer getFixerId() {
+		return fixerId;
+	}
+
+	public void setFixerId(Integer fixerId) {
+		this.fixerId = fixerId;
 	}
 }

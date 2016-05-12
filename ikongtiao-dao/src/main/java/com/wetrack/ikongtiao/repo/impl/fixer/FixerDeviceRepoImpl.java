@@ -20,6 +20,11 @@ public class FixerDeviceRepoImpl implements FixerDeviceRepo {
 		return commonDao.mapper(FixerDevice.class).sql("selectByFixerId").session().selectOne(fixerId);
 	}
 
+	@Override
+	public FixerDevice getByClientId(String clientId) {
+		return commonDao.mapper(FixerDevice.class).sql("selectByClientId").session().selectOne(clientId);
+	}
+
 	@Override public FixerDevice save(FixerDevice fixerDevice) {
 		commonDao.mapper(FixerDevice.class).sql("insertSelective").session().insert(fixerDevice);
 		return fixerDevice;

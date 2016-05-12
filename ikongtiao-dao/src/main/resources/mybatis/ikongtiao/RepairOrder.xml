@@ -68,8 +68,8 @@
   </resultMap>
 
   <sql id="Base_Column_List" >
-    id, mission_id, fixer_id, creator_fixer_id, admin_user_id, repair_order_desc, repair_order_state, operator, create_time,
-    update_time, name_plate_img, labor_cost, discount, accessory_content, user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num
+    repair_order.id, mission_id, repair_order.fixer_id, creator_fixer_id, repair_order.admin_user_id, repair_order_desc, repair_order_state, repair_order.operator, repair_order.create_time,
+    repair_order.update_time, name_plate_img, labor_cost, discount, accessory_content, repair_order.user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num
   </sql>
 
   <select id="selectImages" resultMap="RoImageMap" parameterType="java.lang.Long">
@@ -115,7 +115,7 @@
     </selectKey>
     insert into repair_order
     <trim prefix="(" suffix=")" suffixOverrides="," >
-        mission_id, repair_order_desc, user_id,
+        mission_id, repair_order_desc, user_id, admin_user_id,
       <if test="creatorFixerId != null" >
         creator_fixer_id,
       </if>
@@ -133,6 +133,7 @@
         #{missionId,jdbcType=INTEGER},
         #{repairOrderDesc,jdbcType=VARCHAR},
         #{userId,jdbcType=VARCHAR},
+        #{adminUserId},
       <if test="creatorFixerId != null" >
         #{creatorFixerId,jdbcType=INTEGER},
       </if>
@@ -197,5 +198,100 @@
     <include refid="Base_Column_List" />
     from repair_order
     where repair_order.mission_id = #{id}
+  </select>
+
+  <select id="listByQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+    SELECT DISTINCT <include refid="Base_Column_List"/>
+    from repair_order LEFT OUTER JOIN mission
+    ON repair_order.mission_id = mission.id
+    <where>
+      <if test="userId!=null">
+        and repair_order.user_id = #{userId,jdbcType=VARCHAR}
+      </if>
+      <if test="userName!=null">
+        and
+        (
+        mission.contacter_name LIKE #{userName,jdbcType=VARCHAR}
+        or mission.organization LIKE #{userName,jdbcType=VARCHAR}
+        )
+      </if>
+      <if test="phone!=null">
+        and mission.contacter_phone LIKE #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="type!=null">
+        <choose>
+          <when test="type==0">
+            and repair_order_state &lt; 6
+            and repair_order_state &gt;= 0
+          </when>
+          <when test="type==1">
+            and (repair_order_state = 6
+            or repair_order_state = -1)
+          </when>
+        </choose>
+      </if>
+      <if test="adminUserId!=null">
+        and  repair_order.admin_user_id = #{adminUserId}
+      </if>
+      <if test="notForAdminUserId!=null">
+        and repair_order.admin_user_id is not NULL
+        and repair_order.admin_user_id != #{notForAdminUserId}
+      </if>
+      <if test="fixerId!=null">
+        and repair_order.fixer_id = #{fixerId}
+      </if>
+      <if test="state!=null">
+        and  repair_order_state = #{state}
+      </if>
+    </where>
+    order by create_time desc limit #{start},#{pageSize}
+  </select>
+
+  <select id="countByQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+    select
+    count(*) as totalSize
+    from repair_order LEFT OUTER JOIN mission
+    ON repair_order.mission_id = mission.id
+    <where>
+      <if test="userId!=null">
+        and repair_order.user_id = #{userId,jdbcType=VARCHAR}
+      </if>
+      <if test="userName!=null">
+        and
+        (
+        mission.contacter_name LIKE #{userName,jdbcType=VARCHAR}
+        or mission.organization LIKE #{userName,jdbcType=VARCHAR}
+        )
+      </if>
+      <if test="phone!=null">
+        and mission.contacter_phone LIKE #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="type!=null">
+        <choose>
+          <when test="type==0">
+            and repair_order_state &lt; 6
+            and repair_order_state &gt;= 0
+          </when>
+          <when test="type==1">
+            and (repair_order_state = 6
+            or repair_order_state = -1)
+          </when>
+        </choose>
+      </if>
+      <if test="adminUserId!=null">
+        and  repair_order.admin_user_id = #{adminUserId}
+      </if>
+      <if test="notForAdminUserId!=null">
+        and repair_order.admin_user_id is not NULL
+        and repair_order.admin_user_id != #{notForAdminUserId}
+      </if>
+      <if test="fixerId!=null">
+        and repair_order.fixer_id = #{fixerId}
+      </if>
+      <if test="state!=null">
+        and  repair_order_state = #{state}
+      </if>
+
+    </where>
   </select>
 </mapper>

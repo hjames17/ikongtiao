@@ -10,11 +10,21 @@
   <sql id="Base_Column_List" >
     id, repair_order_id, url, ordinal
   </sql>
-  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.MissionImg" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.repairOrder.RoImage" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into repair_order_image (repair_order_id, url, ordinal)
     values (#{repairOrderId}, #{url}, #{ordinal})
   </insert>
+  <delete id="removeByUrlAndRepairOrderIdIn" parameterType="com.wetrack.ikongtiao.domain.repairOrder.RoImage">
+    DELETE FROM repair_order_image
+    WHERE repair_order_id = #{repairOrderId} and url = #{url}
+  </delete>
+  <select id="selectTopOrdinalByRepairOrderId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    SELECT ordinal from repair_order_image
+    WHERE repair_order_id = #{id}
+    ORDER BY ordinal DESC
+    limit 1
+  </select>
 </mapper>

@@ -26,11 +26,35 @@ public enum RepairOrderState {
 		this.message = message;
 	}
 
-	public Byte getCode() {
+	public final Byte getCode() {
 		return code;
 	}
 
 	public String getMessage() {
+
 		return message;
+	}
+
+	public static RepairOrderState fromCode(Byte code){
+		switch (code){
+			case 0:
+				return NEW;
+			case 1:
+				return COST_READY;
+			case 2:
+				return AUDIT_READY;
+			case 3:
+				return CONFIRMED;
+			case 4:
+				return PREPARED;
+			case 5:
+				return FIXING;
+			case 6:
+				return COMPLETED;
+			case 7:
+				return CLOSED;
+			default:
+				return null;
+		}
 	}
 }

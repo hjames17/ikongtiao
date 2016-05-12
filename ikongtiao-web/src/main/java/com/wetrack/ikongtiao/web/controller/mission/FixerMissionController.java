@@ -5,6 +5,7 @@ import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
+import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,15 @@ public class FixerMissionController {
 	@Resource
 	private MissionService missionService;
 
+	@Resource
+	FixerService fixerService;
+
 
 	@RequestMapping(value = BASE_PATH + "/list", method = RequestMethod.POST)
 	@ResponseBody
 	public PageList<MissionDto> listMission(HttpServletRequest request, @RequestBody FixerMissionQueryParam param) throws Exception{
 		User user = (User)request.getAttribute("user");
-		param.setFixerId(Integer.valueOf(user.getId()));
+		param.setFixerId(fixerService.getFixerIdFromTokenUser(user));
 		return missionService.ListFixerMissionByParam(param);
 	}
 

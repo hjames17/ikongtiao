@@ -1,8 +1,10 @@
 package com.wetrack.ikongtiao.service.impl.fixer;
 
 import com.wetrack.auth.domain.Token;
+import com.wetrack.auth.domain.User;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
+import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
@@ -345,6 +347,11 @@ public class FixerServiceImpl implements FixerService {
     }
 
     @Override
+    public Integer getFixerIdFromTokenUser(User user) {
+        return Integer.valueOf(user.getId().substring(Constants.TOKEN_ID_PREFIX_FIXER.length()));
+    }
+
+    @Override
     public Fixer createAccount(String phone, String name, String password) throws Exception {
         FixerQueryForm query = new FixerQueryForm();
         query.setPhone(phone);
@@ -356,6 +363,23 @@ public class FixerServiceImpl implements FixerService {
         fixer.setPhone(phone);
         fixer.setName(name);
         fixer.setPassword(password);
+        fixer.setJkMaintainer(false);
+        return fixerRepo.save(fixer);
+    }
+
+    @Override
+    public Fixer createJKAccount(String phone, String name, String password) throws Exception {
+        FixerQueryForm query = new FixerQueryForm();
+        query.setPhone(phone);
+        int count = fixerRepo.countFixerByQueryParam(query);
+        if(count > 0){
+            throw new BusinessException("该号码"+phone+"已经被注册");
+        }
+        Fixer fixer = new Fixer();
+        fixer.setPhone(phone);
+        fixer.setName(name);
+        fixer.setPassword(password);
+        fixer.setJkMaintainer(true);
         return fixerRepo.save(fixer);
     }
 
@@ -367,7 +391,7 @@ public class FixerServiceImpl implements FixerService {
         if(results != null && results.size() > 0){
             Fixer found = results.get(0);
             if(found.getPassword().equals(password)){
-                return tokenService.login(found.getId().toString(), password);
+                return tokenService.login(Constants.TOKEN_ID_PREFIX_FIXER + found.getId().toString(), password);
             }else{
                 throw new BusinessException("密码错误");
 //                throw new AjaxException(MissionErrorMessage.MISSION_LIST_PARAM_ERROR);

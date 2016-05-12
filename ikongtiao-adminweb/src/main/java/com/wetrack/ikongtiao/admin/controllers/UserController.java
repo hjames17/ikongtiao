@@ -33,12 +33,14 @@ public class UserController {
     public PageList<UserInfoDto> listMission(@RequestParam(required = false, value = "name") String name,
                                              @RequestParam(required = false, value = "phone") String phone,
                                              @RequestParam(required = false, value = "address") String address,
+                                             @RequestParam(required = false, value = "districtId") Integer districtId,
                                              @RequestParam(required = false, value = "page") Integer page,
                                              @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
         UserQueryParam userQueryParam = new UserQueryParam();
         userQueryParam.setAddress(address);
         userQueryParam.setPhone(phone);
         userQueryParam.setUserName(name);
+        userQueryParam.setDistrictId(districtId);
         userQueryParam.setPage(page == null ? 0 : page);
         userQueryParam.setPageSize(pageSize == null ? 10 : pageSize);
         return userInfoService.listUserByQueryParam(userQueryParam);
@@ -68,7 +70,7 @@ public class UserController {
             throw new BusinessException("客户单位名称未填");
         }
         if(StringUtils.isEmpty(userInfo.getContacterName())){
-            throw new BusinessException("联系人姓名姓名未填");
+            throw new BusinessException("联系人姓名未填");
         }
         if(StringUtils.isEmpty(userInfo.getContacterPhone())){
             throw new BusinessException("联系人电话未填");
@@ -78,6 +80,18 @@ public class UserController {
 
 
         return created.getId();
+    }
+
+    @SignTokenAuth(roleNameRequired = "EDIT_CUSTOMER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/update" , method = {RequestMethod.POST})
+    public void update(@RequestBody UserInfo userInfo) throws Exception {
+        if(org.springframework.util.StringUtils.isEmpty(userInfo.getId())){
+            throw new BusinessException("未知用户id");
+        }
+        //email字段不允许修改
+        userInfo.setAccountEmail(null);
+        userInfoService.update(userInfo);
     }
 
 

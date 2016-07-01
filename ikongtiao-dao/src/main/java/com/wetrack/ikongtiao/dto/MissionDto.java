@@ -40,6 +40,8 @@ public class MissionDto {
 	 */
 	private Integer missionState;
 
+	String closeReason;
+
 	/**
 	 * is_need_more:是否需要详细信息:0-不需要,1-需要
 	 */
@@ -324,5 +326,13 @@ public class MissionDto {
 
 	public void setFaultType(String faultType) {
 		this.faultType = faultType;
+	}
+
+	public String getCloseReason() {
+		return closeReason;
+	}
+
+	public void setCloseReason(String closeReason) {
+		this.closeReason = closeReason;
 	}
 }

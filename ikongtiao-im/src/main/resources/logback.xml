@@ -4,12 +4,13 @@
 	<property resource="conf/app.conf" />
 	<property name="path" value="../ikt" />
 	<property name="rollover" value="rollover" />
-	<property name="app" value="ikt-web" />
+	<property name="app" value="ikt-im" />
 	<!--The date pattern should follow the conventions defined in SimpleDateFormat-->
 	<timestamp key="byDay" detePattern="yyyyMMdd" />
 	<!-- 输出到控制台 -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -34,6 +35,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -48,6 +50,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -62,6 +65,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -76,10 +80,11 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
-	<appender name="biz-debug"
+	<appender name="debug"
 			  class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<File>${path}/${app}-debug.log</File>
 		<!-- 日志文件rolling策略 -->
@@ -90,10 +95,11 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
-	<appender name="biz-info"
+	<appender name="info"
 			  class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<File>${path}/${app}-info.log</File>
 		<!-- 日志文件rolling策略 -->
@@ -104,6 +110,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -137,11 +144,11 @@
 	</logger>
 	<logger name="com.wetrack" additivity="true">
 		<level value="debug" />
-		<appender-ref ref="biz-debug" />
+		<appender-ref ref="debug" />
 	</logger>
 	<logger name="com.wetrack" additivity="true">
 		<level value="info" />
-		<appender-ref ref="biz-info" />
+		<appender-ref ref="info" />
 	</logger>
 	<!--<logger name="com.wetrack" additivity="true">-->
 	<!--<level value="error" />-->

@@ -1,9 +1,13 @@
 package com.wetrack.ikongtiao.service.impl.user;
 
 import com.wetrack.auth.domain.Token;
+import com.wetrack.auth.domain.User;
+import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
+import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.geo.GeoLocation;
 import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.UserQueryParam;
@@ -43,6 +47,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Resource
 	private ImMessageService imMessageService;
+
+	@Autowired
+	TokenService tokenService;
 
 	@Override
 	public UserInfo CreateFromWeChatOpenId(String weChatOpenId) {
@@ -133,7 +140,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public Token login(String email, String password) throws Exception {
-		return null;
+	public Token login(String contacterPhone, String password) throws Exception {
+		UserInfo userInfo = userInfoRepo.findByOrganizationOrContacterPhone(null, contacterPhone);
+		if(userInfo == null){
+			throw new BusinessException("不存在的联系人号码");
+		}
+		if(!password.equals(userInfo.getPassword())){
+			throw new BusinessException("密码错误");
+		}
+		User authUser = new User(Constants.TOKEN_ID_PREFIX_CUSTOMER + userInfo.getId(), password, User.NEVER_EXPIRED, "JK_LEVEL_1");
+		return tokenService.login(authUser);
+	}
+
+	@Override
+	public UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone) {
+		return userInfoRepo.findByOrganizationOrContacterPhone(organization, contacterPhone);
 	}
 }

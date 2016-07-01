@@ -1,8 +1,11 @@
 package com.wetrack.ikongtiao.domain;
 
+import lombok.Data;
+
 /**
  * Created by zhanghong on 16/4/28.
  */
+@Data
 public class AppVersion {
 
     Integer id;
@@ -10,6 +13,7 @@ public class AppVersion {
     String version;
     String releaseNote;
     String url;
+    boolean released;
 
     public Integer getId() {
         return id;

@@ -54,7 +54,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
             paymentInfo.setAmount(payAmount);
             PaymentInfo existed = paymentInfoRepo.findByMatch(paymentInfo);
             if(existed != null){
-                if(existed.getState().compareTo(PaymentInfo.State.WAIT) > 0){
+                if(existed.getState().compareTo(PaymentInfo.State.NOTPAY) > 0){
                     throw new Exception("订单已经完成或者关闭，不能再次创建:" + paymentKey);
                 }else{
                     return existed;
@@ -86,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
         try {
             PaymentInfo existed = paymentInfoRepo.findByMatch(paymentInfo);
             if (existed != null) {
-                if (existed.getState().compareTo(PaymentInfo.State.WAIT) > 0) {
+                if (existed.getState().compareTo(PaymentInfo.State.NOTPAY) > 0) {
                     throw new Exception("订单已经完成或者关闭，不能再次创建:" + paymentKey);
                 } else {
                     return existed;
@@ -106,7 +106,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
     }
 
     private void checkSendMessage(PaymentInfo paymentInfo){
-        if(paymentInfo.getState() == PaymentInfo.State.PAID) {
+        if(paymentInfo.getState() == PaymentInfo.State.SUCCESS) {
             Map<String, Object> params = new HashMap<String, Object>();
             //TODO 目前只有一种订单类型，头部都是RO,以后可能会扩展
             params.put(MessageParamKey.REPAIR_ORDER_ID, paymentInfo.getOutTradeNo().substring("RO".length()));
@@ -144,9 +144,9 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
             paymentInfo.setMethod(method);
             PaymentInfo found = paymentInfoRepo.findByMatch(paymentInfo);
             if(found != null){
-                if(found.getState().equals(PaymentInfo.State.PAID)){
+                if(found.getState().equals(PaymentInfo.State.SUCCESS)){
                     //TODO 退款发起
-                }else if(found.getState().equals(PaymentInfo.State.WAIT)){
+                }else if(found.getState().equals(PaymentInfo.State.NOTPAY)){
                     paymentInfo.setState(PaymentInfo.State.CLOSED);
                     paymentInfo.setCloseTime(new Date());
                 }else{

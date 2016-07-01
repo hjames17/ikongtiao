@@ -7,6 +7,7 @@
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="maintainer_id" property="maintainerId" jdbcType="INTEGER" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="account_email" property="accountEmail" jdbcType="VARCHAR" />
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR"/>
@@ -26,7 +27,7 @@
   <sql id="Base_Column_List" >
     id, wechat_open_id,phone, avatar, type, organization, account_email, auth_state,
     province_id, city_id, district_id, address, latitude, longitude,
-    contacter_name, contacter_phone,
+    contacter_name, contacter_phone, maintainer_id,
     auth_img, license_no, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -122,6 +123,10 @@
       <if test="contacterPhone != null">
         contacter_phone ,
       </if>
+      <if test="maintainerId != null">
+        maintainer_id ,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -184,9 +189,12 @@
       <if test="contacterPhone != null">
         #{contacterPhone,jdbcType=VARCHAR},
       </if>
+      <if test="maintainerId != null">
+        #{maintainerId}
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo">
+  <update id="updateByIdOrContacterPhone" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo">
     update user_info
     <set >
       <if test="wechatOpenId != null" >
@@ -246,8 +254,19 @@
       <if test="contacterPhone != null">
         contacter_phone = #{contacterPhone,jdbcType=VARCHAR},
       </if>
+      <if test="maintainerId != null">
+        maintainer_id = #{maintainerId}
+      </if>
     </set>
-    where id = #{id,jdbcType=VARCHAR}
+    <where>
+      <if test="id != null">
+        id = #{id,jdbcType=VARCHAR}
+      </if>
+      <if test="id == null">
+        contacter_phone = #{contacterPhone}
+      </if>
+    </where>
+    where
   </update>
   <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >
     select
@@ -258,5 +277,19 @@
              open = "(" separator="," close=")">
       #{item}
     </foreach>
+  </select>
+  <select id="selectByOrganizationOrContacterPhone" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
+    select
+    <include refid="Base_Column_List" />
+    from user_info
+    <where>
+        <if test="organization != null">
+          organization = #{organization}
+        </if>
+        <if test="contacterPhone != null">
+          or contacter_phone = #{contacterPhone}
+        </if>
+    </where>
+    limit 1
   </select>
 </mapper>

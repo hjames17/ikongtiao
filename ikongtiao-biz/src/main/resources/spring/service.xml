@@ -92,4 +92,7 @@
         <!--<bean class="com.wetrack.auth.filter.AjaxResponseInterceptor"></bean>-->
         <bean class="com.wetrack.auth.filter.SignTokenAuthInterceptor"></bean>
     </mvc:interceptors>
+
+    <!--最大大小100m-->
+    <bean id="multipartResolver" class = "org.springframework.web.multipart.commons.CommonsMultipartResolver" p:maxUploadSize="104857600"></bean>
 </beans>

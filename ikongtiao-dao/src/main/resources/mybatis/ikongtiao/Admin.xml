@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.admin.User" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
     <!--<result column="roles_string" property="rolesString" jdbcType="VARCHAR" />-->
@@ -143,7 +144,7 @@
         and  email LIKE #{email}
       </if>
       <if test="adminType != null" >
-        admin_type = #{adminType,jdbcType=VARCHAR}
+        and admin_type = #{adminType}
       </if>
 
     </where>
@@ -167,6 +168,9 @@
       </if>
       <if test="email != null ">
         and email LIKE #{email}
+      </if>
+      <if test="adminType != null" >
+        and admin_type = #{adminType}
       </if>
     </where>
   </select>

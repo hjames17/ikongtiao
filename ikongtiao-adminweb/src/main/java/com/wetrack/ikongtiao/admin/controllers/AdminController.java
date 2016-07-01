@@ -1,11 +1,16 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
+import com.wetrack.auth.domain.SimpleGrantedAuthority;
 import com.wetrack.auth.domain.Token;
+import com.wetrack.auth.exceptions.TokenAuthorizationException;
 import com.wetrack.auth.filter.SignTokenAuth;
+import com.wetrack.auth.filter.SignTokenAuthInterceptor;
+import com.wetrack.auth.service.AuthorizationService;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.utils.encrypt.MD5;
 import com.wetrack.ikongtiao.domain.admin.AdminType;
+import com.wetrack.ikongtiao.domain.admin.Role;
 import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AdminQueryForm;
@@ -22,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.wetrack.ikongtiao.domain.admin.AdminType.MANAGER;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -47,6 +54,7 @@ public class AdminController {
     public PageList<User> list(@RequestParam(required = false, value = "inService") Boolean inService,
                                 @RequestParam(required = false, value = "name") String name,
                                 @RequestParam(required = false, value = "email") String email,
+                                @RequestParam(required = false, value = "adminType") AdminType adminType,
                                 @RequestParam(required = false, value = "phone") String phone,
                                 @RequestParam(required = false, value = "page") Integer page,
                                 @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
@@ -56,6 +64,7 @@ public class AdminController {
         queryForm.setPhone(phone);
         queryForm.setName(name);
         queryForm.setEmail(email);
+        queryForm.setAdminType(adminType);
         queryForm.setInService(inService);
         return adminService.listWithParams(queryForm);
     }
@@ -89,7 +98,7 @@ public class AdminController {
     LoginOut loginjk(@RequestBody LoginForm loginForm) throws Exception{
         Token token = adminService.login(loginForm.getEmail(), loginForm.getPassword());
         User user = adminService.getByEmail(loginForm.getEmail());
-        if(!user.getAdminType().equals(AdminType.MANAGER)){
+        if(!user.getAdminType().equals(MANAGER)){
             throw new BusinessException("无效的用户，不允许登录");
         }
         LoginOut out = new LoginOut();
@@ -129,9 +138,37 @@ public class AdminController {
      * @return
      * @throws Exception
      */
+
+    @Autowired
+    AuthorizationService authorizationService;
+
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    String create(@RequestBody User form) throws Exception{
+    String create(@RequestBody User form, HttpServletRequest request) throws Exception{
+        String role;
+        switch (form.getAdminType()){
+            case KEFU:
+                role = Role.EDIT_ADMIN_KEFU.getRoleName();
+                break;
+            case MANAGER:
+                role = Role.EDIT_ADMIN_MANAGER.getRoleName();
+                break;
+            case FINANCIAL:
+                role = Role.EDIT_ADMIN_FINANCIAL.getRoleName();
+                break;
+            case SUPERVISOR:
+                role = Role.EDIT_ADMIN_SUPERVISOR.getRoleName();
+                break;
+            default:
+                throw new BusinessException("无效的账号类型: " + form.getAdminType());
+        }
+
+        String tokenString = request.getHeader(SignTokenAuthInterceptor.HEADER_CUSTOMER_TOKEN);
+
+        Token token = tokenService.findByTokenString(tokenString);
+        if (!authorizationService.grantAccess(token.getToken(), new SimpleGrantedAuthority(role))) {
+            throw new TokenAuthorizationException("用户类型没有访问权限");
+        }
         if(StringUtils.isEmpty(form.getEmail())){
             throw new BusinessException("email不能为空");
         }else if(StringUtils.isEmpty(form.getName())){

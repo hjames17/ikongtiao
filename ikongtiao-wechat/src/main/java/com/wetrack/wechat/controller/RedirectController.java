@@ -152,17 +152,17 @@ public class RedirectController {
                 }
                 switch (state.action){
                     case MISSION_NEW:
-                        redirectUrl = host + mission + "?action=new&uid=" + userInfo.getId();
+                        redirectUrl = host + mission + "&action=new&uid=" + userInfo.getId();
                         break;
                     case USER_SETTING:
-                        redirectUrl = host + setting + "?uid=" + userInfo.getId();
+                        redirectUrl = host + setting + "&uid=" + userInfo.getId();
                         break;
                     case ONLINE_SUPPORT:
-                        redirectUrl = host + support + "?uid=" + userInfo.getId();
+                        redirectUrl = host + support + "&uid=" + userInfo.getId();
                         break;
                     case MISSION_LIST:
                     default:
-                        redirectUrl = host + mission + "?action=list&uid=" + userInfo.getId();
+                        redirectUrl = host + mission + "&action=list&uid=" + userInfo.getId();
 
                 }
                 response.sendRedirect(redirectUrl);

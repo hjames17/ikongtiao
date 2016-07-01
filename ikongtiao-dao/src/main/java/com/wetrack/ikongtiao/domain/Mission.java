@@ -40,6 +40,11 @@ public class Mission implements Serializable {
     private Integer missionState;
 
     /**
+     * 任务状态为已关闭的时候，需要这个字段
+     */
+    private String closeReason;
+
+    /**
      * is_need_more:是否需要详细信息:0-不需要,1-需要
      */
     private Integer isNeedMore;
@@ -343,5 +348,13 @@ public class Mission implements Serializable {
 
     public void setFaultType(String faultType) {
         this.faultType = faultType;
+    }
+
+    public String getCloseReason() {
+        return closeReason;
+    }
+
+    public void setCloseReason(String closeReason) {
+        this.closeReason = closeReason;
     }
 }

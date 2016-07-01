@@ -37,6 +37,16 @@ public class SmsMessageChannel extends AbstractMessageChannel {
 
 
         //用户消息
+        registerAdapter(MessageId.NEW_COMMISSION, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                SmsMessage message = new SmsMessage();
+                UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
+                message.setReceiver(userInfo.getPhone());
+                message.setText(String.format("你的任务已经创建成功，任务号%d。查看详细信息，请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_ID)));
+                return message;
+            }
+        });
         registerAdapter(MessageId.ACCEPT_MISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {

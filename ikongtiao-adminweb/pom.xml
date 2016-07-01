@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ikongtiao-adminweb</artifactId>
     <packaging>war</packaging>
+    <name>ikongtiao-admin</name>
     <parent>
         <groupId>com.wetrack.ikongtiao</groupId>
         <artifactId>ikongtiao-pom</artifactId>
@@ -36,9 +37,18 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
+                    <warFile>target/admin.war</warFile>
                     <url>http://115.29.203.145:8090/manager/text</url>
                     <server>RemoteTomcatServer</server>
                     <path>/admin</path>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <warName>admin</warName>
                 </configuration>
             </plugin>
             <!--<plugin>-->

@@ -11,6 +11,8 @@ public interface TokenStorageService {
 
     boolean addToken(Token token);
 
+    boolean updateToken(Token token);
+
     Token removeByTokenString(String tokenString);
 
     public Token findByTokenString(String tokenString);

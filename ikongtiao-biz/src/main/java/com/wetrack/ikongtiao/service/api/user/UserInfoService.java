@@ -29,6 +29,8 @@ public interface UserInfoService {
 
     List<UserInfo> listInIds(List<String> ids);
 
-    Token login(String email, String password) throws Exception;;
+    Token login(String contacterPhone, String password) throws Exception;
+
+    UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone);
 }
 

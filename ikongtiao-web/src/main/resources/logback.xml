@@ -10,6 +10,7 @@
 	<!-- 输出到控制台 -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -48,6 +49,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -62,6 +64,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -76,6 +79,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -90,6 +94,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
@@ -104,6 +109,7 @@
 		</rollingPolicy>
 		<!-- 日志输出格式 -->
 		<encoder>
+			<charset>UTF-8</charset>
 			<pattern>%d{yy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>

@@ -14,9 +14,6 @@
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="latitude" property="latitude" jdbcType="DECIMAL" />
     <result column="longitude" property="longitude" jdbcType="DECIMAL" />
-    <result column="geohash" property="geohash" jdbcType="VARCHAR" />
-    <result column="level" property="level" jdbcType="TINYINT" />
-    <result column="min_price" property="minPrice" jdbcType="DECIMAL" />
     <result column="dw_create_time" property="dwCreateTime" jdbcType="TIMESTAMP" />
     <result column="dw_update_time" property="dwUpdateTime" jdbcType="TIMESTAMP" />
     <result column="operate_id" property="operateId" jdbcType="INTEGER" />
@@ -33,10 +30,11 @@
     <result column="orders" property="orders" jdbcType="INTEGER" />
     <result column="missions" property="missions" jdbcType="INTEGER" />
     <result column="jk_maintainer" property="jkMaintainer" jdbcType="TINYINT" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     fixer.id, name, password, avatar, phone, fixer.province_id, fixer.city_id, fixer.jk_maintainer,
-    fixer.district_id, fixer.address, fixer.latitude, fixer.longitude, geohash, level, min_price,
+    fixer.district_id, fixer.address, fixer.latitude, fixer.longitude, type,
     dw_create_time, dw_update_time, operate_id, in_service, certificate_state, insurance_state, welder_state, electrician_state
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -89,15 +87,6 @@
       <if test="longitude != null" >
         longitude,
       </if>
-      <if test="geohash != null" >
-        geohash,
-      </if>
-      <if test="level != null" >
-        level,
-      </if>
-      <if test="minPrice != null" >
-        min_price,
-      </if>
       <if test="dwCreateTime != null" >
         dw_create_time,
       </if>
@@ -141,15 +130,6 @@
       </if>
       <if test="longitude != null" >
         #{longitude,jdbcType=DECIMAL},
-      </if>
-      <if test="geohash != null" >
-        #{geohash,jdbcType=VARCHAR},
-      </if>
-      <if test="level != null" >
-        #{level,jdbcType=TINYINT},
-      </if>
-      <if test="minPrice != null" >
-        #{minPrice,jdbcType=DECIMAL},
       </if>
       <if test="dwCreateTime != null" >
         #{dwCreateTime,jdbcType=TIMESTAMP},
@@ -200,15 +180,6 @@
       </if>
       <if test="longitude != null" >
         longitude = #{longitude,jdbcType=DECIMAL},
-      </if>
-      <if test="geohash != null" >
-        geohash = #{geohash,jdbcType=VARCHAR},
-      </if>
-      <if test="level != null" >
-        level = #{level,jdbcType=TINYINT},
-      </if>
-      <if test="minPrice != null" >
-        min_price = #{minPrice,jdbcType=DECIMAL},
       </if>
       <if test="dwCreateTime != null" >
         dw_create_time = #{dwCreateTime,jdbcType=TIMESTAMP},

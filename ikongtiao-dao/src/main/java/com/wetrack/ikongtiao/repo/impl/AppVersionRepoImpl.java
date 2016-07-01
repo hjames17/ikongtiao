@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.repo.impl;
 
 import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.ikongtiao.domain.AppVersion;
+import com.wetrack.ikongtiao.param.SoftwareQueryParam;
 import com.wetrack.ikongtiao.repo.api.AppVersionRepo;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,10 @@ public class AppVersionRepoImpl implements AppVersionRepo {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public AppVersion findByQueryParam(SoftwareQueryParam param) {
+        return null;
     }
 }

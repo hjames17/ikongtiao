@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.service.impl;
 
 import com.wetrack.ikongtiao.domain.AppVersion;
 import com.wetrack.ikongtiao.domain.BusinessSettings;
+import com.wetrack.ikongtiao.param.SoftwareQueryParam;
 import com.wetrack.ikongtiao.repo.api.AppVersionRepo;
 import com.wetrack.ikongtiao.repo.api.BusinessSettingsRepo;
 import com.wetrack.ikongtiao.service.api.SettingsService;
@@ -60,6 +61,11 @@ public class SettingsServiceImpl implements SettingsService, InitializingBean{
     @Override
     public AppVersion insertAppVersion(String platform, String version, String releaseNote, String url) {
         return appVersionRepo.addNewVersion(platform, version, releaseNote, url);
+    }
+
+    @Override
+    public AppVersion findVersion(SoftwareQueryParam query) {
+        return appVersionRepo.findByQueryParam(query);
     }
 
     BusinessSettings businessSettings;

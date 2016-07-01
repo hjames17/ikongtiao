@@ -16,6 +16,8 @@ public interface UserInfoRepo {
 
 	int update(UserInfo userInfo);
 
+	int updateByContacterPhone(UserInfo userInfo);
+
 	/**
 	 * 根据用户ID获取用户信息
 	 *
@@ -51,4 +53,6 @@ public interface UserInfoRepo {
 	int countByQueryParam(UserQueryParam param) throws Exception;
 
 	List<UserInfo> listInIds(List<String> ids);
+
+	UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone);
 }

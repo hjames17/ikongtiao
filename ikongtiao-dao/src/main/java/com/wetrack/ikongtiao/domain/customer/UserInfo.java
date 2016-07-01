@@ -7,18 +7,21 @@
  */
 package com.wetrack.ikongtiao.domain.customer;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Data
 public class UserInfo implements Serializable {
     /**
      * id:
      */
     private String id;
     /**
-     * 另一个关联的账户id
-     * 考虑到集控系统需要创建用户账号
+     * 关联的企业id
+     * 集控系统需要创建用户账号
      * 而该客户又有可能通过维大师的公众号直接为自己创建账号
      * 因此同一个客户可能存在两个账号
      * 两个账号在通过微信绑定操作互相关联之后，在这个字段上互为引用
@@ -61,6 +64,11 @@ public class UserInfo implements Serializable {
 
     String contacterName;
     String contacterPhone;
+
+    /**
+     * 集控系统用户，有维保人员
+     */
+    private Integer maintainerId;
 
     /**
      * auth_state:认证状态,0：待认证，1：认证中，2：认证成功；3:认证失败

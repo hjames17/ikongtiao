@@ -207,15 +207,25 @@ public class PaymentInfo implements Serializable {
         return sb.toString();
     }
 
+    /**
+     *
+     * SUCCESS—支付成功
+     * REFUND—转入退款
+     * NOTPAY—未支付
+     * CLOSED—已关闭
+     * REVOKED—已撤销（刷卡支付）
+     * USERPAYING--用户支付中
+     * PAYERROR--支付失败(其他原因，如银行返回失败)
+     *
+     */
     public enum State{
-        WAIT,
-        PAID,
-        PART_REFUND,
-        TOTAL_REFUND,
+        NOTPAY,
+        SUCCESS,
+        REFUND,
         CLOSED,
-        PAID_ERROR,
-        ;
-
+        REVOKED,
+        USERPAYING,
+        PAYERROR;
     }
 
     public enum Method{

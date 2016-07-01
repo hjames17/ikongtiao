@@ -31,7 +31,7 @@ public class PaymentTest {
         try {
 //            PaymentInfo paymentInfo = paymentService.create(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, "111", 10000);
             PaymentInfo found = paymentService.findByOutTradeNo(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO + "111");
-            found.setState(PaymentInfo.State.PAID);
+            found.setState(PaymentInfo.State.SUCCESS);
             found.setPaidTime(new Date());
             paymentService.update(found);
             System.out.println("Ok");

@@ -45,6 +45,17 @@ public class TokenRedisStorageService implements TokenStorageService {
     }
 
     @Override
+    public boolean updateToken(Token token) {
+        //删除老token，放入新的token
+        tokenHashOps.delete(token.getToken());
+        tokenHashOps.put(token.getToken(), token);
+        BoundHashOperations<String, String, Token> userHashOps = redisTemplate.boundHashOps(USER_TOKEN_HASH_KEY_PREFIX + token.getUser().getId());
+        userHashOps.delete(token.getToken());
+        userHashOps.put(token.getToken(), token);
+        return false;
+    }
+
+    @Override
     public Token removeByTokenString(String tokenString) {
         Token token = tokenHashOps.get(tokenString);
         tokenHashOps.delete(tokenString);

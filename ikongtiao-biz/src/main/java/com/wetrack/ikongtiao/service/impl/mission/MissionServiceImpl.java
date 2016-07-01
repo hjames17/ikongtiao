@@ -90,29 +90,14 @@ public class MissionServiceImpl implements MissionService {
 			userInfoRepo.update(bindUserInfo);
 		}
 
-//		Mission mission = new Mission();
-//		mission.setMissionAddressId(missionAddress.getId());
-//		mission.setMachineTypeId(param.getMachineTypeId());
-//		mission.setFaultType(param.getFaultType());
-//		mission.setUserId(param.getUserId());
-
-
 		Mission mission = doSave(param, userInfo);
-//		}
-
-
-		//创建一个地址信息
-//		MissionAddress missionAddress = new MissionAddress();
-//		missionAddress.setPhone(param.getPhone());
-
-//		missionAddress.setId(mission.getId());
-//		missionAddressRepo.save(missionAddress);
 
 		//发送消息
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, mission.getId());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		messageService.send(MessageId.NEW_COMMISSION, params);
+
 		//加入提醒任务
 		taskMonitorService.putTask(Constants.TASK_MISSION + mission.getId());
 		return mission;
@@ -184,14 +169,6 @@ public class MissionServiceImpl implements MissionService {
 		page.setTotalSize(missionRepo.countMissionByAppQueryParam(param));
 		// 获取内容
 		List<MissionDto> missionDtos = missionRepo.listMissionByAppQueryParam(param);
-//		for(MissionDto missionDto:missionDtos){
-//			//填充机器类型
-//			MachineType machineType = machineTypeRepo.getMachineTypeById(missionDto.getMachineTypeId());
-//			missionDto.setMachineImg(machineType.getImg());
-//			missionDto.setMachineName(machineType.getName());
-//			missionDto.setMachineRemark(machineType.getRemark());
-//			missionDto.setMachineTypeParentId(machineType.getParentId());
-//		}
 		page.setData(missionDtos);
 		return page;
 	}
@@ -255,6 +232,8 @@ public class MissionServiceImpl implements MissionService {
 		}
 		//修改状态
 		mission.setMissionState(MissionState.REJECT.getCode());
+		mission.setCloseReason(reason);
+		mission.setAdminUserId(adminUserId);
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 

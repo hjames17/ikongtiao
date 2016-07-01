@@ -34,6 +34,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
+                    <warFile>target/im.war</warFile>
                     <url>http://115.29.203.145:8090/manager/text</url>
                     <server>RemoteTomcatServer</server>
                     <path>/im</path>

@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.service.api;
 
 import com.wetrack.ikongtiao.domain.AppVersion;
 import com.wetrack.ikongtiao.domain.BusinessSettings;
+import com.wetrack.ikongtiao.param.SoftwareQueryParam;
 
 /**
  * Created by zhanghong on 16/1/7.
@@ -14,4 +15,6 @@ public interface SettingsService {
     AppVersion getNewerAppVersion(String platform, String version);
 
     AppVersion insertAppVersion(String platform, String version, String releaseNote, String url);
+
+    AppVersion findVersion(SoftwareQueryParam query);
 }

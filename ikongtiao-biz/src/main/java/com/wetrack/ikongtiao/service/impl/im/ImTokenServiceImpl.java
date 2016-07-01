@@ -19,6 +19,8 @@ import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
 import com.wetrack.rong.RongCloudApiService;
 import com.wetrack.rong.models.FormatType;
 import com.wetrack.rong.models.SdkHttpResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,8 @@ import java.util.Map;
  */
 @Service("imTokenService")
 public class ImTokenServiceImpl implements ImTokenService {
+
+	private static final Logger log = LoggerFactory.getLogger(ImTokenServiceImpl.class);
 
 	@Resource
 	private ImTokenRepo imTokenRepo;
@@ -100,12 +104,24 @@ public class ImTokenServiceImpl implements ImTokenService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (result == null) {
+			if (result == null || result.getResult() == null) {
 				throw new AjaxException("GET_CLOUD_TOKEN_ERROR", "获取融云token失败");
 			}
+
 			Map<String, Object> map = Jackson.base().readValue(result.getResult(), Map.class);
-			imToken.setCloudToken(map.get("token").toString());
-			imTokenRepo.saveImToken(imToken);
+			int code = 0;
+			try {
+				code = Integer.valueOf(map.get("code").toString());
+			}catch (Exception e){
+				log.error("ronghub api rongCloudApiService.getToken returned invalid value:{}", result.getResult());
+				throw new AjaxException("GET_CLOUD_TOKEN_ERROR", "获取融云token失败");
+			}
+			if(code != 200){
+				log.error("ronghub api rongCloudApiService.getToken failure，code {}, errorMessage {}", code, map.get("errorMessage") == null ? null: map.get("errorMessage").toString());
+			}else {
+				imToken.setCloudToken(map.get("token").toString());
+				imTokenRepo.saveImToken(imToken);
+			}
 		}
 		return imToken;
 	}

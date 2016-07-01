@@ -12,7 +12,7 @@ public class Token implements Serializable{
 
     private final long created = System.currentTimeMillis();
     private final String token;
-    private final User user;
+    private User user;
     private boolean loggedout; //token已经退出
 
     public Token(String token, User user) {
@@ -26,6 +26,10 @@ public class Token implements Serializable{
 
     public User getUser(){
         return user;
+    }
+
+    public void setUser(User user){
+        this.user = user;
     }
 
     public boolean isExpired(){

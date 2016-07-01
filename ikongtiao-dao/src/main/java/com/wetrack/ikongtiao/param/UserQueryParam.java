@@ -1,12 +1,14 @@
 package com.wetrack.ikongtiao.param;
 
 import com.wetrack.base.page.BaseCondition;
+import lombok.Data;
 
 import java.util.Date;
 
 /**
  * Created by zhangsong on 15/12/15.
  */
+@Data
 public class UserQueryParam extends BaseCondition {
 
 
@@ -15,6 +17,7 @@ public class UserQueryParam extends BaseCondition {
 	String userName;
 	String phone;
 	String address;
+	Integer maintainerId;
 
 	/**
 	 * province_id:

@@ -223,7 +223,7 @@ public class FixerController {
         BeanUtils.copyProperties(form, fixer);
         fixer.setInService(form.isInService());
         fixer.setId(fixerService.getFixerIdFromTokenUser(user));
-        if(fixer.isInService() != null && fixer.isInService() == true){
+        if(fixer.getInService() != null && fixer.getInService() == true){
             Fixer current = fixerService.getFixer(fixer.getId());
             if(current.getInsuranceState() != null && current.getInsuranceState().equals(2)
                     &&current.getCertificateState() != null && current.getCertificateState().equals(2)){
@@ -232,6 +232,11 @@ public class FixerController {
                 throw new BusinessException("没有通过实名认证或者保险认证前，无法进入服务状态");
             }
         }
+        /**
+         * 不允许修改角色
+         */
+        fixer.setJkMaintainer(null);
+        fixer.setType(null);
         fixerService.updateInfo(fixer);
         return "ok";
     }

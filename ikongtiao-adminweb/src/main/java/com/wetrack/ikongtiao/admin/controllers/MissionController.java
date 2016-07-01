@@ -12,13 +12,18 @@ import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
+import com.wetrack.message.MessageService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -33,6 +38,9 @@ public class MissionController {
 
     @Autowired
     UserInfoService userInfoService;
+
+    @Autowired
+    MessageService messageService;
 
     @ResponseBody
     @SignTokenAuth(roleNameRequired = "VIEW_MISSION")
@@ -64,15 +72,15 @@ public class MissionController {
         }
         param.setAdminUserId(Integer.valueOf(user.getId()));
         param.setMissionState(MissionState.ACCEPT.getCode());
-//
-//        MissionAddress missionAddress = new MissionAddress();
-//        missionAddress.setProvinceId(param.getProvinceId());
-//        missionAddress.setCityId(param.getCityId());
-//        missionAddress.setDistrictId(param.getDistrictId());
-//        missionAddress.setAddress(param.getAddress());
-//        missionAddress.setPhone(param.getContacterPhone());
-//        missionAddress.setName(param.getContacterName());
         Mission created = missionService.saveMission(param);
+
+        //发送消息
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(MessageParamKey.MISSION_ID, created.getId());
+        params.put(MessageParamKey.USER_ID, created.getUserId());
+        params.put(MessageParamKey.ADMIN_ID, created.getAdminUserId());
+        messageService.send(MessageId.ACCEPT_MISSION, params);
+
         return created.getId();
     }
 

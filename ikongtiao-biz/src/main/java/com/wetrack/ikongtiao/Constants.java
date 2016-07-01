@@ -12,4 +12,5 @@ public class Constants {
 
     public final static String TOKEN_ID_PREFIX_FIXER = "fixer_";
     public final static String TOKEN_ID_PREFIX_ADMIN = "admin_";
+    public final static String TOKEN_ID_PREFIX_CUSTOMER = "cu_";
 }

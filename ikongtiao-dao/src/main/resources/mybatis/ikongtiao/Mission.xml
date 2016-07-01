@@ -7,6 +7,7 @@
     <result column="fault_type" property="faultType" jdbcType="VARCHAR" />
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
     <result column="mission_state" property="missionState" jdbcType="INTEGER" />
+    <result column="close_reason" property="closeReason" jdbcType="VARCHAR" />
     <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
@@ -25,7 +26,7 @@
     <result column="latitude" property="latitude" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, fault_type, mission_desc, mission_state, is_need_more, fixer_id,
+    id, user_id, fault_type, mission_desc, mission_state, close_reason, is_need_more, fixer_id,
     admin_user_id, operator, create_time, update_time,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude
@@ -223,6 +224,9 @@
       </if>
       <if test="latitude != null" >
         latitude = #{latitude},
+      </if>
+      <if test="closeReason != null" >
+        close_reason = #{closeReason},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

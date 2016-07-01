@@ -30,8 +30,18 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 		return userInfo;
 	}
 
+	/**
+	 * 可以通过id，或者联系人手机来更新客户信息
+	 * @param userInfo
+	 * @return
+	 */
 	@Override public int update(UserInfo userInfo) {
-		return commonDao.mapper(UserInfo.class).sql("updateByPrimaryKeySelective").session().update(userInfo);
+		return commonDao.mapper(UserInfo.class).sql("updateByIdOrContacterPhone").session().update(userInfo);
+	}
+
+	@Override
+	public int updateByContacterPhone(UserInfo userInfo) {
+		return commonDao.mapper(UserInfo.class).sql("updateByContacterPhone").session().update(userInfo);
 	}
 
 	@Override public UserInfo getById(String userId) {
@@ -115,6 +125,14 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 	@Override
 	public List<UserInfo> listInIds(List<String> ids) {
 		return commonDao.mapper(UserInfo.class).sql("selectInIds").session().selectList(ids);
+	}
+
+	@Override
+	public UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone) {
+		UserInfo user = new UserInfo();
+		user.setOrganization(organization);
+		user.setContacterPhone(contacterPhone);
+		return commonDao.mapper(UserInfo.class).sql("selectByOrganizationOrContacterPhone").session().selectOne(user);
 	}
 
 

@@ -6,12 +6,13 @@
     <result column="platform" property="platform" jdbcType="VARCHAR" />
     <result column="version" property="version" jdbcType="VARCHAR" />
     <result column="release_note" property="releaseNote" jdbcType="VARCHAR" />
+    <result column="released" property="released" jdbcType="TINYINT" />
     <result column="url" property="url" jdbcType="VARCHAR" />
   </resultMap>
   <select id="getLatest" resultMap="BaseResultMap" parameterType="java.lang.String">
     select *
     from app_version
-    where platform = #{id}
+    where platform = #{id} and released = TRUE
     ORDER BY id DESC
     limit 1
   </select>

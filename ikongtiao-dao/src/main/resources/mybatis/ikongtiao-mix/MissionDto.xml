@@ -7,6 +7,7 @@
     <!--<result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />-->
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
     <result column="mission_state" property="missionState" jdbcType="TINYINT" />
+    <result column="close_reason" property="closeReason" jdbcType="VARCHAR" />
     <result column="is_need_more" property="isNeedMore" jdbcType="TINYINT" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -32,7 +33,7 @@
     admin_user_id, operator, create_time, update_time
   </sql>
   <sql id="Mission_Dto_List" >
-    mission.id, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.is_need_more, mission.fixer_id,
+    mission.id, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.close_reason, mission.is_need_more, mission.fixer_id,
     mission.admin_user_id, mission.operator, mission.create_time, mission.update_time,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude,

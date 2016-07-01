@@ -4,11 +4,14 @@ import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
+import com.wetrack.verification.VerificationCodeService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +31,9 @@ public class UserController {
 	FixerService fixerService;
 	@Autowired
 	TokenService tokenService;
+
+	@Autowired
+	VerificationCodeService verificationCodeService;
 
 	@ResponseBody
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET) UserInfo info(
@@ -51,10 +57,26 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	LoginOut login(@RequestBody LoginForm loginForm) throws Exception{
-		Token token = userInfoService.login(loginForm.getEmail(), loginForm.getPassword());
+		Token token = userInfoService.login(loginForm.getContacterPhone(), loginForm.getPassword());
 		LoginOut out = new LoginOut();
 		out.setToken(token.getToken());
 		return out;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+	void reset(@RequestBody ResetForm form) throws Exception{
+		if(!verificationCodeService.verifyCode(form.getContacterPhone(), form.getCode())){
+			throw new BusinessException("手机验证码无效");
+		}
+		if(StringUtils.isEmpty(form.getPassword())){
+			throw new BusinessException("请设置一个密码");
+		}
+
+		UserInfo userInfo = new UserInfo();
+		userInfo.setContacterPhone(form.getContacterPhone());
+		userInfo.setPassword(form.getPassword());
+		userInfoService.update(userInfo);
 	}
 
 	@SignTokenAuth
@@ -62,28 +84,6 @@ public class UserController {
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	void login(@RequestBody LoginOut form, HttpServletRequest request) throws Exception{
 		tokenService.logout(form.getToken());
-	}
-
-
-
-	/**
-	 * TODO 请求发送绑定邮件
-	 * @param userId 微信公众号注册的用户id
-	 * @param email 集控系统的用户邮箱
-	 */
-	void getBindingCode(String userId, String email){
-
-	}
-
-	/**
-	 * TODO
-	 * 把通过微信公众号注册的用户和集控系统的用户绑定起来
-	 * @param userId 用户id
-	 * @param email 集控系统的用户邮箱
-	 * @param code 集控系统的用户邮箱收到的绑定码
-	 */
-	void bind(String userId, String email, String code){
-
 	}
 
 
@@ -110,15 +110,15 @@ public class UserController {
 	}
 
 	static class LoginForm{
-		String email;
+		String contacterPhone;
 		String password;
 
-		public String getEmail() {
-			return email;
+		public String getContacterPhone() {
+			return contacterPhone;
 		}
 
-		public void setEmail(String email) {
-			this.email = email;
+		public void setContacterPhone(String contacterPhone) {
+			this.contacterPhone = contacterPhone;
 		}
 
 		public String getPassword() {
@@ -127,6 +127,36 @@ public class UserController {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+	}
+
+	static class ResetForm{
+		String contacterPhone;
+		String code;
+		String password;
+
+		public String getContacterPhone() {
+			return contacterPhone;
+		}
+
+		public void setContacterPhone(String contacterPhone) {
+			this.contacterPhone = contacterPhone;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
 		}
 	}
 

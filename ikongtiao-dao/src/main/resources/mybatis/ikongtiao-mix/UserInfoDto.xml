@@ -7,6 +7,7 @@
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
+    <result column="maintainer_id" property="maintainerId" jdbcType="INTEGER" />
     <result column="account_email" property="accountEmail" jdbcType="VARCHAR" />
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
     <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
@@ -25,7 +26,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     user_info.id, user_info.phone, user_info.avatar, user_info.type, user_info.organization, user_info.account_email, user_info.auth_state,
-    user_info.auth_img, user_info.license_no, user_info.create_time, user_info.contacter_name, user_info.contacter_phone,
+    user_info.auth_img, user_info.license_no, user_info.create_time, user_info.contacter_name, user_info.contacter_phone,user_info.maintainer_id,
     user_info.province_id, user_info.city_id, user_info.district_id, user_info.address, user_info.latitude, user_info.longitude
   </sql>
 
@@ -60,8 +61,12 @@
       <if test="districtId != null">
         and user_info.district_id = #{districtId}
       </if>
+      <if test="maintainerId != null">
+        and maintainer_id = #{maintainerId}
+      </if>
     </where>
     GROUP BY user_info.id
+    ORDER BY user_info.create_time DESC
     limit #{start},#{pageSize}
   </select>
 
@@ -84,6 +89,9 @@
       </if>
       <if test="address != null ">
         and address LIKE #{address}
+      </if>
+      <if test="maintainerId != null">
+        and maintainer_id = #{maintainerId}
       </if>
     </where>
   </select>

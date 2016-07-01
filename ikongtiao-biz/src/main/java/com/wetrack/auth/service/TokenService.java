@@ -41,6 +41,10 @@ public class TokenService {
         return doLogin(new User(id, password, loginLifeTime, User.ROLE_FULL));
     }
 
+    public boolean updateToken(Token token){
+        return tokenStorageService.updateToken(token);
+    }
+
     private Token doLogin(User user){
 
         //found exist token list for this user

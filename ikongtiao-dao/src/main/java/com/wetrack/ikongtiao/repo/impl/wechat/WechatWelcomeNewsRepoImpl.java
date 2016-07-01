@@ -18,7 +18,7 @@ public class WechatWelcomeNewsRepoImpl implements WechatWelcomeNewsRepo {
 
     @Override
     public WechatWelcomeNews create(WechatWelcomeNews news) throws Exception {
-        if(1 == commonDao.mapper(WechatWelcomeNews.class).sql("insertSelective").session().insert(news)){
+        if(1 == commonDao.mapper(WechatWelcomeNews.class).sql("insert").session().insert(news)){
             return news;
         }else{
             throw new Exception("没有保存成功");

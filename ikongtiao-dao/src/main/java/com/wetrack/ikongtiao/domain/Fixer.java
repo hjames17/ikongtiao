@@ -7,10 +7,14 @@
  */
 package com.wetrack.ikongtiao.domain;
 
+import com.wetrack.ikongtiao.domain.fixer.FixerType;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Data
 public class Fixer implements Serializable {
 
 
@@ -33,6 +37,8 @@ public class Fixer implements Serializable {
      */
     Boolean jkMaintainer;
 
+    FixerType type;
+
     /**
      * avatar:维修员头像
      */
@@ -43,39 +49,15 @@ public class Fixer implements Serializable {
      */
     private String phone;
 
-    @Deprecated
-    /**
-     * contacts:联系人
-     */
-    private String contacts;
-
-    @Deprecated
-    /**
-     * province_name:省
-     */
-    private String provinceName;
-
     /**
      * province_id:
      */
     private Integer provinceId;
 
-    @Deprecated
-    /**
-     * city_name:市
-     */
-    private String cityName;
-
     /**
      * city_id:
      */
     private Integer cityId;
-
-    @Deprecated
-    /**
-     * district_name:
-     */
-    private String districtName;
 
     /**
      * district_id:区
@@ -96,23 +78,6 @@ public class Fixer implements Serializable {
      * longitude:经度
      */
     private BigDecimal longitude;
-
-    /**
-     * geohash:
-     */
-    private String geohash;
-
-    /**
-     * level:资质级别 0－普通，1－高级
-     */
-    @Deprecated
-    private Byte level;
-
-    /**
-     * min_price:上门最低标准
-     */
-    @Deprecated
-    private BigDecimal minPrice;
 
     /**
      * dw_create_time:
@@ -191,398 +156,6 @@ public class Fixer implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @return the value of id
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @param id the value for id
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the value of name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the value for name
-     */
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
-
-    /**
-     * @return the value of avatar
-     */
-    public String getAvatar() {
-        return avatar;
-    }
-
-    /**
-     * @param avatar the value for avatar
-     */
-    public void setAvatar(String avatar) {
-        this.avatar = avatar == null ? null : avatar.trim();
-    }
-
-    /**
-     * @return the value of phone
-     */
-    public String getPhone() {
-        return phone;
-    }
-
-    /**
-     * @param phone the value for phone
-     */
-    public void setPhone(String phone) {
-        this.phone = phone == null ? null : phone.trim();
-    }
-
-    /**
-     * @return the value of contacts
-     */
-    public String getContacts() {
-        return contacts;
-    }
-
-    /**
-     * @param contacts the value for contacts
-     */
-    public void setContacts(String contacts) {
-        this.contacts = contacts == null ? null : contacts.trim();
-    }
-
-    /**
-     * @return the value of province_name
-     */
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    /**
-     * @param provinceName the value for province_name
-     */
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName == null ? null : provinceName.trim();
-    }
-
-    /**
-     * @return the value of province_id
-     */
-    public Integer getProvinceId() {
-        return provinceId;
-    }
-
-    /**
-     * @param provinceId the value for province_id
-     */
-    public void setProvinceId(Integer provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    /**
-     * @return the value of city_name
-     */
-    public String getCityName() {
-        return cityName;
-    }
-
-    /**
-     * @param cityName the value for city_name
-     */
-    public void setCityName(String cityName) {
-        this.cityName = cityName == null ? null : cityName.trim();
-    }
-
-    /**
-     * @return the value of city_id
-     */
-    public Integer getCityId() {
-        return cityId;
-    }
-
-    /**
-     * @param cityId the value for city_id
-     */
-    public void setCityId(Integer cityId) {
-        this.cityId = cityId;
-    }
-
-    /**
-     * @return the value of district_name
-     */
-    public String getDistrictName() {
-        return districtName;
-    }
-
-    /**
-     * @param districtName the value for district_name
-     */
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName == null ? null : districtName.trim();
-    }
-
-    /**
-     * @return the value of district_id
-     */
-    public Integer getDistrictId() {
-        return districtId;
-    }
-
-    /**
-     * @param districtId the value for district_id
-     */
-    public void setDistrictId(Integer districtId) {
-        this.districtId = districtId;
-    }
-
-    /**
-     * @return the value of address
-     */
-    public String getAddress() {
-        return address;
-    }
-
-    /**
-     * @param address the value for address
-     */
-    public void setAddress(String address) {
-        this.address = address == null ? null : address.trim();
-    }
-
-    /**
-     * @return the value of latitude
-     */
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * @param latitude the value for latitude
-     */
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
-
-    /**
-     * @return the value of longitude
-     */
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
-
-    /**
-     * @param longitude the value for longitude
-     */
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
-
-    /**
-     * @return the value of geohash
-     */
-    public String getGeohash() {
-        return geohash;
-    }
-
-    /**
-     * @param geohash the value for geohash
-     */
-    public void setGeohash(String geohash) {
-        this.geohash = geohash == null ? null : geohash.trim();
-    }
-
-    /**
-     * @return the value of level
-     */
-    public Byte getLevel() {
-        return level;
-    }
-
-    /**
-     * @param level the value for level
-     */
-    public void setLevel(Byte level) {
-        this.level = level;
-    }
-
-    /**
-     * @return the value of min_price
-     */
-    public BigDecimal getMinPrice() {
-        return minPrice;
-    }
-
-    /**
-     * @param minPrice the value for min_price
-     */
-    public void setMinPrice(BigDecimal minPrice) {
-        this.minPrice = minPrice;
-    }
-
-    /**
-     * @return the value of dw_create_time
-     */
-    public Date getDwCreateTime() {
-        return dwCreateTime;
-    }
-
-    /**
-     * @param dwCreateTime the value for dw_create_time
-     */
-    public void setDwCreateTime(Date dwCreateTime) {
-        this.dwCreateTime = dwCreateTime;
-    }
-
-    /**
-     * @return the value of dw_update_time
-     */
-    public Date getDwUpdateTime() {
-        return dwUpdateTime;
-    }
-
-    /**
-     * @param dwUpdateTime the value for dw_update_time
-     */
-    public void setDwUpdateTime(Date dwUpdateTime) {
-        this.dwUpdateTime = dwUpdateTime;
-    }
-
-    /**
-     * @return the value of operate_id
-     */
-    public Integer getOperateId() {
-        return operateId;
-    }
-
-    /**
-     * @param operateId the value for operate_id
-     */
-    public void setOperateId(Integer operateId) {
-        this.operateId = operateId;
-    }
-
-    public Boolean isInService() {
-        return inService;
-    }
-
-    public void setInService(Boolean inService) {
-        this.inService = inService;
-    }
-
-    public Integer getCertificateState() {
-        return certificateState;
-    }
-
-    public void setCertificateState(Integer certificateState) {
-        this.certificateState = certificateState;
-    }
-
-    public Integer getCertInfoId() {
-        return certInfoId;
-    }
-
-    public void setCertInfoId(Integer certInfoId) {
-        this.certInfoId = certInfoId;
-    }
-
-    public Integer getInsuranceState() {
-        return insuranceState;
-    }
-
-    public void setInsuranceState(Integer insuranceState) {
-        this.insuranceState = insuranceState;
-    }
-
-    public Integer getInsuranceInfoId() {
-        return insuranceInfoId;
-    }
-
-    public void setInsuranceInfoId(Integer insuranceInfoId) {
-        this.insuranceInfoId = insuranceInfoId;
-    }
-
-    public Integer getWelderState() {
-        return welderState;
-    }
-
-    public void setWelderState(Integer welderState) {
-        this.welderState = welderState;
-    }
-
-    public Integer getWelderInfoId() {
-        return welderInfoId;
-    }
-
-    public void setWelderInfoId(Integer welderInfoId) {
-        this.welderInfoId = welderInfoId;
-    }
-
-    public Integer getElectricianState() {
-        return electricianState;
-    }
-
-    public void setElectricianState(Integer electricianState) {
-        this.electricianState = electricianState;
-    }
-
-    public Integer getElectricianInfoId() {
-        return electricianInfoId;
-    }
-
-    public void setElectricianInfoId(Integer electricianInfoId) {
-        this.electricianInfoId = electricianInfoId;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getMissions() {
-        return missions;
-    }
-
-    public void setMissions(Integer missions) {
-        this.missions = missions;
-    }
-
-    public Integer getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Integer orders) {
-        this.orders = orders;
-    }
-
-    public Boolean isJkMaintainer() {
-        return jkMaintainer;
-    }
-
-    public void setJkMaintainer(Boolean jkMaintainer) {
-        this.jkMaintainer = jkMaintainer;
-    }
-
-    /**
      * This method corresponds to the database table fixer
      */
     @Override
@@ -595,19 +168,12 @@ public class Fixer implements Serializable {
         sb.append(", name=").append(name);
         sb.append(", avatar=").append(avatar);
         sb.append(", phone=").append(phone);
-        sb.append(", contacts=").append(contacts);
-        sb.append(", provinceName=").append(provinceName);
         sb.append(", provinceId=").append(provinceId);
-        sb.append(", cityName=").append(cityName);
         sb.append(", cityId=").append(cityId);
-        sb.append(", districtName=").append(districtName);
         sb.append(", districtId=").append(districtId);
         sb.append(", address=").append(address);
         sb.append(", latitude=").append(latitude);
         sb.append(", longitude=").append(longitude);
-        sb.append(", geohash=").append(geohash);
-        sb.append(", level=").append(level);
-        sb.append(", minPrice=").append(minPrice);
         sb.append(", dwCreateTime=").append(dwCreateTime);
         sb.append(", dwUpdateTime=").append(dwUpdateTime);
         sb.append(", operateId=").append(operateId);

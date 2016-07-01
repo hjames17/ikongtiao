@@ -9,6 +9,7 @@ import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
+import com.wetrack.ikongtiao.domain.fixer.FixerType;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerCertInfoRepo;
@@ -25,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhanghong on 15/12/30.
@@ -310,6 +308,23 @@ public class FixerServiceImpl implements FixerService {
 //                fixer.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
 //            }
 //        }
+        if(fixer.getJkMaintainer() != null){
+            Collection<Token> tokens = tokenService.findAllByUserId(Constants.TOKEN_ID_PREFIX_FIXER + fixer.getId().toString());
+            if(fixer.getJkMaintainer()){
+                fixer.setType(FixerType.MAINTAINER);
+            }else{
+                fixer.setType(FixerType.COMMON);
+            }
+            //给token改权限，这样维修员无需重新登录，权限变化马上可以生效
+            if(tokens != null){
+                for(Token token : tokens){
+                    User authUser = new User(Constants.TOKEN_ID_PREFIX_FIXER + fixer.getId().toString(),
+                            null, User.NEVER_EXPIRED, fixer.getType().getRolesStringArray());
+                    token.setUser(authUser);
+                    tokenService.updateToken(token);
+                }
+            }
+        }
         fixerRepo.update(fixer);
     }
 
@@ -364,6 +379,7 @@ public class FixerServiceImpl implements FixerService {
         fixer.setName(name);
         fixer.setPassword(password);
         fixer.setJkMaintainer(false);
+        fixer.setType(FixerType.COMMON);
         return fixerRepo.save(fixer);
     }
 
@@ -380,6 +396,7 @@ public class FixerServiceImpl implements FixerService {
         fixer.setName(name);
         fixer.setPassword(password);
         fixer.setJkMaintainer(true);
+        fixer.setType(FixerType.MAINTAINER);
         return fixerRepo.save(fixer);
     }
 
@@ -391,7 +408,9 @@ public class FixerServiceImpl implements FixerService {
         if(results != null && results.size() > 0){
             Fixer found = results.get(0);
             if(found.getPassword().equals(password)){
-                return tokenService.login(Constants.TOKEN_ID_PREFIX_FIXER + found.getId().toString(), password);
+                User authUser = new User(Constants.TOKEN_ID_PREFIX_FIXER + found.getId().toString(),
+                        password, User.NEVER_EXPIRED, found.getType().getRolesStringArray());
+                return tokenService.login(authUser);
             }else{
                 throw new BusinessException("密码错误");
 //                throw new AjaxException(MissionErrorMessage.MISSION_LIST_PARAM_ERROR);

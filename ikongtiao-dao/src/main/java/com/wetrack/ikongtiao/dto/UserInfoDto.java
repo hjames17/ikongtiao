@@ -1,5 +1,7 @@
 package com.wetrack.ikongtiao.dto;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,6 +9,7 @@ import java.util.Date;
 /**
  * Created by zhanghong on 16/1/29.
  */
+@Data
 public class UserInfoDto implements Serializable{
     /**
      * id:
@@ -28,6 +31,7 @@ public class UserInfoDto implements Serializable{
      * type:用户类型,0：业主，1：厂家，2：代理
      */
     private Integer type;
+    private Integer maintainerId;
 
     /**
      * organization:账户名称

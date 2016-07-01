@@ -13,8 +13,9 @@ public class User {
 
     String phone;
 
-    //nick name or true name
+    //true name
     String name;
+    String nickName;
 
     String avatar;
 

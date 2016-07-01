@@ -21,17 +21,36 @@
           }]
       },
       {
-        "type":"view",
-        "name":"信息设置",
-        "url":"GOTO://USER_SETTING"
+        "name":"我的",
+        "sub_button":[
+          {
+            "type":"view",
+            "name":"设备在线监控",
+            "url":"http://p.waids.com.cn/p/jk-weixin/www/index.html"
+          },
+          {
+            "type":"view",
+            "name":"信息设置",
+            "url":"GOTO://USER_SETTING"
+          }]
       },
       {
-        "name":"帮助中心",
+        "name":"维大师",
         "sub_button":[
           {
             "type":"view",
             "name":"关于我们",
-            "url":"http://weixin.ikongtiao.wetrack.studio/news/about.html?v=1"
+            "url":"http://p.waids.com.cn/p/weixin/www/news/about.html?v=1"
+          },
+          {
+            "type":"view",
+            "name":"国祥电商",
+            "url":"http://m.1688.com/winport/kingair2012.html"
+          },
+          {
+            "type":"view",
+            "name":"配件商城",
+            "url":"https://shop101051527.taobao.com/"
           },
           {
             "type":"click",

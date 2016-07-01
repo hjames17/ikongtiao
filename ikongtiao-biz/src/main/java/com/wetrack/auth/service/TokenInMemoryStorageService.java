@@ -37,6 +37,11 @@ public class TokenInMemoryStorageService implements TokenStorageService {
     }
 
     @Override
+    public boolean updateToken(Token token) {
+        return true;
+    }
+
+    @Override
     public Token removeByTokenString(String tokenString){
         Token token = tokenKeyMap.get(tokenString);
         tokenKeyMap.remove(tokenString);

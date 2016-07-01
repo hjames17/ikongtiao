@@ -50,7 +50,8 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(fixerDevice.getClientId());
+//                message.setReceiver(fixerDevice.getClientId());
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
                 message.setTitle("有新的任务分配给你");
                 message.setContent(String.format("任务号是%d,点击查看详情", params.get(MessageParamKey.MISSION_ID)));
                 // 任务id，
@@ -66,7 +67,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(fixerDevice.getClientId());
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
                 message.setTitle("有新的维修单分配给你");
                 message.setContent(String.format("维修单号是%d,点击查看详情", params.get(MessageParamKey.REPAIR_ORDER_ID)));
                 // 任务id，
@@ -84,7 +85,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(fixerDevice.getClientId());
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
                 String auditText , resultText, content = "点击查看详情";
                 Object auditInfo = params.get(MessageParamKey.FIXER_AUDIT_INFO);
                 switch (messageId){
@@ -149,7 +150,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(fixerDevice.getClientId());
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
                 message.setTitle("你有新的消息");
                 message.setContent("你有新的消息，请点击查看");
                 // 任务id，
@@ -165,7 +166,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
                 FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(fixerDevice.getClientId());
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
                 message.setTitle("您的维修服务已经被评价");
                 message.setContent(String.format("你的维修单%d获得了%d星评价，请点击查看",
                         params.get(MessageParamKey.REPAIR_ORDER_ID), params.get(MessageParamKey.REPAIR_ORDER_COMMENT_RATE)));
@@ -201,7 +202,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                         if(message != null) {
                             try {
                                 doSend(message);
-                                logger.info("{} sent message {} succeed.", this.getName(), messageRaw.id);
+                                logger.info("{} sent message {} to fixer {} succeed.", this.getName(), messageRaw.id, messageRaw.params.get(MessageParamKey.FIXER_ID));
                             }catch (Exception e){
                                 logger.error("发送消息{}失败，messageChannel {}, 原因:",message.getId(),  this.getName(), e.getMessage());
                             }
@@ -215,6 +216,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                 logger.error("message channel take message failed ! " + e.getMessage());
 //            e.printStackTrace();
             } catch (Exception e){
+                logger.error("getui send message error ! {}",  e.getMessage());
                 //抛弃任何异常
             }
         }
@@ -225,7 +227,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
         GetuiMessage getui = (GetuiMessage)message;
         logger.info("个推发送消息，消息内容为:{}", Jackson.base().writeValueAsString(getui));
         boolean success = getuiPush
-                .pushNotification(getui.getReceiver(), getui.getTitle(), getui.getContent(),
+                .pushNotificationToUserId(getui.getReceiver(), getui.getTitle(), getui.getContent(),
                         Jackson.mobile().writeValueAsString(getui.getData()));
     }
 

@@ -7,13 +7,18 @@
  */
 package com.wetrack.ikongtiao.domain;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+//@Entity(name = "payment_info")
 public class PaymentInfo implements Serializable {
     /**
      * id:
      */
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     /**
@@ -24,6 +29,7 @@ public class PaymentInfo implements Serializable {
     /**
      * out_trade_no:外部交易号:和支付系统交互
      */
+    @Column(name = "out_trade_no")
     private String outTradeNo;
 
     /**
@@ -39,24 +45,29 @@ public class PaymentInfo implements Serializable {
     /**
      * refund_amount:退款金额 单位为分
      */
+    @Column(name = "refund_amount")
     private Integer refundAmount;
 
     /**
      * paid_time:支付时间
      */
+    @Column(name = "paid_time")
     private Date paidTime;
 
     /**
      * refund_time:退款时间
      */
+    @Column(name = "refund_time")
     private Date refundTime;
     /**
      * create_time:
      */
+    @Column(name = "create_time")
     private Date createTime;
     /**
      * close_time:
      */
+    @Column(name = "close_time")
     private Date closeTime;
 
     /**
@@ -65,6 +76,7 @@ public class PaymentInfo implements Serializable {
      *
      * @xiazhougenerated Tue Dec 15 12:50:23 CST 2015
      */
+    @Transient
     private static final long serialVersionUID = 1L;
 
     /**

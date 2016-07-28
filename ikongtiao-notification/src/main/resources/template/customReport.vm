@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>[$fromDay 到 $endDay ]统计</title>
+    <style>
+        table.dataintable {
+            margin-top:10px;
+            border-collapse:collapse;
+            border:1px solid #aaa;
+            width:100%;
+        }
+
+        table.dataintable th {
+            vertical-align:baseline;
+            padding:5px 15px 5px 6px;
+            background-color:#d5d5d5;
+            border:1px solid #aaa;
+            text-align:left;
+        }
+
+        table.dataintable td {
+            vertical-align:text-top;
+            padding:6px 15px 6px 6px;
+            background-color:#efefef;
+            border:1px solid #aaa;
+        }
+
+        table.dataintable pre {
+            width:auto;
+            margin:0;
+            padding:0;
+            border:0;
+            background-color:transparent;
+        }
+
+        table.dataintable p {margin:0 0 2px 0;}
+    </style>
+</head>
+<body>
+    <h2>$fromDay 到 $endDay , ${days}天</h2>
+    <h3>一.客户情况统计</h3>
+    <table class="dataintable">
+        <tbody>
+            <tr>
+                <th>老客户数</th>
+                <th>新客户数</th>
+                <th>所有老客户数</th>
+                <th>老客户活跃度</th>
+                <th>老客户点单占比</th>
+            </tr>
+
+            <tr>
+                <td>$activeOldUserCount </td>
+                <td>$newCustomerOrderNumber </td>
+                <td>$allOldUserCount </td>
+                #set($acr=${activeRate}*100)
+                <td>${acr}% </td>
+                #set($rcor=${regularCustomerOrderRate}*100)
+                <td>${rcor}% </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>注：
+        <ol>老客户活跃度是指活跃老客户占全部老客户的比例</ol>
+        <ol>老客户点单占比是指老客户占本周所有用户的比例</ol>
+    </p>
+
+    <h3>二.订单数统计</h3>
+    <table class="dataintable">
+        <tbody>
+        <tr>
+            <th></th>
+            <th>订单数</th>
+            <th>日均单数</th>
+            <th>上午订单数</th>
+            <th>下午订单数</th>
+            <th>用户实付金额</th>
+            <th>用户实付客单价</th>
+            <th>平均送达时间(分)</th>
+            <th>最长送餐时间(分)</th>
+            <th>最短送达时间(分)</th>
+
+        </tr>
+
+        <tr>
+            <td>汇总数据</td>
+            <td>$orderCount </td>
+            <td>$orderCountPerDay </td>
+            <td>$orderNoon </td>
+            <td>$orderAfternoon </td>
+            <td>$orderMoney </td>
+            <td>$moneyPerOrder </td>
+            <td>$averageSendingMinutes </td>
+            <td>$longestSendingMinutes </td>
+            <td>$shortestSendingMinutes </td>
+        </tr>
+
+        <tr>
+            <td>淘点点</td>
+            <td>$orderCount_tdd </td>
+            <td>$orderCountPerDay_tdd </td>
+            <td>$orderNoon_tdd </td>
+            <td>$orderAfternoon_tdd </td>
+            <td>$orderMoney_tdd </td>
+            <td>$moneyPerOrder_tdd </td>
+            <td>/ </td>
+            <td>/ </td>
+            <td>/ </td>
+        </tr>
+        <tr>
+            <td>美团外卖</td>
+            <td>$orderCount_mt </td>
+            <td>$orderCountPerDay_mt </td>
+            <td>$orderNoon_mt </td>
+            <td>$orderAfternoon_mt </td>
+            <td>$orderMoney_mt </td>
+            <td>$moneyPerOrder_mt </td>
+            <td>/ </td>
+            <td>/ </td>
+            <td>/ </td>
+        </tr>
+        <tr>
+            <td>饿了么</td>
+            <td>$orderCount_eleme </td>
+            <td>$orderCountPerDay_eleme </td>
+            <td>$orderNoon_eleme </td>
+            <td>$orderAfternoon_eleme </td>
+            <td>$orderMoney_eleme </td>
+            <td>$moneyPerOrder_eleme </td>
+            <td>/ </td>
+            <td>/ </td>
+            <td>/ </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</body>
+</html>

@@ -49,6 +49,7 @@ public class AdminController {
     @Autowired
     MessageService messageService;
 
+
     @ResponseBody
     @RequestMapping(value = "/list" , method = {RequestMethod.GET})
     public PageList<User> list(@RequestParam(required = false, value = "inService") Boolean inService,

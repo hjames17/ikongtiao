@@ -5,6 +5,7 @@
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="wechat_open_id" property="wechatOpenId" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="maintainer_id" property="maintainerId" jdbcType="INTEGER" />
@@ -25,7 +26,7 @@
     <result column="longitude" property="longitude" jdbcType="DECIMAL"/>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, wechat_open_id,phone, avatar, type, organization, account_email, auth_state,
+    id, wechat_open_id,phone, password, avatar, type, organization, account_email, auth_state,
     province_id, city_id, district_id, address, latitude, longitude,
     contacter_name, contacter_phone, maintainer_id,
     auth_img, license_no, create_time, update_time
@@ -71,6 +72,9 @@
       </if>
       <if test="phone != null" >
         phone,
+      </if>
+      <if test="password != null" >
+        password,
       </if>
       <if test="avatar != null" >
         avatar,
@@ -138,6 +142,9 @@
       <if test="phone != null" >
         #{phone,jdbcType=VARCHAR},
       </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
       <if test="avatar != null" >
         #{avatar,jdbcType=VARCHAR},
       </if>
@@ -203,6 +210,9 @@
       <if test="phone != null" >
         phone = #{phone,jdbcType=VARCHAR},
       </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
       <if test="avatar != null" >
         avatar = #{avatar,jdbcType=VARCHAR},
       </if>
@@ -266,7 +276,6 @@
         contacter_phone = #{contacterPhone}
       </if>
     </where>
-    where
   </update>
   <select id="selectInIds" resultMap="BaseResultMap" parameterType="java.util.List" >
     select

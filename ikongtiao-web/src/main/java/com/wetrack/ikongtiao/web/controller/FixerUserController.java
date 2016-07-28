@@ -41,9 +41,7 @@ public class FixerUserController {
     VerificationCodeService verificationCodeService;
 
 
-
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String createUser(@RequestBody CreateForm form, HttpServletRequest request){
+    void checkFields(CreateForm form) throws BusinessException{
         if(!RegExUtil.isMobilePhone(form.getContacterPhone())){
             throw new BusinessException("联系人手机号码无效");
         }
@@ -72,6 +70,17 @@ public class FixerUserController {
             throw new BusinessException("无法获取地址的经纬度");
 
         }
+    }
+
+    /**
+     * 创建一个集控系统用户账号,此时并未关联微信号
+     * @param form
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String createUser(@RequestBody CreateForm form, HttpServletRequest request){
+        checkFields(form);
 
         UserInfo exist = userInfoService.findByOrganizationOrContacterPhone(form.getOrganization(), form.getContacterPhone());
         if(exist != null){
@@ -97,8 +106,37 @@ public class FixerUserController {
         return user.getId();
     }
 
+    /**
+     * 升级一个用户账号为集控系统用户
+     * @param form
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/upgrade", method = RequestMethod.POST)
+    public String upgradeUser(@RequestBody CreateForm form, HttpServletRequest request) throws Exception{
+        checkFields(form);
+
+        UserInfo exist = userInfoService.findByOrganizationOrContacterPhone(form.getOrganization(), form.getContacterPhone());
+        if(exist == null){
+            throw new BusinessException("没有指定单位:"+form.getOrganization());
+        }
+
+        if(!verificationCodeService.verifyCode(form.getContacterPhone(), form.getCode())){
+            throw new BusinessException("联系人手机验证码无效");
+        }
+
+        BeanUtils.copyProperties(form, exist);
+        User authUser = (User)request.getAttribute("user");
+        exist.setMaintainerId(Integer.valueOf(
+                authUser.getId().substring(Constants.TOKEN_ID_PREFIX_FIXER.length())));
+        userInfoService.update(exist);
+        return exist.getId();
+
+    }
+
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public void updateUser(UserInfo userInfo) throws Exception{
+    public void updateUser(@RequestBody UserInfo userInfo) throws Exception{
         if(StringUtils.isEmpty(userInfo.getId())){
             throw new BusinessException("未指定用户id");
         }

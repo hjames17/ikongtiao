@@ -40,6 +40,10 @@ public class SmsMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.NEW_COMMISSION, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
+                //重复提醒不发送给用户
+                if(params.get(MessageParamKey.REPEAT) != null && (Boolean)params.get(MessageParamKey.REPEAT) == true){
+                    return null;
+                }
                 SmsMessage message = new SmsMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getPhone());

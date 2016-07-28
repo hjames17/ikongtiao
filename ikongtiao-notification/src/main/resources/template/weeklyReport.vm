@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>[维大师运营周报]$fromDay 到 $endDay </title>
+    <style>
+        table.dataintable {
+            margin-top:10px;
+            border-collapse:collapse;
+            border:1px solid #aaa;
+            width:100%;
+        }
+
+        table.dataintable th {
+            vertical-align:baseline;
+            padding:5px 15px 5px 6px;
+            background-color:#d5d5d5;
+            border:1px solid #aaa;
+            text-align:left;
+        }
+
+        table.dataintable td {
+            vertical-align:text-top;
+            padding:6px 15px 6px 6px;
+            background-color:#efefef;
+            border:1px solid #aaa;
+        }
+
+        table.dataintable pre {
+            width:auto;
+            margin:0;
+            padding:0;
+            border:0;
+            background-color:transparent;
+        }
+
+        table.dataintable p {margin:0 0 2px 0;}
+    </style>
+</head>
+<body>
+    <h2>维大师运营周报$fromDay 到 $endDay</h2>
+    <table class="dataintable">
+        <tbody>
+            <tr>
+                <th>本周新增任务数量</th>
+                <th>本周完成任务数量</th>
+                <th>截止目前剩余未完成的任务数量</th>
+                <th>本周任务应收合计</th>
+            </tr>
+
+            <tr>
+                <td>$newMissionCount </td>
+                <td>$finishedMissionCount </td>
+                <td>$unfinishedMissionCount </td>
+                #set($acr=${activeRate}*100)
+                <td>¥$income </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>新增任务地区分布</h2>
+    <table class="dataintable">
+        <tbody>
+        <tr>
+            <th>省份</th>
+            <th>单数</th>
+        </tr>
+        #foreach($item in $areaList)
+            <tr>
+                <td>$item.getProvinceName()</td>
+                <td>$item.getCount()</td>
+            </tr>
+        #end
+        </tbody>
+    </table>
+</body>
+</html>

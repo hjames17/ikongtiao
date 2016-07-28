@@ -39,7 +39,7 @@
 	<constructor-arg ref="redisSentinelConfiguration" />
 	</bean>
 
-	<!-- redis template definition -->
+	<!-- redis com.wetrack.ikongtiao.admin.template definition -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 	<property name="connectionFactory" ref="jedisConnFactory" />
 	<property name="hashKeySerializer" ref="stringRedisSerializer" />

@@ -64,4 +64,10 @@ public class AccessoryRepoImpl implements AccessoryRepo {
     public List<Accessory> listOfRepairOrderId(Long repairOrderId) throws Exception {
         return commonDao.mapper(Accessory.class).sql("selectByRepairOrderId").session().selectList(repairOrderId);
     }
+
+    @Override
+    public Integer countMoneyInRepairOrders(List<Long> repairOrderIds) {
+        Integer money = commonDao.mapper(Accessory.class).sql("countMoneyInRepairOrders").session().selectOne(repairOrderIds);
+        return money == null ? 0 : money;
+    }
 }

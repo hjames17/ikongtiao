@@ -4,6 +4,7 @@ import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
+import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface RepairOrderService {
     List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception;
-    PageList<RepairOrder> list(RepairOrderQueryParam param);
+    PageList<RepairOrderDto> list(RepairOrderQueryParam param);
 
     RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg,
                        String makeOrderNum, String repairOrderDesc, String accessoryContent, List<RoImage> images) throws Exception;

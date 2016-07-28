@@ -81,7 +81,7 @@ public class AdminRepoImpl implements AdminRepo {
     public User create(User user) throws Exception {
         int count = commonDao.mapper(User.class).sql("insertSelective").session().insert(user);
         if(count != 1){
-            throw new Exception("创建,实际创建数量:" + count);
+            throw new Exception("创建失败,实际创建数量:" + count);
         }
         return user;
     }

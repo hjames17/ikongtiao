@@ -85,6 +85,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public void update(UserInfo userInfo) throws Exception {
+		if(!StringUtils.isEmpty(userInfo.getContacterPhone())){
+			UserInfo exist = findByOrganizationOrContacterPhone(null, userInfo.getContacterPhone());
+
+			if(userInfo.getContacterPhone().equals(exist.getContacterPhone())){
+				throw new BusinessException("联系人手机"+userInfo.getContacterPhone()+"已被占用，不能重复使用");
+			}
+		}
 		if (!StringUtils.isEmpty(userInfo.getAddress()) && (userInfo.getLongitude() == null
 				|| userInfo.getLatitude() == null)) {
 			try {

@@ -5,4 +5,5 @@ package com.wetrack.ikongtiao.notification.services;
  */
 public interface NotificationService {
     void NotificationOntime();
+    void finishUnattendedMissions();
 }

@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.web.controller.user;
 import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.auth.service.TokenService;
+import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
@@ -57,9 +58,13 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	LoginOut login(@RequestBody LoginForm loginForm) throws Exception{
+		if(StringUtils.isEmpty(loginForm.getContacterPhone())){
+			throw new BusinessException("请使用联系人手机号码登录");
+		}
 		Token token = userInfoService.login(loginForm.getContacterPhone(), loginForm.getPassword());
 		LoginOut out = new LoginOut();
 		out.setToken(token.getToken());
+		out.setId(token.getUser().getId().substring(Constants.TOKEN_ID_PREFIX_CUSTOMER.length()));
 		return out;
 	}
 

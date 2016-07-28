@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.statistics.MonthStats" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.statistics.MonthStats" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <id column="new_mission_count" property="newMissionCount" jdbcType="INTEGER" />
+    <id column="finished_mission_count" property="finishedMissionCount" jdbcType="INTEGER" />
+    <id column="unfinished_mission_count" property="unfinishedMissionCount" jdbcType="INTEGER" />
+    <id column="income" property="income" jdbcType="INTEGER" />
+    <id column="month" property="month" jdbcType="INTEGER" />
+    <id column="time" property="time" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, ordinal
+  </sql>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.statistics.MonthStats" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into month_stats (new_mission_count, finished_mission_count, unfinished_mission_count, income, month, time)
+    values (#{newMissionCount}, #{finishedMissionCount}, #{unfinishedMissionCount}, #{income}, #{month}, #{time})
+  </insert>
+</mapper>

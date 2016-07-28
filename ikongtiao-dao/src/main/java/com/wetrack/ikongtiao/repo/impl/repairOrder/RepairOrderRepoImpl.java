@@ -4,7 +4,9 @@ import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
+import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,7 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     }
 
     @Override
-    public List<RepairOrder> listByQueryParam(RepairOrderQueryParam param) {
+    public List<RepairOrderDto> listByQueryParam(RepairOrderQueryParam param) {
 
         if(param.getPhone() != null){
             //加上sql like查询通配符
@@ -59,6 +61,7 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
 
         return commonDao.mapper(RepairOrder.class).sql("listByQueryParam").session().selectList(param);
     }
+
 
     @Override public int countByParam(RepairOrderQueryParam param) {
         if(param.getPhone() != null){
@@ -73,6 +76,25 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
                 .selectOne(param);
         Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
         return count == null ? 0 : count;
+    }
+
+    @Override
+    public List<RepairOrder> listByStatsParam(StatsQueryParam param) {
+
+        return commonDao.mapper(RepairOrder.class).sql("listByStatsParam").session().selectList(param);
+    }
+
+    @Override
+    public int countLaborCostByStatsParam(StatsQueryParam param) {
+        return commonDao.mapper(RepairOrder.class).sql("countLaborCostByStatsParam").session()
+                .selectOne(param);
+    }
+
+    @Override
+    public int countByMissionId(int missionId) {
+
+        return commonDao.mapper(RepairOrder.class).sql("countByMission").session()
+                .selectOne(missionId);
     }
 
     @Override
@@ -94,5 +116,10 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     @Override
     public RepairOrder getById(Long id){
         return commonDao.mapper(RepairOrder.class).sql("selectByPrimaryKey").session().selectOne(id);
+    }
+
+    @Override
+    public RepairOrder getBySid(String sid) {
+        return commonDao.mapper(RepairOrder.class).sql("selectBySid").session().selectOne(sid);
     }
 }

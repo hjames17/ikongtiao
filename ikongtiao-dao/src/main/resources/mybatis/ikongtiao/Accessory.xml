@@ -30,6 +30,15 @@
     </foreach>
     ORDER BY repair_order_id, name
   </select>
+  <select id="countMoneyInRepairOrders" resultType="java.lang.Integer" parameterType="java.util.List" >
+    select
+    sum(price*count)
+    from accessory
+    where repair_order_id IN
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item,jdbcType=BIGINT}
+    </foreach>
+  </select>
   <delete id="deleteByRepairOrderId" parameterType="java.lang.Long" >
     delete from accessory
     where repair_order_id = #{id,jdbcType=BIGINT}

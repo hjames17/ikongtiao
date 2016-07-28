@@ -24,11 +24,11 @@ public class EmailUtil {
 	public static void sendMail(String msg,String fileDataSource,String subject,String mailTo, MailSendAttachment sender) throws Exception{
     	try {
 //			sender.setMailFrom(Const.EMAIL_SEND_FROM);
-			sender.setSubject(subject,"utf-8");
+			sender.setSubject(subject, "utf-8");
 			sender.setSendDate(new Date());
 			sender.setFileDataSource(fileDataSource);
-			sender.setMailContent(msg,"utf-8");
-			sender.setMailTo(new String[]{mailTo}, Message.RecipientType.TO);
+			sender.setMailContent(msg, "utf-8");
+			sender.setMailTo(mailTo.split(","), Message.RecipientType.TO);
 			sender.sendMail();
 		} catch (MessagingException e) {
 			logger.error(" 发送邮件失败 !"+e.getMessage());
@@ -39,13 +39,8 @@ public class EmailUtil {
 		}
 	}
 	public static void main(String[] args) {
-//		try {
-//			MailSendAttachment sender = new MailSendAttachment(Const.EMAIL_SMTP_HOST,Const.EMAIL_USERNAME,Const.EMAIL_PASSWORD);
-//			sender.setMailFrom(Const.EMAIL_SEND_FROM);
-//			sendMail("这是你的密码",  "", "空调系统", "zhanghong@wetrack.studio", sender);
-//			sendMail("2222",  "", "空调系统", "it@wetrack.studio", sender);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		String r = "a, b";
+		String[] l = new String[]{r};
+		System.out.println(l.toString());
 	}
 }

@@ -1,5 +1,6 @@
 package com.wetrack.rong;
 
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.rong.models.*;
 import com.wetrack.rong.util.HttpUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -755,7 +756,7 @@ public class RongCloudApiService {
 				RONGCLOUDURI + "/wordfilter/add." + format.toString());
 
 		if (word == null || word.length() == 0) {
-			throw new Exception("word is not null or empty.");
+			throw new BusinessException("word is not null or empty.");
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("word=").append(
@@ -775,7 +776,7 @@ public class RongCloudApiService {
 				RONGCLOUDURI + "/wordfilter/delete." + format.toString());
 
 		if (word == null || word.length() == 0) {
-			throw new Exception("word is not null or empty.");
+			throw new BusinessException("word is not null or empty.");
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("word=").append(

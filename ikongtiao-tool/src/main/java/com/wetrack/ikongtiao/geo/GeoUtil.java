@@ -5,6 +5,7 @@ import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -51,7 +52,7 @@ public class GeoUtil {
         try {
             String content=Util.readUrlContent(url, "UTF-8", 5000);
             content=content.replace(String
-                    .format(GAODE_JSON_RESULT_APPEND,rand), "");
+                    .format(GAODE_JSON_RESULT_APPEND, rand), "");
             result =Jackson.simple().readValue(content,
                     GaoDeLocation.class);
         } catch (Exception e) {
@@ -65,6 +66,7 @@ public class GeoUtil {
     }
 
     public static GeoLocation getGeoLocationFromAddress(String address) throws UnsupportedEncodingException {
+        address = StringUtils.trimAllWhitespace(address);
         BaiduLocatonResult baiDuResult = GeoUtil.generaterLocationFromBaidu(address);
         if(baiDuResult==null||baiDuResult.getStatus()!=0||baiDuResult.getResult().getConfidence()<5){
             //百度地址不可用，尝试高德
@@ -81,6 +83,12 @@ public class GeoUtil {
                     ,baiDuResult.getResult().getLocation().getLat());
 
         }
+    }
+
+
+    static public void main(String[] args){
+        String address = "浙江省嘉兴市 南湖区 吉玛 西路";
+        System.out.println(StringUtils.trimAllWhitespace(address));
     }
 
 

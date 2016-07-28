@@ -26,9 +26,33 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4.1</version>
         </dependency>
 
+
+        <!-- add velocity Start -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-tools</artifactId>
+
+            <exclusions>
+                <!--hibernate-entitymanager:5.0.3.FINAL引用了1.6.1，这里版本会冲突-->
+                <exclusion>
+                    <groupId>dom4j</groupId>
+                    <artifactId>dom4j</artifactId>
+                </exclusion>
+                <!--hibernate-entitymanager:jar:5.0.3.Final引用了2.7.7，这里时2.7.2，会冲突-->
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
 
     <build>

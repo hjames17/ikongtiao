@@ -1,6 +1,7 @@
 package com.wetrack.ikongtiao.service.impl;
 
 import com.wetrack.ikongtiao.domain.PaymentInfo;
+import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.repo.api.PaymentInfoRepo;
 import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.message.MessageId;
@@ -44,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
 
         String paymentKey = String.format("%s%s%s", method, type, orderId);
         if(!getOperationLock(paymentKey, "cr")){
-            throw new Exception("多次创建的支付信息: " + paymentKey);
+            throw new BusinessException("多次创建的支付信息: " + paymentKey);
         }
 
         try {
@@ -55,7 +56,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
             PaymentInfo existed = paymentInfoRepo.findByMatch(paymentInfo);
             if(existed != null){
                 if(existed.getState().compareTo(PaymentInfo.State.NOTPAY) > 0){
-                    throw new Exception("订单已经完成或者关闭，不能再次创建:" + paymentKey);
+                    throw new BusinessException("订单已经完成或者关闭，不能再次创建:" + paymentKey);
                 }else{
                     return existed;
                 }
@@ -75,19 +76,19 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
     @Override
     public PaymentInfo create(PaymentInfo paymentInfo) throws Exception {
         if(paymentInfo.getMethod() == null || paymentInfo.getOutTradeNo() == null || paymentInfo.getAmount() == null){
-            throw new Exception("订单缺少必要字段,不能创建");
+            throw new BusinessException("订单缺少必要字段,不能创建");
         }
 
         String paymentKey = String.format("%s%s", paymentInfo.getMethod(), paymentInfo.getOutTradeNo());
         if(!getOperationLock(paymentKey, "cr")){
-            throw new Exception("多次创建的支付信息: " + paymentKey);
+            throw new BusinessException("多次创建的支付信息: " + paymentKey);
         }
 
         try {
             PaymentInfo existed = paymentInfoRepo.findByMatch(paymentInfo);
             if (existed != null) {
                 if (existed.getState().compareTo(PaymentInfo.State.NOTPAY) > 0) {
-                    throw new Exception("订单已经完成或者关闭，不能再次创建:" + paymentKey);
+                    throw new BusinessException("订单已经完成或者关闭，不能再次创建:" + paymentKey);
                 } else {
                     return existed;
                 }
@@ -118,7 +119,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
     public void update(PaymentInfo paymentInfo) throws Exception{
         String paymentKey = String.format("%s%s", paymentInfo.getMethod(), paymentInfo.getOutTradeNo());
         if(!getOperationLock(paymentKey, "w")){
-            throw new Exception("重复操作支付订单: " + paymentKey);
+            throw new BusinessException("重复操作支付订单: " + paymentKey);
         }
         try{
             paymentInfoRepo.update(paymentInfo);
@@ -135,7 +136,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
     public void closed(PaymentInfo.Method method, PaymentInfo.Type type, String orderId) throws Exception{
         String paymentKey = String.format("%s%s%s", method, type, orderId);
         if(!getOperationLock(paymentKey, "w")){
-            throw new Exception("重复操作支付订单: " + paymentKey);
+            throw new BusinessException("重复操作支付订单: " + paymentKey);
         }
 
         try{
@@ -150,7 +151,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
                     paymentInfo.setState(PaymentInfo.State.CLOSED);
                     paymentInfo.setCloseTime(new Date());
                 }else{
-                    throw new Exception(String.format("支付订单处于%s状态，不能关闭:%s", found.getState(), paymentKey));
+                    throw new BusinessException(String.format("支付订单处于%s状态，不能关闭:%s", found.getState(), paymentKey));
                 }
             }
         }catch (Exception e) {

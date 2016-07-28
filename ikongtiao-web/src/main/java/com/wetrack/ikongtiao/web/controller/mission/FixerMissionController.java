@@ -41,7 +41,7 @@ public class FixerMissionController {
 
 	@ResponseBody
 	@RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
-	public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
+	public MissionDto getMission(@PathVariable(value = "id") String id) throws Exception{
 		return missionService.getMissionDto(id);
 	}
 }

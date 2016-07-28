@@ -94,7 +94,7 @@ public class MissionServiceTest {
 
 		Integer testAdminUserId = 12345;
 		//do test
-		missionService.dispatchMission(27, 3, testAdminUserId);
+		missionService.dispatchMission("27", 3, testAdminUserId);
 
 		Thread.sleep(60000);
 	}

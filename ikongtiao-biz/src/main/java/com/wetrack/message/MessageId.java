@@ -81,6 +81,9 @@ public class MessageId {
     public static final int FIXER_INITIAL_PASSWORD = 402; //初始密码发送
 
 
+    public static final int WEEKLY_REPORT = 500; //周报
+
+
 
     //维修员认证类型
 //    public static final int FIXER_AUDIT_TYPE_CERT = 1;

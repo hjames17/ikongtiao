@@ -15,9 +15,9 @@ import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,8 +56,8 @@ public class MissionController {
     @ResponseBody
     @SignTokenAuth(roleNameRequired = "VIEW_MISSION")
     @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
-    public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
-        return missionService.getMissionDto(id);
+    public MissionDto getMission(@PathVariable(value = "id") String id) throws Exception{
+            return missionService.getMissionDto(id);
     }
 
     @RequestMapping(value = BASE_PATH + "/save" , method = {RequestMethod.POST})
@@ -76,7 +76,7 @@ public class MissionController {
 
         //发送消息
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(MessageParamKey.MISSION_ID, created.getId());
+        params.put(MessageParamKey.MISSION_ID, created.getSerialNumber());
         params.put(MessageParamKey.USER_ID, created.getUserId());
         params.put(MessageParamKey.ADMIN_ID, created.getAdminUserId());
         messageService.send(MessageId.ACCEPT_MISSION, params);
@@ -87,7 +87,7 @@ public class MissionController {
     @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/finish/{id}", method = {RequestMethod.POST})
-    public void finishMission(@PathVariable(value = "id") int id ) throws Exception{
+    public void finishMission(@PathVariable(value = "id") String id ) throws Exception{
         //TODO 操作纪录
         missionService.finishMission(id);
     }
@@ -109,26 +109,26 @@ public class MissionController {
     @ResponseBody
     @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @RequestMapping(value = BASE_PATH + "/accept" , method = {RequestMethod.GET})
-    public void acceptMission(@RequestParam(value = "missionId") Integer missionId, HttpServletRequest request) throws Exception{
+    public void acceptMission(@RequestParam(value = "missionId") String sid, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        checkValid(missionId, Integer.valueOf(user.getId()));
+        checkValid(sid, Integer.valueOf(user.getId()));
 
-        missionService.acceptMission(missionId, Integer.valueOf(user.getId()));
+        missionService.acceptMission(sid, Integer.valueOf(user.getId()));
 
     }
 
     @ResponseBody
     @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @RequestMapping(value = BASE_PATH + "/dispatch" , method = {RequestMethod.GET})
-    public void dispatchMission(@RequestParam(value = "missionId") Integer missionId,
+    public void dispatchMission(@RequestParam(value = "missionId") String sid,
                                   @RequestParam(value = "fixerId") Integer fixerId, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        checkValid(missionId, Integer.valueOf(user.getId()));
+        checkValid(sid, Integer.valueOf(user.getId()));
         if(fixerId == null){
             throw new BusinessException("没有指定诊断员id");
         }
 
-        missionService.dispatchMission(missionId, fixerId, Integer.valueOf(user.getId()));
+        missionService.dispatchMission(sid, fixerId, Integer.valueOf(user.getId()));
     }
     @ResponseBody
     @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
@@ -154,7 +154,7 @@ public class MissionController {
 
         User user = (User)request.getAttribute("user");
         mission.setAdminUserId(Integer.valueOf(user.getId()));
-        checkValid(mission.getId(), mission.getAdminUserId());
+        checkValid(mission.getSerialNumber(), mission.getAdminUserId());
 
         missionService.update(mission);
     }
@@ -174,11 +174,11 @@ public class MissionController {
         return name;
     }
 
-    void checkValid(Integer missionId, Integer adminUserId) throws Exception{
+    void checkValid(String sid, Integer adminUserId) throws Exception{
         if(adminUserId == null){
             throw new BusinessException("没有处理人的id");
         }
-        if(missionId == null){
+        if(org.springframework.util.StringUtils.isEmpty(sid)){
             throw new BusinessException("没有目标任务id");
         }
     }
@@ -243,7 +243,7 @@ public class MissionController {
 
     public static class DenyForm {
         Integer adminUserId;
-        Integer missionId;
+        String missionId;
         String reason;
 
         public Integer getAdminUserId() {
@@ -254,11 +254,11 @@ public class MissionController {
             this.adminUserId = adminUserId;
         }
 
-        public Integer getMissionId() {
+        public String getMissionId() {
             return missionId;
         }
 
-        public void setMissionId(Integer missionId) {
+        public void setMissionId(String missionId) {
             this.missionId = missionId;
         }
 
@@ -274,7 +274,7 @@ public class MissionController {
 
     public static class DescribeForm {
         Integer adminUserId;
-        Integer missionId;
+        String missionId;
         String description;
         Integer provinceId;
         Integer cityId;
@@ -291,11 +291,11 @@ public class MissionController {
             this.adminUserId = adminUserId;
         }
 
-        public Integer getMissionId() {
+        public String getMissionId() {
             return missionId;
         }
 
-        public void setMissionId(Integer missionId) {
+        public void setMissionId(String missionId) {
             this.missionId = missionId;
         }
 

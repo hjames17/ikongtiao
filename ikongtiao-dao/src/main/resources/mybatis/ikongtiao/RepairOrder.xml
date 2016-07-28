@@ -3,6 +3,8 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.RepairOrder" >
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.RepairOrder" >
     <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="serial_number" property="serialNumber" jdbcType="VARCHAR" />
+    <result column="mission_serial_number" property="missionSerialNumber" jdbcType="VARCHAR" />
     <result column="mission_id" property="missionId" jdbcType="INTEGER" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
@@ -32,6 +34,10 @@
       <result column="url" property="url" jdbcType="VARCHAR" />
       <result column="ordinal" property="ordinal" jdbcType="INTEGER" />
     </collection>
+  </resultMap>
+  <resultMap id="RepairOrderDto" type="com.wetrack.ikongtiao.dto.RepairOrderDto" extends="BaseResultMap">
+    <result column="name" property="fixerName" jdbcType="VARCHAR" />
+    <result column="organization" property="organization" jdbcType="VARCHAR" />
   </resultMap>
   <resultMap id="CommentMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment">
     <id column="id" property="id" jdbcType="BIGINT" />
@@ -68,8 +74,13 @@
   </resultMap>
 
   <sql id="Base_Column_List" >
-    repair_order.id, mission_id, repair_order.fixer_id, creator_fixer_id, repair_order.admin_user_id, repair_order_desc, repair_order_state, repair_order.operator, repair_order.create_time,
+    repair_order.id, mission_id, mission_serial_number, repair_order.serial_number, repair_order.fixer_id, creator_fixer_id, repair_order.admin_user_id, repair_order_desc, repair_order_state, repair_order.operator, repair_order.create_time,
     repair_order.update_time, name_plate_img, labor_cost, discount, accessory_content, repair_order.user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num
+  </sql>
+  <sql id="Dto_Column_List" >
+    repair_order.id, mission_id, mission_serial_number, repair_order.serial_number, repair_order.fixer_id, creator_fixer_id, repair_order.admin_user_id, repair_order_desc, repair_order_state, repair_order.operator, repair_order.create_time,
+    repair_order.update_time, name_plate_img, labor_cost, discount, accessory_content, repair_order.user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num,
+    fixer.name, user_info.organization
   </sql>
 
   <select id="selectImages" resultMap="RoImageMap" parameterType="java.lang.Long">
@@ -103,7 +114,13 @@
     select 
     <include refid="Base_Column_List" />
     from repair_order
-    where repair_order.id = #{id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectBySid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from repair_order
+    where serial_number = #{sid}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from repair_order
@@ -115,7 +132,7 @@
     </selectKey>
     insert into repair_order
     <trim prefix="(" suffix=")" suffixOverrides="," >
-        mission_id, repair_order_desc, user_id, admin_user_id,
+        mission_id, mission_serial_number, serial_number, repair_order_desc, user_id, admin_user_id,
       <if test="creatorFixerId != null" >
         creator_fixer_id,
       </if>
@@ -131,6 +148,8 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
         #{missionId,jdbcType=INTEGER},
+        #{missionSerialNumber},
+        #{serialNumber},
         #{repairOrderDesc,jdbcType=VARCHAR},
         #{userId,jdbcType=VARCHAR},
         #{adminUserId},
@@ -151,9 +170,6 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.RepairOrder" >
     update repair_order
     <set >
-      <if test="missionId != null" >
-        mission_id = #{missionId,jdbcType=INTEGER},
-      </if>
       <if test="payment != null" >
         payment = #{payment,jdbcType=INTEGER},
       </if>
@@ -191,7 +207,14 @@
         tax_amount = #{taxAmount},
       </if>
     </set>
-    where id = #{id,jdbcType=BIGINT}
+    <where>
+      <if test="serialNumber == null">
+        id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber}
+      </if>
+    </where>
   </update>
   <select id="listByMissionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select
@@ -200,10 +223,14 @@
     where repair_order.mission_id = #{id}
   </select>
 
-  <select id="listByQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
-    SELECT DISTINCT <include refid="Base_Column_List"/>
+  <select id="listByQueryParam" resultMap="RepairOrderDto" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+    SELECT DISTINCT <include refid="Dto_Column_List"/>
     from repair_order LEFT OUTER JOIN mission
     ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN fixer
+    ON repair_order.fixer_id = fixer.id
+    LEFT OUTER JOIN user_info
+    ON repair_order.user_id = user_info.id
     <where>
       <if test="userId!=null">
         and repair_order.user_id = #{userId,jdbcType=VARCHAR}
@@ -242,6 +269,12 @@
       </if>
       <if test="state!=null">
         and  repair_order_state = #{state}
+      </if>
+      <if test="createTimeStart != null">
+        and repair_order.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and repair_order.create_time &lt;= #{createTimeEnd}
       </if>
     </where>
     order by create_time desc limit #{start},#{pageSize}
@@ -291,7 +324,72 @@
       <if test="state!=null">
         and  repair_order_state = #{state}
       </if>
+      <if test="createTimeStart != null">
+        and repair_order.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and repair_order.create_time &lt;= #{createTimeEnd}
+      </if>
+    </where>
+  </select>
 
+
+
+  <select id="listByStatsParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    id, create_time, update_time, labor_cost
+    from repair_order
+    <where>
+      <if test="states != null">
+        repair_order_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+  </select>
+  <select id="countLaborCostByStatsParam" resultType="java.lang.Integer" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    sum(labor_cost)
+    from repair_order
+    <where>
+      <if test="states != null">
+        repair_order_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+  </select>
+  <select id="countByMission" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select count(*)
+    from repair_order
+    <where>
+      mission_id = #{id}
     </where>
   </select>
 </mapper>

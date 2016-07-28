@@ -50,24 +50,28 @@ public class MissionController {
 
 	@ResponseBody
 	@RequestMapping(value = "/mission/{id}" , method = {RequestMethod.GET})
-	public MissionDto getMission(@PathVariable(value = "id") int id) throws Exception{
+	public MissionDto getMissionOfPath(@PathVariable(value = "id") String id) throws Exception{
+		return missionService.getMissionDto(id);
+	}
+
+	@RequestMapping("/mission/detail")
+	@ResponseBody
+	public MissionDto getMission(@RequestParam(value="id") String id) throws Exception{
 		return missionService.getMissionDto(id);
 	}
 
 	@RequestMapping("/mission/finish")
 	@ResponseBody
 	public void finishMission(@RequestBody UpdateForm form) throws Exception{
-		Mission mission = missionService.getMission(form.getMissionId());
+		String id = form.getSerialNumber();
+		if(StringUtils.isEmpty(id)){
+			id = form.getMissionId().toString();
+		}
+		Mission mission = missionService.getMission(id);
 		if(!mission.getUserId().equals(form.getUserId())){
 			throw new BusinessException("不是您的任务!");
 		}
-		missionService.finishMission(form.getMissionId());
-	}
-
-	@RequestMapping("/mission/detail")
-	@ResponseBody
-	public MissionDto getMission(@RequestParam(value="id") Integer id) throws Exception{
-		return missionService.getMissionDto(id);
+		missionService.finishMission(id);
 	}
 
 	@ResponseBody
@@ -88,7 +92,10 @@ public class MissionController {
 //	}
 
 	static class UpdateForm {
+		@Deprecated
 		Integer missionId;
+
+		String serialNumber;
 		String userId;
 
 		public Integer getMissionId() {
@@ -105,6 +112,14 @@ public class MissionController {
 
 		public void setUserId(String userId) {
 			this.userId = userId;
+		}
+
+		public String getSerialNumber() {
+			return serialNumber;
+		}
+
+		public void setSerialNumber(String serialNumber) {
+			this.serialNumber = serialNumber;
 		}
 	}
 }

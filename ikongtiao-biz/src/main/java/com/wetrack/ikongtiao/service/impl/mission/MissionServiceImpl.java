@@ -17,6 +17,7 @@ import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.service.api.mission.MissionSerialNumberService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import com.wetrack.message.MessageId;
@@ -48,34 +49,17 @@ public class MissionServiceImpl implements MissionService {
 	@Resource
 	private MissionRepo missionRepo;
 
-//	@Resource
-//	MissionAddressRepo missionAddressRepo;
-
 	@Resource
 	private UserInfoRepo userInfoRepo;
-
-//	@Resource
-//	private MachineTypeRepo machineTypeRepo;
 
 	@Resource
 	MessageService messageService;
 
-//	@Resource
-//	private MessageProcess messageProcess;
-
-//	@Resource
-//	private FixerRepo fixerRepo;
-
-//	@Value("${weixin.page.host}")
-//	String weixinPageHost;
-//	@Value("${weixin.page.mission}")
-//	String weixinMissionPage;
-//	static final String ACTION_DETAIL = "detail";
-
-
-
 	@Autowired
 	TaskMonitorService taskMonitorService;
+
+	@Autowired
+	MissionSerialNumberService missionSerialNumberService;
 
 	@Override public Mission saveMissionFromUser(Mission param) throws Exception{
 		UserInfo userInfo = userInfoRepo.getById(param.getUserId());
@@ -95,6 +79,7 @@ public class MissionServiceImpl implements MissionService {
 		//发送消息
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, mission.getId());
+		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		messageService.send(MessageId.NEW_COMMISSION, params);
 
@@ -154,6 +139,8 @@ public class MissionServiceImpl implements MissionService {
 			mission.setLongitude(userInfo.getLongitude());
 		}
 
+		mission.setSerialNumber(missionSerialNumberService.getNextSerialNumber());
+
 
 		return missionRepo.save(mission);
 	}
@@ -196,9 +183,9 @@ public class MissionServiceImpl implements MissionService {
 
 	@Transactional
 	@Override
-	public void acceptMission(Integer missionId, Integer adminUserId) throws Exception {
+	public void acceptMission(String id, Integer adminUserId) throws Exception {
 		//先读取任务状态，防止多人抢单，导致最后一个来的抢成功了
-		Mission mission = missionRepo.getMissionById(missionId);
+		Mission mission = getMission(id);
 		if(mission == null){
 			throw new BusinessException("任务不存在");
 		}
@@ -213,22 +200,23 @@ public class MissionServiceImpl implements MissionService {
 
 		//发送消息
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.MISSION_ID, mission.getId());
+		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		params.put(MessageParamKey.ADMIN_ID, adminUserId);
 		messageService.send(MessageId.ACCEPT_MISSION, params);
 	}
 
 	@Override
-	public void denyMission(Integer missionId, Integer adminUserId, String reason) throws Exception {
+	public void denyMission(String id, Integer adminUserId, String reason) throws Exception {
 
 		//先读取任务状态，不能拒绝已经被处理的订单
-		Mission mission = missionRepo.getMissionById(missionId);
+		Mission mission = getMission(id);
 		if(mission == null){
-			throw new BusinessException("不存在任务" + missionId);
+			throw new BusinessException("不存在任务" + id);
 		}
 		if(mission.getMissionState() > MissionState.NEW.getCode()){
-			throw new BusinessException("任务"+missionId+"已经被受理,不能拒绝");
+			throw new BusinessException("任务"+id+"已经被受理,不能拒绝");
 		}
 		//修改状态
 		mission.setMissionState(MissionState.REJECT.getCode());
@@ -239,19 +227,20 @@ public class MissionServiceImpl implements MissionService {
 
 		//发送消息
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.MISSION_ID, mission.getId());
+		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		params.put(MessageParamKey.ADMIN_ID, adminUserId);
 		messageService.send(MessageId.REJECT_MISSION, params);
 	}
 
 	@Override
-	public void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception {
-		Mission mission = missionRepo.getMissionById(missionId);
+	public void dispatchMission(String id, Integer fixerId, Integer adminUserId) throws Exception {
+
+		Mission mission = getMission(id);
 
 		//修改状态
 		if(mission.getMissionState() != MissionState.DISPATCHED.getCode() || mission.getFixerId() != fixerId) {
-			mission.setId(missionId);
 			mission.setFixerId(fixerId);
 			mission.setMissionState(MissionState.DISPATCHED.getCode());
 			mission.setUpdateTime(new Date());
@@ -260,7 +249,8 @@ public class MissionServiceImpl implements MissionService {
 
 		//发送消息
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.MISSION_ID, mission.getId());
+		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		params.put(MessageParamKey.FIXER_ID, fixerId);
 		params.put(MessageParamKey.ADMIN_ID, adminUserId);
@@ -269,8 +259,10 @@ public class MissionServiceImpl implements MissionService {
 
 
 	@Override
-	public void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception {
-		Mission mission = missionRepo.getMissionById(id);
+	public void submitMissionDescription(String id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception {
+
+		Mission mission = getMission(id);
+
 		if(mission == null){
 			throw new BusinessException("不存在任务" + id);
 		}
@@ -281,7 +273,7 @@ public class MissionServiceImpl implements MissionService {
 		if(!StringUtils.isEmpty(address) && !address.equals(mission.getAddress())) {
 			GeoLocation geoLocation = GeoUtil.getGeoLocationFromAddress(address);
 			if(geoLocation == null){
-				throw new BusinessException(String.format("任务%d地址:%s无法获取经纬度，需要重新填写!", id, address));
+				throw new BusinessException(String.format("任务%s地址:%s无法获取经纬度，需要重新填写!", id, address));
 			}else{
 				mission.setLatitude(BigDecimal.valueOf(geoLocation.getLatitude()));
 				mission.setLongitude(BigDecimal.valueOf(geoLocation.getLongitude()));
@@ -297,26 +289,46 @@ public class MissionServiceImpl implements MissionService {
 	}
 
 	@Override
-	public MissionDto getMissionDto(Integer id) throws Exception {
-		return missionRepo.getMissionDetailById(id);
+	public MissionDto getMissionDto(String id) throws Exception {
+
+		MissionDto mission;
+		try{
+			int iid = Integer.parseInt(id);
+			mission = missionRepo.getMissionDetailById(iid);
+		}catch (NumberFormatException e){
+			mission = missionRepo.getMissionDetailBySid(id);
+		}
+		return  mission;
 	}
 
 	@Override
-	public Mission getMission(Integer id) throws Exception {
-		return missionRepo.getMissionById(id);
+	public Mission getMission(String id) throws Exception {
+		Mission mission;
+		try{
+			int iid = Integer.parseInt(id);
+			mission = missionRepo.getMissionById(iid);
+		}catch (NumberFormatException e){
+			mission = missionRepo.getMissionBySid(id);
+		}
+		return  mission;
 	}
 
 	@Override
-	public void finishMission(Integer missionId) throws Exception {
+	public void finishMission(String id) throws Exception {
 		Mission mission = new Mission();
-		mission.setId(missionId);
+		try{
+			int iid = Integer.parseInt(id);
+			mission.setId(iid);
+		}catch (NumberFormatException e){
+			mission.setSerialNumber(id);
+		}
 		mission.setMissionState(MissionState.COMPLETED.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 
 		//发送消息
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, missionId);
+		params.put(MessageParamKey.MISSION_SID, id);
 		params.put(MessageParamKey.USER_ID, mission.getUserId());
 		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
 		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());

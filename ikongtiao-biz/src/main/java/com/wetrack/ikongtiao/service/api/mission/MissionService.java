@@ -36,15 +36,15 @@ public interface MissionService {
 	 */
 	PageList<MissionDto> ListFixerMissionByParam(FixerMissionQueryParam param) throws Exception;
 
-	void acceptMission(Integer missionId, Integer adminUserId) throws Exception;
-	void denyMission(Integer missionId, Integer adminUser, String reason) throws Exception;
-	void dispatchMission(Integer missionId, Integer fixerId, Integer adminUserId) throws Exception;
-	void submitMissionDescription(Integer id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception;
+	void acceptMission(String id, Integer adminUserId) throws Exception;
+	void denyMission(String id, Integer adminUser, String reason) throws Exception;
+	void dispatchMission(String id, Integer fixerId, Integer adminUserId) throws Exception;
+	void submitMissionDescription(String id, String description, String name, Integer provinceId, Integer cityId, Integer districtId, String address) throws Exception;
 
-	MissionDto getMissionDto(Integer id) throws Exception;
-	Mission getMission(Integer id) throws Exception;
+	MissionDto getMissionDto(String  id) throws Exception;
+	Mission getMission(String id) throws Exception;
 
-	void finishMission(Integer missionId) throws Exception;
+	void finishMission(String id) throws Exception;
 
 	void update(Mission mission);
 

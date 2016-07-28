@@ -90,7 +90,7 @@ public class PayController implements InitializingBean {
         cbro.setReturn_code(MSG_FAIL);
         if(payCallback == null){
             log.warn("微信支付回调通知数据无法解析");
-            throw new Exception("无法解析的回调数据");
+            throw new BusinessException("无法解析的回调数据");
         }
 
         //首先校验签名，以防伪造

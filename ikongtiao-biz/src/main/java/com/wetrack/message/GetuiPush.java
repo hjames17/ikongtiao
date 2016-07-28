@@ -158,7 +158,7 @@ public class GetuiPush implements InitializingBean {
 	}
 
 	public boolean pushNotificationToUserId(String userId, String title, String content, String data) {
-//		ITemplate template = buildNotificationTemplate(title, content, data);
+//		ITemplate com.wetrack.ikongtiao.admin.template = buildNotificationTemplate(title, content, data);
 		ITemplate template = buildTransmissionTemplate(title, content, data);
 		SingleMessage message = buildSingleMessage(template);
 		Target target = buildTarget(null, userId);

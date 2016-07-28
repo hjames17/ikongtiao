@@ -5,25 +5,28 @@ import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
+import com.wetrack.ikongtiao.repo.jpa.MissionJpaRepo;
+import com.wetrack.ikongtiao.repo.jpa.RepairOrderJpaRepo;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhanghong on 16/4/11.
  */
-//@Service
+@Service
 public class NotificationServiceImpl implements NotificationService {
 
     private static Logger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
@@ -50,8 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
                  * TODO :改单条处理为批量处理，减少数据库查询次数
                  */
                 if (taskId.startsWith(Constants.TASK_MISSION)) {
-                    Integer missionId = Integer.valueOf(taskId.substring(Constants.TASK_MISSION.length()));
-                    notifyMission(missionId);
+                    notifyMission(taskId.substring(Constants.TASK_MISSION.length()));
                 } else if (taskId.startsWith(Constants.TASK_REPAIR_ORDER)) {
                     Long repairOrderId = Long.valueOf(taskId.substring(Constants.TASK_REPAIR_ORDER.length()));
                     notifyRepairOrder(repairOrderId);
@@ -66,6 +68,63 @@ public class NotificationServiceImpl implements NotificationService {
                 }
             }
         }
+    }
+
+    /**
+     * 自动完成一定时间内无人处理没有未完成维修单的任务
+     */
+    @Autowired
+    MissionJpaRepo missionJpaRepo;
+    @Autowired
+    RepairOrderJpaRepo repairOrderJpaRepo;
+    @Override
+    public void finishUnattendedMissions(){
+            //找出所有可能的备选mission列表
+            List<Mission> missionList = missionJpaRepo.findByMissionState(MissionState.FIXING.getCode());
+            List<Integer> missionIds = new ArrayList<>();
+            if(missionList == null || missionList.size() == 0){
+                return;
+            }
+
+            for(Mission mission : missionList){
+                missionIds.add(mission.getId());
+            }
+            List<Byte> closedStates = Arrays.asList(RepairOrderState.CLOSED.getCode(), RepairOrderState.COMPLETED.getCode());
+            //select * from repair_order where mission_id in {#list} and repair_order_state!=6 and repair_order_state!=-1 group by mission_id
+            //排除这些有维修单未完成而且未关闭的mission
+            List<Integer> notFinishedMissionIds = repairOrderJpaRepo.findNonFinished(missionIds, closedStates);
+            for(Integer missionId : notFinishedMissionIds){
+                missionIds.remove(missionId);
+            }
+            //对剩余mission，获取其所有的维修单，并按照时间排序
+            //select * from repair_order where mission_id in #{list2} and repair_order_state=6 order by update_time desc
+            List<RepairOrder> repairOrders = repairOrderJpaRepo.findByMissionIdInAndRepairOrderState(
+                    missionIds, RepairOrderState.COMPLETED.getCode(), new Sort(new Sort.Order(Sort.Direction.DESC, "updateTime")));
+            //建立一个hashmap，为每一个missionId放入它的最后一个完成的维修单
+            Map<Integer, RepairOrder> map = new HashMap<>();
+            for (RepairOrder repairOrder : repairOrders) {
+                if(map.get(repairOrder.getMissionId()) == null){
+                    map.put(repairOrder.getMissionId(), repairOrder);
+                }
+            }
+
+            List<Integer> finishedIds = new ArrayList<>();
+            Date sevenDaysAgo = new DateTime().plusDays(7).withHourOfDay(23).withMinuteOfHour(59).toDate();
+            //遍历hashmap，判断每个missionId对应的维修单是否在7天前完成，是则放入待更新队列
+            for(RepairOrder repairOrder : map.values()){
+                if(repairOrder.getUpdateTime().before(sevenDaysAgo)){
+                    finishedIds.add(repairOrder.getMissionId());
+                }
+            }
+            //保存更新队列，发送消息
+            for(Integer missionId : finishedIds){
+                try {
+                    missionService.finishMission(missionId.toString());
+                } catch (Exception e) {
+                    log.error("can't update mission {} to finish state, {}", missionId, e.getMessage());
+                    e.printStackTrace();
+                }
+            }
     }
 
     @Autowired
@@ -85,6 +144,7 @@ public class NotificationServiceImpl implements NotificationService {
                 params.put(MessageParamKey.FIXER_ID, repairOrder.getFixerId());
                 params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
                 params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
+                params.put(MessageParamKey.REPEAT, true);
                 defaultMessageService.send(MessageId.NEW_FIX_ORDER, params);
                 break;
             case COST_READY:
@@ -92,6 +152,7 @@ public class NotificationServiceImpl implements NotificationService {
                 params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
                 params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
                 params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
+                params.put(MessageParamKey.REPEAT, true);
                 defaultMessageService.send(MessageId.WAITING_AUDIT_REPAIR_ORDER, params);
                 break;
             default:
@@ -105,13 +166,15 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     MissionService missionService;
 
-    private void notifyMission(Integer missionId) throws Exception{
+    private void notifyMission(String missionId) throws Exception{
         Mission mission = missionService.getMission(missionId);
         Map<String, Object> params = new HashMap<String, Object>();
         switch (MissionState.fromCode(mission.getMissionState())){
             case NEW:
                 params.put(MessageParamKey.MISSION_ID, mission.getId());
+                params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
                 params.put(MessageParamKey.USER_ID, mission.getUserId());
+                params.put(MessageParamKey.REPEAT, true);
                 defaultMessageService.send(MessageId.NEW_COMMISSION, params);
                 break;
             default:

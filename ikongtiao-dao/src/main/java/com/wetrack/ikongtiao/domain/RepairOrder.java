@@ -12,44 +12,66 @@ import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@Entity(name = "repair_order")
 public class RepairOrder implements Serializable {
     /**
      * id:
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(name = "serial_number")
+    String serialNumber;
+
 
     /**
      * user_id:用户Id
      */
+    @Column(name = "user_id")
     private String userId;
 
     /**
      * mission_id:任务id
      */
+    @Column(name = "mission_id")
     private Integer missionId;
+
+
+    @Column(name = "mission_serial_number")
+    String missionSerialNumber;
 
     /**
      * 创建该维修单的维修员id
      */
+
+    @Column(name = "creator_fixer_id")
     Integer creatorFixerId;
 
     /**
      * fixer_id:维修人id
      */
+
+    @Column(name = "fixer_id")
     private Integer fixerId;
 
     /**
      * repair_order_desc:维修单描述描述
      */
+
+    @Column(name = "repair_order_desc")
     private String repairOrderDesc;
 
     /**
      * repair_order_state:维修单状态:0－待报价；1-待审核；2－待确认；3－已确认/等待配件；4－等待指派；5－维修中；6－完成；-1－已关闭；
      */
+
+    @Column(name = "repair_order_state")
     private Byte repairOrderState;
 
     /**
@@ -57,43 +79,58 @@ public class RepairOrder implements Serializable {
      */
     @Deprecated
     private String operator;
+
+    @Column(name = "admin_user_id")
     Integer adminUserId;
 
     /**
      * create_time:
      */
+
+    @Column(name = "create_time")
     private Date createTime;
 
     /**
      * update_time:
      */
+
+    @Column(name = "update_time")
     private Date updateTime;
 
     /**
      * 铭牌图片
      */
+
+    @Column(name = "name_plate_img")
     String namePlateImg;
 
     /**
      * 制令号
      */
+
+    @Column(name = "make_order_num")
     String makeOrderNum;
 
     /**
      * 维修员提交的配件清单描述，
      * 不是精确的清单，供客服制定精确清单的依据
      */
+
+    @Column(name = "accessory_content")
     String accessoryContent;
 
     /**
      * 人工费
      */
+
+    @Column(name = "labor_cost")
     Integer laborCost; //分为单位
 
     /**
      * 配件清单，单独存表
      * 关联accessory表
      */
+    @Transient
     List<Accessory> accessoryList;
 
     Float discount; //折扣
@@ -101,47 +138,64 @@ public class RepairOrder implements Serializable {
     /**
      * 是否开发票
      */
+
+    @Column(name = "need_invoice")
     Boolean needInvoice;
 
     /**
      * 发票信息
      */
+
+    @Column(name = "invoice_title")
     String invoiceTitle;
 
     /**
      * 税号， 开增值税发票需要
      */
+
+    @Column(name = "tax_no")
     String taxNo;
 
     /**
      * 发票税额
      */
+
+    @Column(name = "tax_amount")
     Integer taxAmount; //单位为分
 
     /**
      * 付款方式， 0 线下， 1 线上
      */
+
+    @Column(name = "payment")
     Integer payment;
 
     /**
      * 关联表 payment_info
      */
+    @Transient
     PaymentInfo paymentInfo;
 
     /**
      * 关联表，comment
      */
+    @Transient
     Comment comment;
 
     /**
      * 关联表，repair_order_audit_info
      */
+    @Transient
     AuditInfo auditInfo;
 
     /**
      * 关联表, repair_order_image
      */
+    @Transient
     List<RoImage> images;
+
+    @Transient
+    Boolean warranty; //保修单，免费
 
 
     /**
@@ -150,6 +204,7 @@ public class RepairOrder implements Serializable {
      *
      * @xiazhougenerated Tue Dec 15 12:50:23 CST 2015
      */
+    @Transient
     private static final long serialVersionUID = 1L;
 
     /**
@@ -164,6 +219,14 @@ public class RepairOrder implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     /**
@@ -369,7 +432,7 @@ public class RepairOrder implements Serializable {
         this.auditInfo = auditInfo;
     }
 
-    public Boolean isNeedInvoice() {
+    public Boolean getNeedInvoice() {
         return needInvoice;
     }
 
@@ -410,6 +473,15 @@ public class RepairOrder implements Serializable {
         this.images = images;
     }
 
+
+    public Boolean getWarranty() {
+        return warranty;
+    }
+
+    public void setWarranty(Boolean warranty) {
+        this.warranty = warranty;
+    }
+
     /**
      * This method corresponds to the database table repair_order
      */
@@ -433,4 +505,11 @@ public class RepairOrder implements Serializable {
         return sb.toString();
     }
 
+    public String getMissionSerialNumber() {
+        return missionSerialNumber;
+    }
+
+    public void setMissionSerialNumber(String missionSerialNumber) {
+        this.missionSerialNumber = missionSerialNumber;
+    }
 }

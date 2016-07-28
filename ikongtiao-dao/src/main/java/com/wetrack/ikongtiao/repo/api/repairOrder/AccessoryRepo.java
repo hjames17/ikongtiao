@@ -17,4 +17,6 @@ public interface AccessoryRepo {
     boolean delete(Long accessoryId) throws Exception;
 
     List<Accessory> listOfRepairOrderId(Long repairOrderId) throws Exception;
+
+    Integer countMoneyInRepairOrders(List<Long> repairOrderIds);
 }

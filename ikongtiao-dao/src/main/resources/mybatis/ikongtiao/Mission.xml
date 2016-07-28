@@ -3,6 +3,7 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.Mission" >
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.Mission" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="serial_number" property="serialNumber" jdbcType="VARCHAR" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
     <result column="fault_type" property="faultType" jdbcType="VARCHAR" />
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
@@ -24,18 +25,25 @@
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="longitude" property="longitude" jdbcType="DOUBLE" />
     <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="setup_sheet" property="setupSheet" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, fault_type, mission_desc, mission_state, close_reason, is_need_more, fixer_id,
+    id, serial_number, user_id, fault_type, mission_desc, mission_state, close_reason, is_need_more, fixer_id,
     admin_user_id, operator, create_time, update_time,
     organization, contacter_name, contacter_phone,
-    province_id, city_id, district_id, address, longitude, latitude
+    province_id, city_id, district_id, address, longitude, latitude, setup_sheet
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from mission
     where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from mission
+    where serial_number = #{sid}
   </select>
   <select id="listMissionByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
@@ -47,13 +55,17 @@
     delete from mission
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteBySid" parameterType="java.lang.String" >
+    delete from mission
+    where serial_number = #{sid}
+  </delete>
   <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.Mission" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into mission
     <trim prefix="(" suffix=")" suffixOverrides="," >
-        user_id, fault_type,
+        serial_number, user_id, fault_type,
       <if test="missionDesc != null" >
         mission_desc,
       </if>
@@ -105,8 +117,13 @@
       <if test="latitude != null" >
         latitude,
       </if>
+      <if test="setupSheet != null" >
+        setup_sheet,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{serialNumber},
         #{userId},
         #{faultType},
       <if test="missionDesc != null" >
@@ -162,6 +179,9 @@
       </if>
       <if test="latitude != null" >
         #{latitude},
+      </if>
+      <if test="setupSheet != null" >
+        #{setupSheet},
       </if>
     </trim>
   </insert>
@@ -228,7 +248,76 @@
       <if test="closeReason != null" >
         close_reason = #{closeReason},
       </if>
+      <if test="setupSheet != null" >
+        setup_sheet = #{setupSheet},
+      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    <where>
+      <if test="serialNumber == null">
+        id = #{id}
+      </if>
+      <if test="serialNumber != null">
+        serial_number = #{serialNumber}
+      </if>
+    </where>
   </update>
+
+  <select id="countByStatsParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as totalSize
+    from mission
+    <where>
+      <if test="states != null">
+        mission_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+  </select>
+
+  <resultMap id="areaCountAsProvince" type="com.wetrack.ikongtiao.domain.statistics.AreaCount" >
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+  </resultMap>
+
+  <select id="groupByProvince" resultMap="areaCountAsProvince" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as count, province_id
+    from mission
+    <where>
+      <if test="states != null">
+        mission_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+    GROUP BY province_id
+    ORDER BY COUNT DESC
+  </select>
 </mapper>

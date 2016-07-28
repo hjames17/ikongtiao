@@ -3,6 +3,7 @@
 <mapper namespace="com.wetrack.ikongtiao.dto.MissionDto" >
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.dto.MissionDto" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="serial_number" property="serialNumber" jdbcType="VARCHAR" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
     <!--<result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />-->
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
@@ -27,14 +28,15 @@
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="longitude" property="longitude" jdbcType="DOUBLE" />
     <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="setup_sheet" property="setupSheet" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, mission_desc, mission_state, is_need_more, fixer_id, fault_type
+    id, serial_number, user_id, mission_desc, mission_state, is_need_more, fixer_id, fault_type
     admin_user_id, operator, create_time, update_time
   </sql>
   <sql id="Mission_Dto_List" >
-    mission.id, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.close_reason, mission.is_need_more, mission.fixer_id,
-    mission.admin_user_id, mission.operator, mission.create_time, mission.update_time,
+    mission.id, mission.serial_number, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.close_reason, mission.is_need_more, mission.fixer_id,
+    mission.admin_user_id, mission.operator, mission.create_time, mission.update_time, mission.setup_sheet,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude,
     admin.name
@@ -48,6 +50,15 @@
     LEFT OUTER JOIN admin
     ON admin.id = mission.admin_user_id
     WHERE mission.id = #{id}
+  </select>
+  <select id="selectBySid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    SELECT <include refid="Mission_Dto_List"/>, COUNT(repair_order.id) as repair_order_count
+    from mission LEFT OUTER JOIN repair_order
+    ON repair_order.mission_serial_number = mission.serial_number
+    LEFT OUTER JOIN admin
+    ON admin.id = mission.admin_user_id
+    WHERE mission.serial_number = #{sid}
+    GROUP BY mission.id
   </select>
 
   <select id="listMissionByAppQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
@@ -94,6 +105,12 @@
       </if>
       <if test="missionState!=null">
         and  mission_state = #{missionState}
+      </if>
+      <if test="createTimeStart != null">
+        and mission.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and mission.create_time &lt;= #{createTimeEnd}
       </if>
     </where>
     GROUP BY mission.id
@@ -143,7 +160,12 @@
       <if test="missionState!=null">
         and mission.mission_state = #{missionState}
       </if>
-
+      <if test="createTimeStart != null">
+        and mission.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and mission.create_time &lt;= #{createTimeEnd}
+      </if>
     </where>
   </select>
 

@@ -7,7 +7,7 @@
     <name>base-pom</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <base.version.spring>4.1.1.RELEASE</base.version.spring>
+        <base.version.spring>4.2.3.RELEASE</base.version.spring>
         <base.version.myBatis>3.2.8</base.version.myBatis>
         <base.version.junit>4.11</base.version.junit>
     </properties>
@@ -16,33 +16,10 @@
             <!--  Spring  -->
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
+                <artifactId>spring-framework-bom</artifactId>
                 <version>${base.version.spring}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${base.version.spring}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context-support</artifactId>
-                <version>${base.version.spring}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-tx</artifactId>
-                <version>${base.version.spring}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-jdbc</artifactId>
-                <version>${base.version.spring}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${base.version.spring}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.aspectj</groupId>
@@ -161,11 +138,6 @@
                         <artifactId>elasticsearch</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-commons</artifactId>
-                <version>1.10.0.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.elasticsearch</groupId>

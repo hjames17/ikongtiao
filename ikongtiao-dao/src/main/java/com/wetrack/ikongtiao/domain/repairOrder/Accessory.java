@@ -1,14 +1,24 @@
 package com.wetrack.ikongtiao.domain.repairOrder;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * Created by zhanghong on 16/1/6.
  */
+//@Entity(name = "accessory")
 public class Accessory implements Serializable{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
+
+    @Column(name = "repair_order_id")
     Long repairOrderId;
+
+    @Column(name = "mission_id")
     Integer missionId; //冗余字段，便以统计
+
     String name;
     Integer count;
     Integer price; //分为单位

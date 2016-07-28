@@ -2,6 +2,8 @@ package com.wetrack.ikongtiao.notification.controllers;
 
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.notification.services.MessageMultiChannelService;
+import com.wetrack.ikongtiao.notification.services.NotificationService;
+import com.wetrack.ikongtiao.notification.statistics.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class PushController {
     @Qualifier("defaultMessageService")
     MessageMultiChannelService messageService;
 
+    @Autowired
+    NotificationService notificationService;
+
     /**
      * TODO 接口的访问安全性
      * @param messageId
@@ -36,5 +41,26 @@ public class PushController {
     void push(@PathVariable int messageId,  @RequestBody Map<String, Object> params){
         logger.debug("received message {}, params {}", messageId, Jackson.mobile().writeValueAsString(params));
         messageService.send(messageId, params);
+    }
+
+    @Autowired
+    Statistics statistics;
+    @ResponseBody
+    @RequestMapping("/week")
+    public String WeekReport(){
+        statistics.weeklyReport();
+        return "ok";
+    }
+    @ResponseBody
+    @RequestMapping("/month")
+    public String monthReport(){
+        statistics.monthReport();
+        return "ok";
+    }
+    @ResponseBody
+    @RequestMapping("/unAM")
+    public String finishUnattendedMission(){
+        notificationService.finishUnattendedMissions();
+        return "ok";
     }
 }

@@ -57,6 +57,18 @@ public class EmailMessageChannel extends AbstractMessageChannel implements Initi
             }
         });
 
+        registerAdapter(MessageId.WEEKLY_REPORT, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                EmailMessage message = new EmailMessage();
+                message.setId(messageId);
+                message.setReceiver(params.get(MessageParamKey.MAIL_RECEIVER).toString());
+                message.setTitle(params.get(MessageParamKey.TITLE).toString());
+                message.setText(params.get(MessageParamKey.CONTENT).toString());
+                return message;
+            }
+        });
+
     }
 
     @Override

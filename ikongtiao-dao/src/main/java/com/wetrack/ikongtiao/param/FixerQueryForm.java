@@ -2,6 +2,8 @@ package com.wetrack.ikongtiao.param;
 
 import com.wetrack.base.page.BaseCondition;
 
+import java.util.Date;
+
 /**
  * Created by zhanghong on 15/12/30.
  */
@@ -18,6 +20,8 @@ public class FixerQueryForm extends BaseCondition {
     Double latitude;
     Float distance; //范围，公里
 
+    Date createTimeStart;
+    Date createTimeEnd;
 
     public Boolean isInsured() {
         return insured;
@@ -98,5 +102,21 @@ public class FixerQueryForm extends BaseCondition {
 
     public void setJkMaintainer(Boolean jkMaintainer) {
         this.jkMaintainer = jkMaintainer;
+    }
+
+    public Date getCreateTimeStart() {
+        return createTimeStart;
+    }
+
+    public void setCreateTimeStart(Date createTimeStart) {
+        this.createTimeStart = createTimeStart;
+    }
+
+    public Date getCreateTimeEnd() {
+        return createTimeEnd;
+    }
+
+    public void setCreateTimeEnd(Date createTimeEnd) {
+        this.createTimeEnd = createTimeEnd;
     }
 }

@@ -10,6 +10,7 @@ import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
+import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerIncomeRepo;
@@ -22,11 +23,13 @@ import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,8 +76,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	}
 
 	@Override
-	public PageList<RepairOrder> list(RepairOrderQueryParam param) {
-		PageList<RepairOrder> page = new PageList<RepairOrder>();
+	public PageList<RepairOrderDto> list(RepairOrderQueryParam param) {
+		PageList<RepairOrderDto> page = new PageList<RepairOrderDto>();
 		page.setPage(param.getPage());
 		page.setPageSize(param.getPageSize());
 		param.setStart(page.getStart());
@@ -97,11 +100,23 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}
 		repairOrder.setUserId(mission.getUserId());
 		repairOrder.setMissionId(missionId);
+		repairOrder.setMissionSerialNumber(mission.getSerialNumber());
 		repairOrder.setAdminUserId(mission.getAdminUserId());
 		repairOrder.setNamePlateImg(namePlateImg);
 		repairOrder.setMakeOrderNum(makeOrderNum);
 		repairOrder.setRepairOrderDesc(repairOrderDesc);
 		repairOrder.setAccessoryContent(accessoryContent);
+
+		String mPadd;
+		if(StringUtils.isEmpty(mission.getSerialNumber())){
+			DateTime today = new DateTime(mission.getCreateTime());
+			mPadd = today.toString("yyyyMMdd", Locale.CHINA) + missionId;
+		}else{
+			mPadd = mission.getSerialNumber().substring(1);
+		}
+		String serialNumber = String.format("r%s%02d", mPadd, repairOrderRepo.countByMissionId(missionId) + 1);
+		repairOrder.setSerialNumber(serialNumber);
+
 		repairOrder = repairOrderRepo.create(repairOrder);
 
 		if(images != null && images.size() > 0){
@@ -113,24 +128,14 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			repairOrderImageRepo.insert(images);
 		}
 
-		//创建维修单状态
+		//设置任务状态到维修中
 		mission.setMissionState(MissionState.FIXING.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
 
 		//发送消息
+		notify(repairOrder.getId(), RepairOrderState.NEW, null, Initiator.INITIATOR_USER);
 		try {
-//			MessageSimple messageSimple = new MessageSimple();
-//			messageSimple.setFixerId(mission.getFixerId());
-//			messageSimple.setRepairOrderId(repairOrder.getId());
-//			messageProcess.process(MessageType.NEW_FIX_ORDER, messageSimple);
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put(MessageParamKey.MISSION_ID, mission.getId());
-			params.put(MessageParamKey.USER_ID, mission.getUserId());
-			params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
-			params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
-			params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
-			messageService.send(MessageId.NEW_FIX_ORDER, params);
 			//添加通知任务
 			taskMonitorService.putTask(Constants.TASK_REPAIR_ORDER + repairOrder.getId());
 		}catch (Exception e){
@@ -180,19 +185,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		mission.setMissionState(MissionState.FIXING.getCode());
 		missionRepo.update(mission);
 
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setUserId(order.getUserId());
-//		messageSimple.setFixerId(fixerId);
-//		messageSimple.setMissionId(order.getMissionId());
-//		messageSimple.setRepairOrderId(repairOrder.getId());
-//		messageProcess.process(MessageType.ASSIGNED_FIXER, messageSimple);
 
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.FIXER_ID, fixerId);
-		params.put(MessageParamKey.MISSION_ID, order.getMissionId());
-		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
-		messageService.send(MessageId.ASSIGNED_FIXER, params);
+		notify(repairOrderId, RepairOrderState.FIXING, null, Initiator.INITIATOR_KEFU);
 	}
 
 	@Override
@@ -205,26 +199,40 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	private void handleCostFinished(RepairOrder repairOrder) throws Exception{
 		boolean autoAudit = false;
-		if(settingsService.getBusinessSettings().isRepairOrderAutoAudit()){
+		if (settingsService.getBusinessSettings().isRepairOrderAutoAudit()) {
 			autoAudit = true;
 		}
 
-		if(autoAudit){
-			repairOrder.setRepairOrderState(RepairOrderState.AUDIT_READY.getCode());
-		}else{
-			repairOrder.setRepairOrderState(RepairOrderState.COST_READY.getCode());
+		RepairOrderState newState;
+		if (autoAudit) {
+			RepairOrder retrieve = repairOrderRepo.getById(repairOrder.getId());
+			List<Accessory> accList = accessoryRepo.listOfRepairOrderId(repairOrder.getId());
+			int cost = 0;
+			if(retrieve.getLaborCost() != null){
+				cost += retrieve.getLaborCost();
+			}
+			if(accList != null && accList.size() > 0){
+				for(Accessory accessory : accList){
+					if(accessory.getPrice() != null && accessory.getCount() != null)
+						cost += accessory.getPrice() * accessory.getCount();
+				}
+			}
+			if(cost != 0){
+				//1. 如果需要付费，则进入待确认状态
+				newState = RepairOrderState.AUDIT_READY;
+			}else{
+				//2. 如果不需要付费，则直接进入已确认状态
+				newState = RepairOrderState.CONFIRMED;
+			}
+		} else {
+			newState = RepairOrderState.COST_READY;
 		}
+		repairOrder.setRepairOrderState(newState.getCode());
 		repairOrderRepo.update(repairOrder);
 
-		if(autoAudit){
-			//通知
-			sendCostFinishEvent(repairOrder.getId());
-		}else{
-			sendWaitingForAuditEvent(repairOrder.getId());
-		}
+		notify(repairOrder.getId(), newState, null, Initiator.INITIATOR_KEFU);
+
 	}
-
-
 
 	@Override
 	public void setPrepared(Integer adminUserId, Long repairOrderId) throws Exception {
@@ -245,18 +253,9 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = new RepairOrder();
 		repairOrder.setId(repairOrderId);
 		repairOrder.setRepairOrderState(RepairOrderState.COMPLETED.getCode());
+		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
 		repairOrder = repairOrderRepo.getById(repairOrderId);
-
-
-//		MessageSimple messageSimple = new MessageSimple();
-//		messageSimple.setUserId(repairOrder.getUserId());
-//		messageSimple.setRepairOrderId(repairOrder.getId());
-//		String url = String
-//				.format("%s%s?action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_COMMENT,
-//						repairOrder.getUserId(), repairOrderId);
-//		messageSimple.setUrl(url);
-//		messageProcess.process(MessageType.COMPLETED_FIX_ORDER,messageSimple);
 
 		/**
 		 * 创建维修员收入记录
@@ -264,13 +263,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		 */
 		fixerIncomeRepo.save(repairOrder.getFixerId(), repairOrder.getId(), repairOrder.getLaborCost() == null ? 0 : repairOrder.getLaborCost());
 
-
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
-		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
-		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
-		messageService.send(MessageId.COMPLETED_FIX_ORDER, params);
+		notify(repairOrderId, RepairOrderState.COMPLETED, null, Initiator.INITIATOR_FIXER);
 	}
 
 
@@ -283,25 +276,43 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		repairOrder.setId(repairOrderId);
+		if(repairOrder.getLaborCost() == null){
+			repairOrder.setLaborCost(0);
+		}
+		boolean needPay = false;
+		RepairOrderState newState;
 		if (deny) {
-			repairOrder.setRepairOrderState(RepairOrderState.CLOSED.getCode());
+			newState = RepairOrderState.CLOSED;
 		} else {
+
+			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
+			Integer accessoryMoney = 0;
+			if(accessories != null) {
+				for (Accessory accessory : accessories) {
+					accessoryMoney += accessory.getCount() * accessory.getPrice();
+				}
+			}
+
 			if(needInvoice){
 				repairOrder.setInvoiceTitle(invoiceTitle);
 				repairOrder.setTaxNo(taxNo);
-				List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
-				Integer accessoryMoney = 0;
-				if(accessories != null) {
-					for (Accessory accessory : accessories) {
-						accessoryMoney += accessory.getCount() * accessory.getPrice();
-					}
-				}
+
 				Float taxAmount = ((repairOrder.getLaborCost() + accessoryMoney) * settingsService.getBusinessSettings().getTaxPoint())/100;
 				repairOrder.setTaxAmount(taxAmount.intValue());
 			}
-			repairOrder.setRepairOrderState(RepairOrderState.CONFIRMED.getCode());
+
+			if((repairOrder.getLaborCost() + accessoryMoney) == 0){
+				newState = RepairOrderState.PREPARED;
+			}else{
+				needPay = true;
+				newState = RepairOrderState.CONFIRMED;
+			}
+
+
 		}
 		repairOrder.setPayment(payment);
+		RepairOrderState oldState = RepairOrderState.fromCode(repairOrder.getRepairOrderState());
+		repairOrder.setRepairOrderState(newState.getCode());
 		repairOrderRepo.update(repairOrder);
 		/**
 		 * TODO : 利用切面分离这些处理逻辑，解除代码耦合
@@ -311,7 +322,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			if(repairOrder.getPayment() != null && repairOrder.getPayment() == 1){
 				paymentService.closed(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, repairOrder.getId().toString());
 			}
-		}else if(repairOrder.getPayment() == 1){
+		}else if((repairOrder.getPayment() == 1) && needPay){
 			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
 			int price = 0;
 			if(accessories != null && accessories.size() > 0){
@@ -324,17 +335,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}
 
 		//消息发送
-
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
-		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
-		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
-		params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
-		if(!deny) {
-			messageService.send(MessageId.CONFIRM_FIX_ORDER, params);
-		}else{
-			messageService.send(MessageId.CANCEL_FIX_ORDER, params);
-		}
+		notify(repairOrderId, newState, oldState, Initiator.INITIATOR_USER);
 	}
 
 	@Autowired
@@ -358,17 +359,16 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 		auditInfoRepo.create(auditInfo);
 
+		RepairOrderState newState;
 		if(pass){
-			repairOrder.setRepairOrderState(RepairOrderState.AUDIT_READY.getCode());
-			repairOrderRepo.update(repairOrder);
-
-			//通知
-			sendCostFinishEvent(repairOrder.getId());
+			newState = RepairOrderState.AUDIT_READY;
 		}else{
-			repairOrder.setRepairOrderState(RepairOrderState.NEW.getCode());
-			repairOrderRepo.update(repairOrder);
-			//TODO 通知有被驳回的待审核维修单
+			newState = RepairOrderState.NEW;
 		}
+		repairOrder.setRepairOrderState(newState.getCode());
+		repairOrderRepo.update(repairOrder);
+
+		notify(repairOrderId, newState, null, Initiator.INITIATOR_AUDITOR);
 	}
 
 	@Override
@@ -418,22 +418,6 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		return repairOrder;
 	}
 
-//	@Override
-//	public void comment(Long repairOrderId, Integer rate, String commentString) throws Exception {
-//		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
-//		if(repairOrder == null){
-//			throw new BusinessException("维修单"+repairOrderId+"不存在");
-//		}
-//		Comment comment = new Comment();
-//		comment.setRepairOrderId(repairOrderId);
-//		comment.setMissionId(repairOrder.getMissionId());
-//		comment.setRate(rate);
-//		comment.setComment(commentString);
-//		commentRepo.create(comment);
-//
-//		//TODO 发送通知
-//	}
-
 	@Override
 	public Accessory createAccessory(Long repairOrderId, String name, Integer count, Integer price) throws Exception {
 		Accessory accessory = new Accessory();
@@ -454,19 +438,101 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		return accessoryRepo.delete(accessoryId);
 	}
 
-//	@Value("${weixin.page.host}")
-//	String weixinPageHost;
-//	@Value("${weixin.page.mission}")
-//	String weixinMissionPage;
-//	static final String ACTION_CONFIRMATION = "repairOderId";
-
-//	@Resource
-//	private MessageProcess messageProcess;
-
 	@Autowired
 	MissionRepo missionRepo;
 
-	private void sendCostFinishEvent(Long repairOrderId) {
+	enum Initiator{
+		INITIATOR_USER,
+		INITIATOR_KEFU,
+		INITIATOR_FIXER,
+		INITIATOR_AUDITOR;
+	}
+
+
+	private void notify(long repairOrderId, RepairOrderState newState, RepairOrderState oldState, Initiator initiator){
+		try {
+			switch (newState) {
+				case NEW:
+					if(Initiator.INITIATOR_AUDITOR == initiator){
+						//TODO 报价审核驳回通知
+					}else {
+						sendNew(repairOrderId);
+					}
+					break;
+				case COST_READY:
+					sendWaitingForAuditEvent(repairOrderId);
+					break;
+				case AUDIT_READY:
+					sendCostFinishEvent(repairOrderId);
+					break;
+				case CONFIRMED:
+					sendUserConfirmed(repairOrderId);
+					break;
+				case PREPARED:
+					if (initiator == Initiator.INITIATOR_USER) {
+						sendUserConfirmed(repairOrderId);
+					}
+					break;
+				case FIXING:
+					sendAssignedFixer(repairOrderId);
+					break;
+				case CLOSED:
+					sendUserDeniedEvent(repairOrderId);
+					break;
+				case COMPLETED:
+					sendCompleteEvent(repairOrderId);
+					break;
+				default:
+					break;
+			}
+		}catch (Exception e){
+			logger.error("repair order notify event failed on state {}, repairOrderId {}, initiator {}", repairOrderId, newState, initiator);
+		}
+	}
+
+	private void sendNew(long repairOrderId){
+		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
+		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
+		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
+		params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
+		messageService.send(MessageId.NEW_FIX_ORDER, params);
+	}
+
+	private void sendUserConfirmed(long repairOrderId){
+		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
+		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
+		params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
+		messageService.send(MessageId.CONFIRM_FIX_ORDER, params);
+	}
+
+	private void sendUserDeniedEvent(long repairOrderId){
+		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
+		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
+		params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
+		messageService.send(MessageId.CANCEL_FIX_ORDER, params);
+	}
+
+	private void sendCompleteEvent(long repairOrderId){
+		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
+		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+		messageService.send(MessageId.COMPLETED_FIX_ORDER, params);
+	}
+
+	private void sendCostFinishEvent(long repairOrderId) {
 		try {
 			RepairOrder order = repairOrderRepo.getById(repairOrderId);
 
@@ -474,19 +540,21 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			params.put(MessageParamKey.MISSION_ID, order.getMissionId());
 			params.put(MessageParamKey.USER_ID, order.getUserId());
 			params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+			params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
 			messageService.send(MessageId.WAITING_CONFIRM_FIX_ORDER, params);
 		} catch (Exception e) {
 			logger.error("发送报价完成消息失败"+e.getMessage());
 		}
 	}
 
-	private void sendWaitingForAuditEvent(Long repairOrderId) {
+	private void sendWaitingForAuditEvent(long repairOrderId) {
 		try {
 			RepairOrder order = repairOrderRepo.getById(repairOrderId);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put(MessageParamKey.MISSION_ID, order.getMissionId());
 			params.put(MessageParamKey.USER_ID, order.getUserId());
 			params.put(MessageParamKey.REPAIR_ORDER_ID, order.getId());
+			params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
 			params.put(MessageParamKey.ADMIN_ID, order.getAdminUserId());
 			messageService.send(MessageId.WAITING_AUDIT_REPAIR_ORDER, params);
 
@@ -495,5 +563,16 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		} catch (Exception e) {
 			logger.error("发送报价待审核消息失败"+e.getMessage());
 		}
+	}
+
+	private void sendAssignedFixer(long repairOrderId){
+		RepairOrder order = repairOrderRepo.getById(repairOrderId);
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(MessageParamKey.FIXER_ID, order.getFixerId());
+		params.put(MessageParamKey.MISSION_ID, order.getMissionId());
+		params.put(MessageParamKey.REPAIR_ORDER_ID, order.getId());
+		params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
+		messageService.send(MessageId.ASSIGNED_FIXER, params);
 	}
 }

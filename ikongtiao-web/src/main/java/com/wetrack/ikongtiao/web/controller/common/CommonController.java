@@ -72,13 +72,13 @@ public class CommonController {
 //
 //		IGtPush push = new IGtPush(url, appKey, masterSecret);
 //
-//		NotificationTemplate template = linkTemplataeDemo();
-//		template.setTransmissionType(1);
+//		NotificationTemplate com.wetrack.ikongtiao.admin.template = linkTemplataeDemo();
+//		com.wetrack.ikongtiao.admin.template.setTransmissionType(1);
 //		SingleMessage message = new SingleMessage();
 //		message.setOffline(true);
 //		//离线有效时间，单位为毫秒，可选
 //		message.setOfflineExpireTime(24 * 3600 * 1000);
-//		message.setData(template);
+//		message.setData(com.wetrack.ikongtiao.admin.template);
 //
 //		message.setPushNetWorkType(0); //可选。判断是否客户端是否wifi环境下推送，1为在WIFI环境下，0为不限制网络环境。
 //		Target target = new Target();
@@ -105,19 +105,19 @@ public class CommonController {
 //		return s;
 //	}
 //	public static NotificationTemplate linkTemplataeDemo() {
-//		NotificationTemplate template = new NotificationTemplate();
-//		template.setAppId(appId);                           //应用APPID
-//		template.setAppkey(appKey);                         //应用APPKEY
+//		NotificationTemplate com.wetrack.ikongtiao.admin.template = new NotificationTemplate();
+//		com.wetrack.ikongtiao.admin.template.setAppId(appId);                           //应用APPID
+//		com.wetrack.ikongtiao.admin.template.setAppkey(appKey);                         //应用APPKEY
 //
 //		//通知属性设置：如通知的标题，内容
-//		template.setTitle("nono"+new Date());                    // 通知标题
-//		template.setText("此时此刻"+new Date());                 // 通知内容
-//		template.setLogo("push.png");               // 通知图标，需要客户端开发时嵌入
-//		template.setIsRing(false);                  // 收到通知是否响铃，可选，默认响铃
-//		//          template.setIsVibrate(true);                    // 收到通知是否震动，可选，默认振动
-//		template.setIsClearable(true);              // 通知是否可清除，可选，默认可清除
+//		com.wetrack.ikongtiao.admin.template.setTitle("nono"+new Date());                    // 通知标题
+//		com.wetrack.ikongtiao.admin.template.setText("此时此刻"+new Date());                 // 通知内容
+//		com.wetrack.ikongtiao.admin.template.setLogo("push.png");               // 通知图标，需要客户端开发时嵌入
+//		com.wetrack.ikongtiao.admin.template.setIsRing(false);                  // 收到通知是否响铃，可选，默认响铃
+//		//          com.wetrack.ikongtiao.admin.template.setIsVibrate(true);                    // 收到通知是否震动，可选，默认振动
+//		com.wetrack.ikongtiao.admin.template.setIsClearable(true);              // 通知是否可清除，可选，默认可清除
 //
-//		template.setTransmissionType(2);                // 收到消息是否立即启动应用，1为立即启动，2则广播等待客户端自启动
+//		com.wetrack.ikongtiao.admin.template.setTransmissionType(2);                // 收到消息是否立即启动应用，1为立即启动，2则广播等待客户端自启动
 //
 //		FixerDevice fixerDevice = new FixerDevice();
 //		fixerDevice.setFixerId(12);
@@ -126,8 +126,8 @@ public class CommonController {
 //		fixerDevice.setOsVersion("ios 9.3");
 //		fixerDevice.setOsType("IOS");
 //		fixerDevice.setClientId("client");
-//		template.setTransmissionContent(Jackson.base().writeValueAsString(fixerDevice));  // 透传内容（点击通知后SDK将透传内容传给你的客户端，需要客户端做相应开发）
-//		return template;
+//		com.wetrack.ikongtiao.admin.template.setTransmissionContent(Jackson.base().writeValueAsString(fixerDevice));  // 透传内容（点击通知后SDK将透传内容传给你的客户端，需要客户端做相应开发）
+//		return com.wetrack.ikongtiao.admin.template;
 //	}
 
 }

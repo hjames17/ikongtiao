@@ -68,32 +68,32 @@ public class RepairOrderController {
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/{id}", method = {RequestMethod.GET})
     public RepairOrder repairOrder(@RequestParam(value = "uid") String uid,
-                                   @PathVariable(value = "id") long id) throws Exception{
+                                   @PathVariable(value = "id") String id) throws Exception{
         return repairOrderService.getById(id, false);
     }
 
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
-    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId,
+    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") String missionId,
                                             @RequestParam(value = "uid") String uid) throws Exception{
         return repairOrderService.listForMission(missionId, false);
     }
 
     static class ConfirmationForm{
         String userId;
-        Long repairOrderId;
+        String repairOrderId;
         Integer payment; //0线下， 1 线上
         boolean deny;
         boolean needInvoice;
         String invoiceTitle;//发票抬头
         String taxNo;//税号
 
-        public Long getRepairOrderId() {
+        public String getRepairOrderId() {
             return repairOrderId;
         }
 
-        public void setRepairOrderId(Long repairOrderId) {
+        public void setRepairOrderId(String repairOrderId) {
             this.repairOrderId = repairOrderId;
         }
 

@@ -24,6 +24,12 @@ public class FaultTypeRepoImpl implements FaultTypeRepo{
     }
 
     @Override
+    public FaultType findById(int id) {
+        return commonDao.mapper(FaultType.class).sql("findById").session().selectOne(id);
+
+    }
+
+    @Override
     public FaultType create(String name, Integer ordinal) {
         FaultType faultType = new FaultType();
         faultType.setName(name);

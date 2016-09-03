@@ -16,6 +16,7 @@ import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
+import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionSerialNumberService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
@@ -215,8 +216,8 @@ public class MissionServiceImpl implements MissionService {
 		if(mission == null){
 			throw new BusinessException("不存在任务" + id);
 		}
-		if(mission.getMissionState() > MissionState.NEW.getCode()){
-			throw new BusinessException("任务"+id+"已经被受理,不能拒绝");
+		if(mission.getMissionState() >= MissionState.FIXING.getCode()){
+			throw new BusinessException("任务"+id+"已不能取消");
 		}
 		//修改状态
 		mission.setMissionState(MissionState.REJECT.getCode());
@@ -313,8 +314,12 @@ public class MissionServiceImpl implements MissionService {
 		return  mission;
 	}
 
+	@Autowired
+	RepairOrderRepo repairOrderRepo;
+
 	@Override
 	public void finishMission(String id) throws Exception {
+
 		Mission mission = new Mission();
 		try{
 			int iid = Integer.parseInt(id);
@@ -322,6 +327,13 @@ public class MissionServiceImpl implements MissionService {
 		}catch (NumberFormatException e){
 			mission.setSerialNumber(id);
 		}
+
+		int unfinished = repairOrderRepo.countUnfinishedForMission(mission);
+		if(unfinished > 0){
+			throw new BusinessException("任务中有" + unfinished + "个未完成的维修单，请先联系维修员完成相关维修单!");
+		}
+
+
 		mission.setMissionState(MissionState.COMPLETED.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);

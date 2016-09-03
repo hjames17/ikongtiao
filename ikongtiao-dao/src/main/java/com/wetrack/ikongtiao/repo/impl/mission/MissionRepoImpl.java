@@ -32,6 +32,11 @@ public class MissionRepoImpl implements MissionRepo {
 		return commonDao.mapper(Mission.class).sql("updateByPrimaryKeySelective").session().update(mission);
 	}
 
+	@Override
+	public void updateSid(Mission mission) {
+		commonDao.mapper(Mission.class).sql("updateSid").session().update(mission);
+	}
+
 	@Override public Mission getMissionById(Integer missionId) {
 		return commonDao.mapper(Mission.class).sql("selectByPrimaryKey").session().selectOne(missionId);
 	}

@@ -243,12 +243,11 @@ public class FixerController {
 
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/code", method = RequestMethod.GET)
-    String getRegisterCode(HttpServletRequest request , @RequestParam(value = "phone") String phone) throws Exception{
+    void getRegisterCode(HttpServletRequest request , @RequestParam(value = "phone") String phone) throws Exception{
         if(!RegExUtil.isMobilePhone(phone)){
             throw new BusinessException("无效的手机号码！");
         }
         verificationCodeService.sendVericationCode(phone);
-        return "ok";
     }
 
     @SignTokenAuth

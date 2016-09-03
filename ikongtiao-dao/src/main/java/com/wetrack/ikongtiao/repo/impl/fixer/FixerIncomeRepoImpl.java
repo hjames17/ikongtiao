@@ -20,7 +20,7 @@ public class FixerIncomeRepoImpl implements FixerIncomeRepo {
     CommonDao commonDao;
 
     @Override
-    public FixerIncome save(Integer fixerId, Long repairOrderId, int amount) {
+    public FixerIncome save(Integer fixerId, String repairOrderId, int amount) {
         FixerIncome fixerIncome = new FixerIncome();
         fixerIncome.setFixerId(fixerId);
         fixerIncome.setRepairOrderId(repairOrderId);

@@ -329,6 +329,14 @@ public class FixerServiceImpl implements FixerService {
     }
 
     @Override
+    public void deleteFixer(int fixerId) throws Exception{
+        if(fixerRepo.getFixerById(fixerId) == null){
+            throw new BusinessException("不存在的维修人员");
+        }
+        fixerRepo.lDelete(fixerId);
+    }
+
+    @Override
     public Fixer getFixer(Integer id) throws Exception {
         return fixerRepo.getFixerById(id);
     }
@@ -339,6 +347,7 @@ public class FixerServiceImpl implements FixerService {
         if(!fixer.getPassword().equals(oldPass)){
             throw new BusinessException("原密码不对");
         }
+
         fixer.setPassword(newPass);
         fixerRepo.update(fixer);
     }
@@ -370,6 +379,7 @@ public class FixerServiceImpl implements FixerService {
     public Fixer createAccount(String phone, String name, String password) throws Exception {
         FixerQueryForm query = new FixerQueryForm();
         query.setPhone(phone);
+        query.setDeleted(false);
         int count = fixerRepo.countFixerByQueryParam(query);
         if(count > 0){
             throw new BusinessException("该号码"+phone+"已经被注册");
@@ -387,6 +397,7 @@ public class FixerServiceImpl implements FixerService {
     public Fixer createJKAccount(String phone, String name, String password) throws Exception {
         FixerQueryForm query = new FixerQueryForm();
         query.setPhone(phone);
+        query.setDeleted(false);
         int count = fixerRepo.countFixerByQueryParam(query);
         if(count > 0){
             throw new BusinessException("该号码"+phone+"已经被注册");
@@ -404,6 +415,7 @@ public class FixerServiceImpl implements FixerService {
     public Token login(String phone, String password) throws Exception {
         FixerQueryForm form = new FixerQueryForm();
         form.setPhone(phone);
+        form.setDeleted(false);
         List<Fixer> results = fixerRepo.listFixerByQueryParam(form);
         if(results != null && results.size() > 0){
             Fixer found = results.get(0);

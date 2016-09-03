@@ -261,6 +261,15 @@
       </if>
     </where>
   </update>
+  <update id="updateSid" parameterType="com.wetrack.ikongtiao.domain.Mission" >
+    update mission
+    <set >
+      serial_number = #{serialNumber}
+    </set>
+    <where>
+        id = #{id}
+    </where>
+  </update>
 
   <select id="countByStatsParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
     select

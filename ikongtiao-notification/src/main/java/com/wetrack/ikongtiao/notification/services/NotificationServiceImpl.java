@@ -135,7 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     RepairOrderService repairOrderService;
     private void notifyRepairOrder(Long repairOrderId) throws Exception{
-        RepairOrder repairOrder = repairOrderService.getById(repairOrderId, true);
+        RepairOrder repairOrder = repairOrderService.getById(String.valueOf(repairOrderId), true);
         Map<String, Object> params = new HashMap<String, Object>();
         switch (RepairOrderState.fromCode(repairOrder.getRepairOrderState())){
             case NEW:
@@ -143,6 +143,7 @@ public class NotificationServiceImpl implements NotificationService {
                 params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
                 params.put(MessageParamKey.FIXER_ID, repairOrder.getFixerId());
                 params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
+                params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
                 params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
                 params.put(MessageParamKey.REPEAT, true);
                 defaultMessageService.send(MessageId.NEW_FIX_ORDER, params);
@@ -151,6 +152,7 @@ public class NotificationServiceImpl implements NotificationService {
                 params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
                 params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
                 params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
+                params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
                 params.put(MessageParamKey.ADMIN_ID, repairOrder.getAdminUserId());
                 params.put(MessageParamKey.REPEAT, true);
                 defaultMessageService.send(MessageId.WAITING_AUDIT_REPAIR_ORDER, params);

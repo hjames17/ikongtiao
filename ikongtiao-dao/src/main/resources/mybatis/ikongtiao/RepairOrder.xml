@@ -25,8 +25,9 @@
     <result column="tax_amount" property="taxAmount" jdbcType="INTEGER" />
     <result column="discount" property="discount" jdbcType="FLOAT" />
     <result column="payment" property="payment" jdbcType="TINYINT" />
+    <result column="quick" property="quick" jdbcType="TINYINT" />
     <association property="paymentInfo" javaType="com.wetrack.ikongtiao.domain.PaymentInfo" column="id" select="selectPayment"/>
-    <association property="comment" javaType="com.wetrack.ikongtiao.domain.repairOrder.Comment" column="id" select="selectComment"/>
+    <association property="comment" javaType="com.wetrack.ikongtiao.domain.repairOrder.Comment" column="serial_number" select="selectComment"/>
     <association property="auditInfo" javaType="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo" column="id" select="selectAuditInfo"/>
     <collection property="images" ofType="com.wetrack.ikongtiao.domain.repairOrder.RoImage" select="selectImages" column="id">
       <id column="id" property="id" jdbcType="BIGINT" />
@@ -38,12 +39,14 @@
   <resultMap id="RepairOrderDto" type="com.wetrack.ikongtiao.dto.RepairOrderDto" extends="BaseResultMap">
     <result column="name" property="fixerName" jdbcType="VARCHAR" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
+    <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
   </resultMap>
   <resultMap id="CommentMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment">
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
+    <result column="repair_order_id" property="repairOrderId" jdbcType="VARCHAR" />
     <result column="comment" property="comment" jdbcType="LONGVARCHAR" />
     <result column="rate" property="rate" jdbcType="SMALLINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <resultMap id="AuditMap" type="com.wetrack.ikongtiao.domain.repairOrder.AuditInfo">
@@ -75,12 +78,12 @@
 
   <sql id="Base_Column_List" >
     repair_order.id, mission_id, mission_serial_number, repair_order.serial_number, repair_order.fixer_id, creator_fixer_id, repair_order.admin_user_id, repair_order_desc, repair_order_state, repair_order.operator, repair_order.create_time,
-    repair_order.update_time, name_plate_img, labor_cost, discount, accessory_content, repair_order.user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num
+    repair_order.update_time, name_plate_img, labor_cost, discount, accessory_content, repair_order.user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num, quick
   </sql>
   <sql id="Dto_Column_List" >
     repair_order.id, mission_id, mission_serial_number, repair_order.serial_number, repair_order.fixer_id, creator_fixer_id, repair_order.admin_user_id, repair_order_desc, repair_order_state, repair_order.operator, repair_order.create_time,
     repair_order.update_time, name_plate_img, labor_cost, discount, accessory_content, repair_order.user_id, payment, need_invoice, invoice_title, tax_no, tax_amount, make_order_num,
-    fixer.name, user_info.organization
+    fixer.name, mission.organization, mission.contacter_name, quick
   </sql>
 
   <select id="selectImages" resultMap="RoImageMap" parameterType="java.lang.Long">
@@ -96,7 +99,7 @@
     limit 0,1
   </select>
 
-  <select id="selectComment" resultMap="CommentMap" parameterType="java.lang.Long">
+  <select id="selectComment" resultMap="CommentMap" parameterType="java.lang.String">
     SELECT *
     FROM comment
     WHERE repair_order_id = #{id}
@@ -145,6 +148,15 @@
       <if test="accessoryContent != null" >
         accessory_content,
       </if>
+      <if test="repairOrderState != null" >
+        repair_order_state,
+      </if>
+      <if test="quick != null" >
+        quick,
+      </if>
+      <if test="fixerId != null" >
+        fixer_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
         #{missionId,jdbcType=INTEGER},
@@ -165,8 +177,28 @@
       <if test="accessoryContent != null" >
         #{accessoryContent,jdbcType=VARCHAR},
       </if>
+      <if test="repairOrderState != null" >
+        #{repairOrderState},
+      </if>
+      <if test="quick != null" >
+        #{quick},
+      </if>
+      <if test="fixerId != null" >
+        #{fixerId},
+      </if>
     </trim>
   </insert>
+
+  <update id="updateSid" parameterType="com.wetrack.ikongtiao.domain.RepairOrder" >
+    update repair_order
+    <set >
+      serial_number = #{serialNumber},
+      mission_serial_number = #{missionSerialNumber}
+    </set>
+    <where>
+      id = #{id}
+    </where>
+  </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.RepairOrder" >
     update repair_order
     <set >
@@ -216,21 +248,27 @@
       </if>
     </where>
   </update>
-  <select id="listByMissionId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="listByMission" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.Mission" >
     select
     <include refid="Base_Column_List" />
     from repair_order
-    where repair_order.mission_id = #{id}
+    <where>
+
+      <if test="id != null">
+        mission_id = #{id}
+      </if>
+      <if test="serialNumber != null">
+        and mission_serial_number = #{serialNumber}
+      </if>
+    </where>
   </select>
 
-  <select id="listByQueryParam" resultMap="RepairOrderDto" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+  <select id="listByQueryParam" resultMap="RepairOrderDto" parameterType="com.wetrack.ikongtiao.param.RepairOrderQueryParam" >
     SELECT DISTINCT <include refid="Dto_Column_List"/>
     from repair_order LEFT OUTER JOIN mission
     ON repair_order.mission_id = mission.id
     LEFT OUTER JOIN fixer
     ON repair_order.fixer_id = fixer.id
-    LEFT OUTER JOIN user_info
-    ON repair_order.user_id = user_info.id
     <where>
       <if test="userId!=null">
         and repair_order.user_id = #{userId,jdbcType=VARCHAR}
@@ -275,16 +313,23 @@
       </if>
       <if test="createTimeEnd != null">
         and repair_order.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="fixerName != null">
+        and fixer.name LIKE #{fixerName}
       </if>
     </where>
     order by create_time desc limit #{start},#{pageSize}
   </select>
 
-  <select id="countByQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
+  <select id="countByQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.RepairOrderQueryParam" >
     select
     count(*) as totalSize
     from repair_order LEFT OUTER JOIN mission
     ON repair_order.mission_id = mission.id
+    <if test="fixerName != null">
+      LEFT OUTER JOIN fixer
+      ON repair_order.fixer_id = fixer.id
+    </if>
     <where>
       <if test="userId!=null">
         and repair_order.user_id = #{userId,jdbcType=VARCHAR}
@@ -329,6 +374,9 @@
       </if>
       <if test="createTimeEnd != null">
         and repair_order.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="fixerName != null">
+        and fixer.name LIKE #{fixerName}
       </if>
     </where>
   </select>
@@ -385,11 +433,30 @@
       </if>
     </where>
   </select>
-  <select id="countByMission" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+  <select id="countByMission" resultType="java.lang.Integer" parameterType="com.wetrack.ikongtiao.domain.Mission" >
     select count(*)
     from repair_order
     <where>
-      mission_id = #{id}
+      <if test="id != null">
+        mission_id = #{id}
+      </if>
+      <if test="serialNumber != null">
+        and mission_serial_number = #{serialNumber}
+      </if>
+    </where>
+  </select>
+  <select id="countUnfinishedForMission" resultType="java.lang.Integer" parameterType="com.wetrack.ikongtiao.domain.Mission" >
+    select count(*)
+    from repair_order
+    <where>
+      <if test="id != null">
+        mission_id = #{id}
+      </if>
+      <if test="serialNumber != null">
+        and mission_serial_number = #{serialNumber}
+      </if>
+      and repair_order_state &lt; 6
+      and repair_order_state &gt;= 0
     </where>
   </select>
 </mapper>

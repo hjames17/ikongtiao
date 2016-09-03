@@ -79,7 +79,10 @@ public class FixerRepoImpl implements FixerRepo {
 
     @Override
     public int lDelete(Integer id) throws Exception {
-        return 0;
+        Fixer fixer = new Fixer();
+        fixer.setId(id);
+        fixer.setDeleted(true);
+        return commonDao.mapper(Fixer.class).sql("updateByPrimaryKeySelective").session().update(fixer);
     }
 
     @Override

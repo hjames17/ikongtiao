@@ -9,6 +9,7 @@ import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -42,10 +43,17 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form, HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        RepairOrder repairOrder = repairOrderService.create(fixerService.getFixerIdFromTokenUser(user), form.getMissionId(),
-                form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(),
-                form.getImages());
-        return repairOrder.getId().toString();
+        RepairOrder repairOrder;
+        if(form.getQuick() != null && form.getQuick() == true) {
+            repairOrder = repairOrderService.create(fixerService.getFixerIdFromTokenUser(user), form.getMissionId(),
+                    form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(),
+                    form.getImages(), true);
+        }else{
+            repairOrder = repairOrderService.create(fixerService.getFixerIdFromTokenUser(user), form.getMissionId(),
+                    form.getNamePlateImg(), form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(),
+                    form.getImages(), false);
+        }
+        return repairOrder.getSerialNumber();
     }
 
     @SignTokenAuth
@@ -53,7 +61,11 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/update" , method = {RequestMethod.POST})
     public void update(@RequestBody RepairOrder repairOrder, HttpServletRequest request) throws Exception{
 //        User user = (User)request.getAttribute("user");
-        RepairOrder current = repairOrderService.getById(repairOrder.getId(), true);
+        String id = repairOrder.getSerialNumber();
+        if(StringUtils.isEmpty(id)){
+            id = repairOrder.getId().toString();
+        }
+        RepairOrder current = repairOrderService.getById(id, true);
         if(current == null){
             throw new BusinessException("维修单不存在");
         }
@@ -66,20 +78,20 @@ public class RepairOrderController {
 
     @SignTokenAuth
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
-    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
+    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") String missionId) throws Exception{
         return repairOrderService.listForMission(missionId, false);
     }
 
     @SignTokenAuth
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/{id}", method = {RequestMethod.GET})
-    public RepairOrder repairOrder(@PathVariable(value = "id") long id) throws Exception{
+    public RepairOrder repairOrder(@PathVariable(value = "id") String id) throws Exception{
         return repairOrderService.getById(id, false);
     }
 
     @SignTokenAuth
     @RequestMapping(value = BASE_PATH + "/finish", method = {RequestMethod.POST})
-    public String setFinished(@RequestBody Long id) throws Exception{
+    public String setFinished(@RequestBody String id) throws Exception{
         repairOrderService.setFinished(id);
         return "ok";
     }
@@ -88,18 +100,19 @@ public class RepairOrderController {
 
 
     public static class CreateForm {
-        Integer missionId;
+        String missionId;
         String namePlateImg;
         String makeOrderNum;
         String repairOrderDesc;
         String accessoryContent;
+        Boolean quick;
         List<RoImage> images;
 
-        public Integer getMissionId() {
+        public String getMissionId() {
             return missionId;
         }
 
-        public void setMissionId(Integer missionId) {
+        public void setMissionId(String missionId) {
             this.missionId = missionId;
         }
 
@@ -142,6 +155,14 @@ public class RepairOrderController {
 
         public void setImages(List<RoImage> images) {
             this.images = images;
+        }
+
+        public Boolean getQuick() {
+            return quick;
+        }
+
+        public void setQuick(Boolean quick) {
+            this.quick = quick;
         }
     }
 }

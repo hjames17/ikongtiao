@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface FaultTypeRepo {
     List<FaultType> findAll();
-
+    FaultType findById(int id);
     FaultType create(String name, Integer ordinal);
 }

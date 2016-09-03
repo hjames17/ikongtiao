@@ -19,6 +19,7 @@ public class FixerQueryForm extends BaseCondition {
     Double longitude;
     Double latitude;
     Float distance; //范围，公里
+    Boolean deleted;
 
     Date createTimeStart;
     Date createTimeEnd;
@@ -96,7 +97,7 @@ public class FixerQueryForm extends BaseCondition {
         this.distance = distance;
     }
 
-    public Boolean isJkMaintainer() {
+    public Boolean getJkMaintainer() {
         return jkMaintainer;
     }
 
@@ -118,5 +119,13 @@ public class FixerQueryForm extends BaseCondition {
 
     public void setCreateTimeEnd(Date createTimeEnd) {
         this.createTimeEnd = createTimeEnd;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -1,6 +1,7 @@
 package com.wetrack.ikongtiao.service.impl;
 
 import com.wetrack.base.page.PageList;
+import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
 import com.wetrack.ikongtiao.exception.BusinessException;
@@ -8,6 +9,7 @@ import com.wetrack.ikongtiao.param.CommentQueryParam;
 import com.wetrack.ikongtiao.repo.api.repairOrder.CommentRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.service.api.CommentService;
+import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
@@ -27,6 +29,8 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     RepairOrderRepo repairOrderRepo;
     @Autowired
+    RepairOrderService repairOrderService;
+    @Autowired
     MessageService messageService;
     @Override
     public PageList<Comment> listComments(CommentQueryParam param) {
@@ -39,14 +43,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void createComment(Long repairOrderId, Integer rate, String commentString) throws Exception {
-        RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+    public void createComment(String repairOrderId, Integer rate, String commentString) throws Exception {
+        RepairOrder repairOrder = repairOrderService.getById(repairOrderId, false); //repairOrderRepo.getBySid(repairOrderId);
         if(repairOrder == null){
             throw new BusinessException("维修单"+repairOrderId+"不存在");
         }
+        if(repairOrder.getRepairOrderState() != RepairOrderState.COMPLETED.getCode()){
+            throw new BusinessException("维修单还未完成，不能评价");
+        }
+        if(repairOrder.getComment() != null){
+            throw new BusinessException("已经评价过该维修单了");
+        }
+
         Comment comment = new Comment();
         comment.setRepairOrderId(repairOrderId);
-        comment.setMissionId(repairOrder.getMissionId());
+        comment.setMissionId(repairOrder.getMissionSerialNumber());
         comment.setRate(rate);
         comment.setFixerId(repairOrder.getFixerId());
         comment.setComment(commentString);
@@ -54,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(MessageParamKey.FIXER_ID, repairOrder.getFixerId());
-        params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+        params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrderId);
         params.put(MessageParamKey.REPAIR_ORDER_COMMENT_RATE, rate);
         params.put(MessageParamKey.REPAIR_ORDER_COMMENT_ID, comment.getId());
         messageService.send(MessageId.COMMENT_REPAIR_ORDER, params);

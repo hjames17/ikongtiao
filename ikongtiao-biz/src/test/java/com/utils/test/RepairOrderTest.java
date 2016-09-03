@@ -43,7 +43,7 @@ public class RepairOrderTest {
 //            RepairOrderQueryParam queryParam = new RepairOrderQueryParam();
 //            queryParam.setType(0);
 //            queryParam.setNotForAdminUserId(1);
-            List<RepairOrder> orders = repairOrderService.listForMission(157, false);
+            List<RepairOrder> orders = repairOrderService.listForMission("157", false);
 //            PageList<RepairOrder> page = repairOrderService.list(queryParam);
             Assert.assertTrue(true);
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class RepairOrderTest {
         images.add(image1);
         repairOrder.setImages(images);
         try {
-            repairOrderService.update(repairOrder, repairOrderService.getById(210L, true));
+            repairOrderService.update(repairOrder, repairOrderService.getById("210", true));
             System.out.println("ok");
         } catch (Exception e) {
             e.printStackTrace();

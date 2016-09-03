@@ -9,7 +9,7 @@ import java.util.List;
  * Created by zhanghong on 16/4/8.
  */
 public interface FixerIncomeRepo {
-    FixerIncome save(Integer fixer, Long repairOrderId, int amount);
+    FixerIncome save(Integer fixer, String repairOrderId, int amount);
     boolean remove(Long id);
     List<FixerIncome> findByFixerIdAndCreateTimeBetween(Integer fixerId, Date startDate, Date endDate, boolean withPaymentInfo);
 }

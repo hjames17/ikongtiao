@@ -7,9 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/14.
@@ -31,7 +34,8 @@ public class TestController {
     static final String BASE_PATH = "/menu";
 
     @RequestMapping(value = BASE_PATH + "/test" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String test() throws Exception{
+    public String test(@RequestBody Map<String, Object> model) throws Exception{
+
         return "菜单创建完成";
     }
 

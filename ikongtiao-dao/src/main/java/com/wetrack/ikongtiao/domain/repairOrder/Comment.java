@@ -7,8 +7,8 @@ import java.util.Date;
  */
 public class Comment {
     Long id;
-    Long repairOrderId;
-    Integer missionId;
+    String repairOrderId;
+    String missionId;
 
     Integer fixerId;
     Date createTime;
@@ -23,11 +23,11 @@ public class Comment {
         this.id = id;
     }
 
-    public Long getRepairOrderId() {
+    public String getRepairOrderId() {
         return repairOrderId;
     }
 
-    public void setRepairOrderId(Long repairOrderId) {
+    public void setRepairOrderId(String repairOrderId) {
         this.repairOrderId = repairOrderId;
     }
 
@@ -65,11 +65,11 @@ public class Comment {
 
 
 
-    public Integer getMissionId() {
+    public String getMissionId() {
         return missionId;
     }
 
-    public void setMissionId(Integer missionId) {
+    public void setMissionId(String missionId) {
         this.missionId = missionId;
     }
 }

@@ -66,6 +66,7 @@ public class FixerController {
         queryForm.setLongitude(longitude);
         queryForm.setLatitude(latitude);
         queryForm.setDistance(distance);
+        queryForm.setDeleted(false);
         if(queryForm.getLongitude() != null || queryForm.getLatitude() != null){
             if(queryForm.getLongitude() == null || queryForm.getLatitude() == null || queryForm.getDistance() == null){
                 throw new BusinessException("地理位置查询参数缺失");
@@ -111,6 +112,14 @@ public class FixerController {
             //ignore
         }
         return fixer;
+    }
+
+
+    @SignTokenAuth(roleNameRequired = "EDIT_FIXER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/{fixerId}" , method = {RequestMethod.DELETE})
+    public void delete(@PathVariable(value = "fixerId") Integer fixerId) throws Exception{
+        fixerService.deleteFixer(fixerId);
     }
 
     @SignTokenAuth(roleNameRequired = "EDIT_FIXER")

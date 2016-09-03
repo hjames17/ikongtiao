@@ -36,7 +36,7 @@ public class RepairOrderController {
 
     @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/listOfMission" , method = {RequestMethod.GET})
-    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") Integer missionId) throws Exception{
+    public List<RepairOrder> listForMission(@RequestParam(value = "missionId") String missionId) throws Exception{
         return repairOrderService.listForMission(missionId, true);
     }
 
@@ -49,7 +49,7 @@ public class RepairOrderController {
 
     @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/{id}" , method = {RequestMethod.GET})
-    public RepairOrder getRepairOrder(@PathVariable(value = "id") long id) throws Exception{
+    public RepairOrder getRepairOrder(@PathVariable(value = "id") String id) throws Exception{
         return repairOrderService.getById(id, false);
     }
 
@@ -57,14 +57,14 @@ public class RepairOrderController {
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST})
     public String create(@RequestBody CreateForm form) throws Exception{
         RepairOrder repairOrder = repairOrderService.create(null, form.getMissionId(), form.getNamePlateImg(),
-                form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(), form.getImages());
+                form.getMakeOrderNum(), form.getRepairOrderDesc(), form.getAccessoryContent(), form.getImages(), form.getQuick());
         return repairOrder.getId().toString();
     }
 
     @SignTokenAuth(roleNameRequired = "EDIT_REPAIR_ORDER")
     @RequestMapping(value = BASE_PATH + "/accessory/create" , method = {RequestMethod.POST})
-    public String createAccessory(@RequestBody Accessory form) throws Exception{
-        if(form.getRepairOrderId() == null){
+    public String createAccessory(@RequestBody AccessoryCreateForm form) throws Exception{
+        if(StringUtils.isEmpty(form.getRepairOrderId())){
             throw new BusinessException("未指定维修单id");
         }
         Accessory created = repairOrderService.createAccessory(form.getRepairOrderId(), form.getName(), form.getCount(), form.getPrice());
@@ -95,7 +95,7 @@ public class RepairOrderController {
         }
         if(form.getAccessoryList() != null && form.getAccessoryList().size() > 0) {
             for (Accessory accessory : form.getAccessoryList()) {
-                accessory.setRepairOrderId(form.getRepairOrderId());
+                accessory.setRepairOrderId(repairOrder.getId());
                 accessory.setMissionId(repairOrder.getMissionId());
             }
         }
@@ -153,20 +153,20 @@ public class RepairOrderController {
         repairOrderService.audit(Integer.valueOf(user.getId()), form.getRepairOrderId(), form.isPass(), form.getReason());
     }
 
-    static class ConfirmationForm{
+    public static class ConfirmationForm{
         String userId;
-        Long repairOrderId;
+        String repairOrderId;
         Integer payment; //0线下， 1 线上
         boolean deny;
         boolean needInvoice;
         String invoiceTitle;//发票抬头
         String taxNo;//税号
 
-        public Long getRepairOrderId() {
+        public String getRepairOrderId() {
             return repairOrderId;
         }
 
-        public void setRepairOrderId(Long repairOrderId) {
+        public void setRepairOrderId(String repairOrderId) {
             this.repairOrderId = repairOrderId;
         }
 
@@ -220,15 +220,15 @@ public class RepairOrderController {
     }
 
     public static class AuditForm{
-        Long repairOrderId;
+        String repairOrderId;
         Boolean pass;
         String reason;
 
-        public Long getRepairOrderId() {
+        public String getRepairOrderId() {
             return repairOrderId;
         }
 
-        public void setRepairOrderId(Long repairOrderId) {
+        public void setRepairOrderId(String repairOrderId) {
             this.repairOrderId = repairOrderId;
         }
 
@@ -251,14 +251,14 @@ public class RepairOrderController {
 
 
     public static class OperationForm {
-        Long repairOrderId;
+        String repairOrderId;
         Integer fixerId;
 
-        public Long getRepairOrderId() {
+        public String getRepairOrderId() {
             return repairOrderId;
         }
 
-        public void setRepairOrderId(Long repairOrderId) {
+        public void setRepairOrderId(String repairOrderId) {
             this.repairOrderId = repairOrderId;
         }
 
@@ -272,16 +272,16 @@ public class RepairOrderController {
     }
 
     public static class CreateCostForm{
-        Long repairOrderId;
+        String repairOrderId;
         List<Accessory> accessoryList;
         Integer laborCost;
         Boolean finishCost;
 
-        public Long getRepairOrderId() {
+        public String getRepairOrderId() {
             return repairOrderId;
         }
 
-        public void setRepairOrderId(Long repairOrderId) {
+        public void setRepairOrderId(String repairOrderId) {
             this.repairOrderId = repairOrderId;
         }
 
@@ -312,18 +312,19 @@ public class RepairOrderController {
 
 
     public static class CreateForm {
-        Integer missionId;
+        String missionId;
         String namePlateImg;
         String makeOrderNum;
         String repairOrderDesc;
         String accessoryContent;
         List<RoImage> images;
+        boolean quick;
 
-        public Integer getMissionId() {
+        public String getMissionId() {
             return missionId;
         }
 
-        public void setMissionId(Integer missionId) {
+        public void setMissionId(String missionId) {
             this.missionId = missionId;
         }
 
@@ -366,6 +367,56 @@ public class RepairOrderController {
 
         public void setImages(List<RoImage> images) {
             this.images = images;
+        }
+
+        public Boolean getQuick() {
+            return quick;
+        }
+
+        public void setQuick(Boolean quick) {
+            this.quick = quick;
+        }
+    }
+
+    public static class AccessoryCreateForm {
+
+        String repairOrderId;
+
+
+        String name;
+        Integer count;
+        Integer price; //分为单位
+
+        public String getRepairOrderId() {
+            return repairOrderId;
+        }
+
+        public void setRepairOrderId(String repairOrderId) {
+            this.repairOrderId = repairOrderId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Integer getCount() {
+            return count;
+        }
+
+        public void setCount(Integer count) {
+            this.count = count;
+        }
+
+        public Integer getPrice() {
+            return price;
+        }
+
+        public void setPrice(Integer price) {
+            this.price = price;
         }
     }
 }

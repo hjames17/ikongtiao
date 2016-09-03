@@ -19,9 +19,9 @@ public class CommentQueryParam extends BaseCondition {
 	 */
 	private String userId;
 
-	Integer missionId;
+	String missionId;
 
-	Long repairOrderId;
+	String repairOrderId;
 
 	Integer rateStart;
 	Integer rateEnd;
@@ -61,19 +61,19 @@ public class CommentQueryParam extends BaseCondition {
 		this.fixerId = fixerId;
 	}
 
-	public Integer getMissionId() {
+	public String getMissionId() {
 		return missionId;
 	}
 
-	public void setMissionId(Integer missionId) {
+	public void setMissionId(String missionId) {
 		this.missionId = missionId;
 	}
 
-	public Long getRepairOrderId() {
+	public String getRepairOrderId() {
 		return repairOrderId;
 	}
 
-	public void setRepairOrderId(Long repairOrderId) {
+	public void setRepairOrderId(String repairOrderId) {
 		this.repairOrderId = repairOrderId;
 	}
 

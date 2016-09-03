@@ -77,7 +77,7 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				message.setContent(String.format("您的任务已经创建，单号%s。点击查看详情", params.get(MessageParamKey.MISSION_SID)));
 				message.setPicUrl(staticHost + "/images/ikongtiao/m_1.png");
 				String url = String.format("%s%s&action=%s&uid=%s&id=%s",
-						weixinPageHost, weixinMissionPage, ACTION_DETAIL, userInfo.getId(), params.get(MessageParamKey.MISSION_ID));
+						weixinPageHost, weixinMissionPage, ACTION_DETAIL, userInfo.getId(), params.get(MessageParamKey.MISSION_SID));
 				message.setUrl(url);
 				return message;
 			}
@@ -109,7 +109,7 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				message.setPicUrl(staticHost + "/images/ikongtiao/m_deny.png");
 				String url = String.format("%s%s&action=%s&uid=%s&id=%s",
 						weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID),
-						params.get(MessageParamKey.MISSION_ID));
+						params.get(MessageParamKey.MISSION_SID));
 				message.setUrl(url);
 				return message;
 			}
@@ -135,16 +135,16 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 			@Override
 			public Message build(int messageId, Map<String, Object> params) {
 				WechatMessage message = new WechatMessage();
-				RepairOrder repairOrder = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_ID).toString()));
+				RepairOrder repairOrder = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_SID).toString()));
 				UserInfo userInfo = userInfoRepo.getById(repairOrder.getUserId());
 				Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
 				message.setReceiver(userInfo.getWechatOpenId());
 				message.setTitle("维修单已分配");
-				message.setContent(String.format("维修员%s将为您维修故障， 维修单号%s。点击查看详情", fixer.getName(), params.get(MessageParamKey.REPAIR_ORDER_ID)));
+				message.setContent(String.format("维修员%s将为您维修故障， 维修单号%s。点击查看详情", fixer.getName(), params.get(MessageParamKey.REPAIR_ORDER_SID)));
 				message.setPicUrl(staticHost + "/images/ikongtiao/ro_2.png");
 				String url = String
 						.format("%s%s&action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
-								repairOrder.getUserId(), params.get(MessageParamKey.REPAIR_ORDER_ID));
+								repairOrder.getUserId(), params.get(MessageParamKey.REPAIR_ORDER_SID));
 				message.setUrl(url);
 				return message;
 			}
@@ -160,7 +160,7 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				message.setPicUrl(staticHost + "/images/ikongtiao/m_complete.png");
 				String url = String.format("%s%s&action=%s&uid=%s&id=%s",
 						weixinPageHost, weixinMissionPage, ACTION_DETAIL, params.get(MessageParamKey.USER_ID),
-						params.get(MessageParamKey.MISSION_ID));
+						params.get(MessageParamKey.MISSION_SID));
 				message.setUrl(url);
 				return message;
 			}
@@ -173,11 +173,11 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
 				message.setReceiver(userInfo.getWechatOpenId());
 				message.setTitle("您有待确认的维修单");
-				message.setContent(String.format("维修单%s已经生成，请点击进行确认", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+				message.setContent(String.format("维修单%s已经生成，请点击进行确认", params.get(MessageParamKey.REPAIR_ORDER_SID)));
 				message.setPicUrl(staticHost + "/images/ikongtiao/ro_1.png");
 				String url = String
 						.format("%s%s&action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
-								params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
+								params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_SID));
 				message.setUrl(url);
 				return message;
 			}
@@ -187,16 +187,16 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 			@Override
 			public Message build(int messageId, Map<String, Object> params) {
 				WechatMessage message = new WechatMessage();
-				RepairOrder order = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_ID).toString()));
+				RepairOrder order = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_SID).toString()));
 				UserInfo userInfo = userInfoRepo.getById(order.getUserId());
 				if(userInfo.getWechatOpenId() != null) {
 					message.setReceiver(userInfo.getWechatOpenId());
 					message.setTitle("您已经完成支付");
-					message.setContent(String.format("维修单%s已经完成付款，点击查看", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+					message.setContent(String.format("维修单%s已经完成付款，点击查看", params.get(MessageParamKey.REPAIR_ORDER_SID)));
 					message.setPicUrl(staticHost + "/images/ikongtiao/ro_paid.png");
 					String url = String
 							.format("%s%s&action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_REPAIRORDER,
-									order.getUserId(), params.get(MessageParamKey.REPAIR_ORDER_ID));
+									order.getUserId(), params.get(MessageParamKey.REPAIR_ORDER_SID));
 
 					message.setUrl(url);
 				}else{
@@ -213,12 +213,12 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				message.setReceiver(userInfo.getWechatOpenId());
 				message.setTitle("维修单已完成");
 				message.setContent(
-						String.format("你的维修单%s已经完成了，请点击评价本次服务", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+						String.format("你的维修单%s已经完成了，请点击评价本次服务", params.get(MessageParamKey.REPAIR_ORDER_SID)));
 				//TODO 图片地址可配置
 				message.setPicUrl(staticHost + "/images/ikongtiao/comment.png");
 				String url = String
 						.format("%s%s&action=%s&uid=%s&id=%s", weixinPageHost, weixinMissionPage, ACTION_COMMENT,
-								params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_ID));
+								params.get(MessageParamKey.USER_ID), params.get(MessageParamKey.REPAIR_ORDER_SID));
 				message.setUrl(url);
 				return message;
 			}

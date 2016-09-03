@@ -45,6 +45,8 @@ public interface FixerService {
 
     void updateInfo(Fixer fixer) throws Exception;
 
+    void deleteFixer(int fixerId) throws Exception;
+
     Fixer getFixer(Integer id) throws Exception;
 
     void changePassword(Integer id, String oldPass, String newPass) throws Exception;

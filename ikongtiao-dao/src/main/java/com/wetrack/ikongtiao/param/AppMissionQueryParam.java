@@ -25,6 +25,7 @@ public class AppMissionQueryParam extends BaseCondition {
 
 	String userName;
 	String phone;
+	String fixerName;
 
 	Date createTimeStart;
 	Date createTimeEnd;
@@ -107,5 +108,13 @@ public class AppMissionQueryParam extends BaseCondition {
 
 	public void setFixerId(Integer fixerId) {
 		this.fixerId = fixerId;
+	}
+
+	public String getFixerName() {
+		return fixerName;
+	}
+
+	public void setFixerName(String fixerName) {
+		this.fixerName = fixerName;
 	}
 }

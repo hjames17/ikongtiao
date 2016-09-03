@@ -13,6 +13,7 @@ public class MessageParamKey {
     public static final String REPAIR_ORDER_SID = "rsid";
     public static final String ADMIN_ID = "adminId";
     public static final String FIXER_AUDIT_INFO = "fixerAuditInfo";
+    public static final String FIXER_AUDIT_RESULT = "fixerAuditResult";
     public static final String REPAIR_ORDER_COMMENT_RATE = "commentRate";
     public static final String REPAIR_ORDER_COMMENT_ID = "commentId";
     public static final String IM_PUSH_NOTIFY_SENDER_ID = "cloudId";

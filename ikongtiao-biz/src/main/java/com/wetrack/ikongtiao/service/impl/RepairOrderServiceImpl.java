@@ -19,6 +19,7 @@ import com.wetrack.ikongtiao.repo.api.repairOrder.*;
 import com.wetrack.ikongtiao.service.api.PaymentService;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
 import com.wetrack.ikongtiao.service.api.SettingsService;
+import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
@@ -63,9 +64,38 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	@Autowired
 	TaskMonitorService taskMonitorService;
 
+
+	@Autowired
+	MissionRepo missionRepo;
+
+	@Autowired
+	MissionService missionService;
+
+	public Mission queryMission(String id) throws Exception {
+		Mission mission = new Mission();
+		try{
+			int iid = Integer.parseInt(id);
+			mission.setId(iid);
+		}catch (NumberFormatException e){
+			mission.setSerialNumber(id);
+		}
+		return  mission;
+	}
+	public RepairOrder queryRepairOrder(String id) throws Exception {
+		RepairOrder repairOrder = new RepairOrder();
+		try{
+			long iid = Long.parseLong(id);
+			repairOrder.setId(iid);
+		}catch (NumberFormatException e){
+			repairOrder.setSerialNumber(id);
+		}
+		return  repairOrder;
+	}
+
 	@Override
-	public List<RepairOrder> listForMission(Integer missionId, boolean includesAuditInfo) throws Exception {
-		List<RepairOrder> list = repairOrderRepo.listForMission(missionId);
+	public List<RepairOrder> listForMission(String missionId, boolean includesAuditInfo) throws Exception {
+
+		List<RepairOrder> list = repairOrderRepo.listForMission(queryMission(missionId));
 
 		if(!includesAuditInfo && list != null){
 			for(RepairOrder order : list){
@@ -87,11 +117,12 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		return page;
 	}
 
+
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public RepairOrder create(Integer creatorId, Integer missionId, String namePlateImg, String makeOrderNum,
-			String repairOrderDesc, String accessoryContent, List<RoImage> images) throws Exception {
-		Mission mission = missionRepo.getMissionById(missionId);
+	public RepairOrder create(Integer creatorId, String missionId, String namePlateImg, String makeOrderNum,
+			String repairOrderDesc, String accessoryContent, List<RoImage> images, boolean quick) throws Exception {
+		Mission mission = missionService.getMission(missionId);
 		RepairOrder repairOrder = new RepairOrder();
 		if(creatorId == null) {
 			repairOrder.setCreatorFixerId(mission.getFixerId());
@@ -99,13 +130,21 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			repairOrder.setCreatorFixerId(creatorId);
 		}
 		repairOrder.setUserId(mission.getUserId());
-		repairOrder.setMissionId(missionId);
+		repairOrder.setMissionId(mission.getId());
 		repairOrder.setMissionSerialNumber(mission.getSerialNumber());
 		repairOrder.setAdminUserId(mission.getAdminUserId());
 		repairOrder.setNamePlateImg(namePlateImg);
 		repairOrder.setMakeOrderNum(makeOrderNum);
 		repairOrder.setRepairOrderDesc(repairOrderDesc);
 		repairOrder.setAccessoryContent(accessoryContent);
+		repairOrder.setQuick(quick);
+
+		//快速现场免费维修，把价格设为0，状态设为维修中
+		if(quick) {
+			repairOrder.setLaborCost(0);
+			repairOrder.setFixerId(creatorId);
+			repairOrder.setRepairOrderState(RepairOrderState.FIXING.getCode());
+		}
 
 		String mPadd;
 		if(StringUtils.isEmpty(mission.getSerialNumber())){
@@ -114,10 +153,12 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}else{
 			mPadd = mission.getSerialNumber().substring(1);
 		}
-		String serialNumber = String.format("r%s%02d", mPadd, repairOrderRepo.countByMissionId(missionId) + 1);
+		String serialNumber = String.format("r%s%02d", mPadd, repairOrderRepo.countByMission(mission) + 1);
 		repairOrder.setSerialNumber(serialNumber);
 
+
 		repairOrder = repairOrderRepo.create(repairOrder);
+
 
 		if(images != null && images.size() > 0){
 			int ordinal = 0;
@@ -134,19 +175,21 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		missionRepo.update(mission);
 
 		//发送消息
-		notify(repairOrder.getId(), RepairOrderState.NEW, null, Initiator.INITIATOR_USER);
-		try {
-			//添加通知任务
-			taskMonitorService.putTask(Constants.TASK_REPAIR_ORDER + repairOrder.getId());
-		}catch (Exception e){
-			//ignore
+		if(!quick) {
+			notify(repairOrder.getId(), RepairOrderState.NEW, null, Initiator.INITIATOR_USER);
+			try {
+				//添加通知任务
+				taskMonitorService.putTask(Constants.TASK_REPAIR_ORDER + repairOrder.getId());
+			} catch (Exception e) {
+				//ignore
+			}
 		}
 		return repairOrder;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void addCost(Long repairOrderId, List<Accessory> accessoryList, Integer laborCost, Boolean finishCost)
+	public void addCost(String repairOrderId, List<Accessory> accessoryList, Integer laborCost, Boolean finishCost)
 			throws Exception {
 		//insert accessory list into accessory table
 		if (accessoryList != null && accessoryList.size() > 0) {
@@ -154,8 +197,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}
 		//update repairOrder
 		if (laborCost != null) {
-			RepairOrder repairOrder = new RepairOrder();
-			repairOrder.setId(repairOrderId);
+			RepairOrder repairOrder = queryRepairOrder(repairOrderId);
+//			repairOrder.setId(repairOrderId);
 			repairOrder.setLaborCost(laborCost);
 			if (finishCost != null && finishCost == true) {
 				handleCostFinished(repairOrder);
@@ -167,15 +210,16 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void dispatchRepairOrder(Integer adminUserId, Long repairOrderId, Integer fixerId) throws Exception {
-		RepairOrder order = repairOrderRepo.getById(repairOrderId);
+	public void dispatchRepairOrder(Integer adminUserId, String repairOrderId, Integer fixerId) throws Exception {
+		RepairOrder order = this.getById(repairOrderId, true);
 		if (order == null) {
 			throw new BusinessException("不存在的维修单"+repairOrderId);
 		}
 
 		RepairOrder repairOrder = new RepairOrder();
 		repairOrder.setFixerId(fixerId);
-		repairOrder.setId(repairOrderId);
+		repairOrder.setId(order.getId());
+		repairOrder.setSerialNumber(order.getSerialNumber());
 		repairOrder.setAdminUserId(adminUserId);
 		repairOrder.setRepairOrderState(RepairOrderState.FIXING.getCode());
 		repairOrderRepo.update(repairOrder);
@@ -186,13 +230,13 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		missionRepo.update(mission);
 
 
-		notify(repairOrderId, RepairOrderState.FIXING, null, Initiator.INITIATOR_KEFU);
+		notify(order.getId(), RepairOrderState.FIXING, null, Initiator.INITIATOR_KEFU);
 	}
 
 	@Override
-	public void setCostFinished(Integer adminUserId, Long repairOrderId) throws Exception {
-		RepairOrder repairOrder = new RepairOrder();
-		repairOrder.setId(repairOrderId);
+	public void setCostFinished(Integer adminUserId, String repairOrderId) throws Exception {
+		RepairOrder repairOrder = this.queryRepairOrder(repairOrderId); //new RepairOrder();
+//		repairOrder.setId(repairOrderId);
 		repairOrder.setAdminUserId(adminUserId);
 		handleCostFinished(repairOrder);
 	}
@@ -235,9 +279,9 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	}
 
 	@Override
-	public void setPrepared(Integer adminUserId, Long repairOrderId) throws Exception {
-		RepairOrder repairOrder = new RepairOrder();
-		repairOrder.setId(repairOrderId);
+	public void setPrepared(Integer adminUserId, String repairOrderId) throws Exception {
+		RepairOrder repairOrder = this.queryRepairOrder(repairOrderId); //new RepairOrder();
+//		repairOrder.setId(repairOrderId);
 		repairOrder.setAdminUserId(adminUserId);
 		repairOrder.setRepairOrderState(RepairOrderState.PREPARED.getCode());
 		repairOrderRepo.update(repairOrder);
@@ -249,21 +293,21 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	@Autowired
 	FixerIncomeRepo fixerIncomeRepo;
 	@Override
-	public void setFinished(Long repairOrderId) throws Exception {
-		RepairOrder repairOrder = new RepairOrder();
-		repairOrder.setId(repairOrderId);
+	public void setFinished(String repairOrderId) throws Exception {
+		RepairOrder repairOrder = this.getById(repairOrderId, true); //new RepairOrder();
+//		repairOrder.setId(repairOrderId);
 		repairOrder.setRepairOrderState(RepairOrderState.COMPLETED.getCode());
 		repairOrder.setUpdateTime(new Date());
 		repairOrderRepo.update(repairOrder);
-		repairOrder = repairOrderRepo.getById(repairOrderId);
+//		repairOrder = repairOrderRepo.getById(repairOrderId);
 
 		/**
 		 * 创建维修员收入记录
 		 * TODO 失败的话，记录后重试
 		 */
-		fixerIncomeRepo.save(repairOrder.getFixerId(), repairOrder.getId(), repairOrder.getLaborCost() == null ? 0 : repairOrder.getLaborCost());
+		fixerIncomeRepo.save(repairOrder.getFixerId(), repairOrder.getSerialNumber(), repairOrder.getLaborCost() == null ? 0 : repairOrder.getLaborCost());
 
-		notify(repairOrderId, RepairOrderState.COMPLETED, null, Initiator.INITIATOR_FIXER);
+		notify(repairOrder.getId(), RepairOrderState.COMPLETED, null, Initiator.INITIATOR_FIXER);
 	}
 
 
@@ -272,25 +316,32 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void confirm(Long repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle, String taxNo) throws Exception {
+	public void confirm(String repairOrderId, boolean deny, Integer payment, boolean needInvoice, String invoiceTitle, String taxNo) throws Exception {
 
-		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
-		repairOrder.setId(repairOrderId);
-		if(repairOrder.getLaborCost() == null){
-			repairOrder.setLaborCost(0);
+//		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+//		repairOrder.setId(repairOrderId);
+		RepairOrder repairOrder = this.getById(repairOrderId, true);
+
+		if(repairOrder == null){
+			throw new BusinessException("不存在的维修单"+repairOrderId);
 		}
+
 		boolean needPay = false;
 		RepairOrderState newState;
 		if (deny) {
 			newState = RepairOrderState.CLOSED;
 		} else {
 
-			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
+			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrder.getId());
 			Integer accessoryMoney = 0;
 			if(accessories != null) {
 				for (Accessory accessory : accessories) {
 					accessoryMoney += accessory.getCount() * accessory.getPrice();
 				}
+			}
+
+			if(repairOrder.getLaborCost() == null){
+				repairOrder.setLaborCost(0);
 			}
 
 			if(needInvoice){
@@ -323,7 +374,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 				paymentService.closed(PaymentInfo.Method.WECHAT, PaymentInfo.Type.RO, repairOrder.getId().toString());
 			}
 		}else if((repairOrder.getPayment() == 1) && needPay){
-			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrderId);
+			List<Accessory> accessories = accessoryRepo.listOfRepairOrderId(repairOrder.getId());
 			int price = 0;
 			if(accessories != null && accessories.size() > 0){
 				for(Accessory accessory : accessories){
@@ -335,15 +386,16 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}
 
 		//消息发送
-		notify(repairOrderId, newState, oldState, Initiator.INITIATOR_USER);
+		notify(repairOrder.getId(), newState, oldState, Initiator.INITIATOR_USER);
 	}
 
 	@Autowired
 	AuditInfoRepo auditInfoRepo;
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void audit(Integer adminId, Long repairOrderId, Boolean pass, String reason) throws Exception {
-		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+	public void audit(Integer adminId, String repairOrderId, Boolean pass, String reason) throws Exception {
+//		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
+		RepairOrder repairOrder = this.getById(repairOrderId, true);
 		if(repairOrder == null){
 			throw new BusinessException("不存在的维修单"+repairOrderId);
 		}
@@ -352,7 +404,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}
 
 		AuditInfo auditInfo = new AuditInfo();
-		auditInfo.setRepairOrderId(repairOrderId);
+		auditInfo.setRepairOrderId(repairOrder.getId());
 		auditInfo.setPass(pass);
 		auditInfo.setReason(reason);
 		auditInfo.setAdminId(adminId);
@@ -368,7 +420,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setRepairOrderState(newState.getCode());
 		repairOrderRepo.update(repairOrder);
 
-		notify(repairOrderId, newState, null, Initiator.INITIATOR_AUDITOR);
+		notify(repairOrder.getId(), newState, null, Initiator.INITIATOR_AUDITOR);
 	}
 
 	@Override
@@ -410,8 +462,14 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	}
 
 	@Override
-	public RepairOrder getById(Long id, boolean brief) throws Exception {
-		RepairOrder repairOrder = repairOrderRepo.getById(id);
+	public RepairOrder getById(String id, boolean brief) throws Exception {
+		RepairOrder repairOrder = null;
+		try{
+			long iid = Long.parseLong(id);
+			repairOrder = repairOrderRepo.getById(iid);
+		}catch (NumberFormatException e){
+			repairOrder = repairOrderRepo.getBySid(id);
+		}
 		if (!brief) {
 			repairOrder.setAccessoryList(accessoryRepo.listOfRepairOrderId(repairOrder.getId()));
 		}
@@ -419,9 +477,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	}
 
 	@Override
-	public Accessory createAccessory(Long repairOrderId, String name, Integer count, Integer price) throws Exception {
+	public Accessory createAccessory(String repairOrderId, String name, Integer count, Integer price) throws Exception {
+		RepairOrder repairOrder = this.getById(repairOrderId, true);
 		Accessory accessory = new Accessory();
-		accessory.setRepairOrderId(repairOrderId);
+		accessory.setRepairOrderId(repairOrder.getId());
 		accessory.setCount(count);
 		accessory.setName(name);
 		accessory.setPrice(price);
@@ -438,8 +497,6 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		return accessoryRepo.delete(accessoryId);
 	}
 
-	@Autowired
-	MissionRepo missionRepo;
 
 	enum Initiator{
 		INITIATOR_USER,
@@ -494,6 +551,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.MISSION_SID, repairOrder.getMissionSerialNumber());
 		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrder.getId());
 		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
@@ -505,6 +563,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.MISSION_SID, repairOrder.getMissionSerialNumber());
 		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
 		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
@@ -516,6 +575,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.MISSION_SID, repairOrder.getMissionSerialNumber());
 		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
 		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
@@ -527,8 +587,10 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		RepairOrder repairOrder = repairOrderRepo.getById(repairOrderId);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.MISSION_ID, repairOrder.getMissionId());
+		params.put(MessageParamKey.MISSION_SID, repairOrder.getMissionSerialNumber());
 		params.put(MessageParamKey.USER_ID, repairOrder.getUserId());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+		params.put(MessageParamKey.REPAIR_ORDER_SID, repairOrder.getSerialNumber());
 		messageService.send(MessageId.COMPLETED_FIX_ORDER, params);
 	}
 
@@ -538,6 +600,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put(MessageParamKey.MISSION_ID, order.getMissionId());
+			params.put(MessageParamKey.MISSION_SID, order.getMissionSerialNumber());
 			params.put(MessageParamKey.USER_ID, order.getUserId());
 			params.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
 			params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
@@ -552,6 +615,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			RepairOrder order = repairOrderRepo.getById(repairOrderId);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put(MessageParamKey.MISSION_ID, order.getMissionId());
+			params.put(MessageParamKey.MISSION_SID, order.getMissionSerialNumber());
 			params.put(MessageParamKey.USER_ID, order.getUserId());
 			params.put(MessageParamKey.REPAIR_ORDER_ID, order.getId());
 			params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
@@ -571,6 +635,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put(MessageParamKey.FIXER_ID, order.getFixerId());
 		params.put(MessageParamKey.MISSION_ID, order.getMissionId());
+		params.put(MessageParamKey.MISSION_SID, order.getMissionSerialNumber());
 		params.put(MessageParamKey.REPAIR_ORDER_ID, order.getId());
 		params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
 		messageService.send(MessageId.ASSIGNED_FIXER, params);

@@ -52,10 +52,11 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
-                Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
+                Mission mission = missionRepo.getMissionBySid(params.get(MessageParamKey.MISSION_SID).toString());
                 if(mission == null){
                     mission = new Mission();
                     mission.setId((Integer) params.get(MessageParamKey.MISSION_ID));
+                    mission.setSerialNumber(params.get(MessageParamKey.MISSION_SID).toString());
                 }
                 message.setId(messageId);
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ROLE);
@@ -70,7 +71,7 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 WebNotificationMessage message = new WebNotificationMessage();
-                Mission mission = missionRepo.getMissionById((Integer) params.get(MessageParamKey.MISSION_ID));
+                Mission mission = missionRepo.getMissionBySid(params.get(MessageParamKey.MISSION_SID).toString());
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setId(messageId);
                 message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
@@ -93,12 +94,12 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                         Thread.sleep(500);
                         retryCount ++;
                     } catch (InterruptedException e) {
-                        logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_ID));
+                        logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_SID));
                     }
                     try {
-                        repairOrder = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_ID).toString()));
+                        repairOrder = repairOrderRepo.getBySid(params.get(MessageParamKey.REPAIR_ORDER_SID).toString());
                     }catch(Exception e){
-                        logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_ID));
+                        logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_SID));
                         return null;
                     }
                 }
@@ -117,16 +118,16 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 WebNotificationMessage message = new WebNotificationMessage();
                 RepairOrder repairOrder = null;
                 try {
-                    repairOrder = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_ID).toString()));
+                    repairOrder = repairOrderRepo.getBySid(params.get(MessageParamKey.REPAIR_ORDER_SID).toString());
                 } catch (Exception e) {
-                    logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_SID));
                     return null;
                 }
                 message.setId(messageId);
                 message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有维修单被确认了");
-                message.setContent(String.format("维修单%d已被客户确认", repairOrder.getId()));
+                message.setContent(String.format("维修单%s已被客户确认", repairOrder.getSerialNumber()));
                 message.setData(repairOrder);
                 return message;
             }
@@ -139,16 +140,16 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 RepairOrder repairOrder = null;
                 try {
-                    repairOrder = repairOrderRepo.getById(Long.valueOf(params.get(MessageParamKey.REPAIR_ORDER_ID).toString()));
+                    repairOrder = repairOrderRepo.getBySid(params.get(MessageParamKey.REPAIR_ORDER_SID).toString());
                 } catch (Exception e) {
-                    logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_ID));
+                    logger.error("repair order not exist, id {}", params.get(MessageParamKey.REPAIR_ORDER_SID));
                     return null;
                 }
                 message.setId(messageId);
                 message.setReceiver(params.get(MessageParamKey.ADMIN_ID).toString());
                 message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
                 message.setTitle("有维修单被取消了");
-                message.setContent(String.format("维修单%d被用户%s取消了", repairOrder.getId(), userInfo.getPhone()));
+                message.setContent(String.format("维修单%s被用户%s取消了", repairOrder.getSerialNumber(), userInfo.getPhone()));
                 message.setData(repairOrder);
                 return message;
             }

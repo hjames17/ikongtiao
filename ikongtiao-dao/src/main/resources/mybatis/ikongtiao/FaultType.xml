@@ -15,6 +15,12 @@
     from fault_type
     ORDER BY ordinal
   </select>
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List" />
+    from fault_type
+    where id=#{id}
+  </select>
   <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.FaultType" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()

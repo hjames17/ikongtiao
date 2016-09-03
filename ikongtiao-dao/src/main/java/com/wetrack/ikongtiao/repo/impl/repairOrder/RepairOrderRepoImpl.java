@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.repo.impl.repairOrder;
 
 import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.base.page.BaseCondition;
+import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
@@ -21,8 +22,8 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     @Autowired
     CommonDao commonDao;
     @Override
-    public List<RepairOrder> listForMission(Integer missionId) throws Exception {
-        List<RepairOrder> list = commonDao.mapper(RepairOrder.class).sql("listByMissionId").session().selectList(missionId);
+    public List<RepairOrder> listForMission(Mission mission) throws Exception {
+        List<RepairOrder> list = commonDao.mapper(RepairOrder.class).sql("listByMission").session().selectList(mission);
         //add accessoryList
         if(list != null && list.size() > 0){
             List<Long> ids = new ArrayList<Long>();
@@ -58,6 +59,10 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
             //加上sql like查询通配符
             param.setUserName("%" + param.getUserName() + "%");
         }
+        if(param.getFixerName() != null){
+            //加上sql like查询通配符
+            param.setFixerName("%" + param.getFixerName() + "%");
+        }
 
         return commonDao.mapper(RepairOrder.class).sql("listByQueryParam").session().selectList(param);
     }
@@ -71,6 +76,10 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
         if(param.getUserName() != null){
             //加上sql like查询通配符
             param.setUserName("%" + param.getUserName() + "%");
+        }
+        if(param.getFixerName() != null){
+            //加上sql like查询通配符
+            param.setFixerName("%" + param.getFixerName() + "%");
         }
         BaseCondition baseCondition = commonDao.mapper(RepairOrder.class).sql("countByQueryParam").session()
                 .selectOne(param);
@@ -91,10 +100,10 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     }
 
     @Override
-    public int countByMissionId(int missionId) {
+    public int countByMission(Mission mission) {
 
         return commonDao.mapper(RepairOrder.class).sql("countByMission").session()
-                .selectOne(missionId);
+                .selectOne(mission);
     }
 
     @Override
@@ -108,9 +117,20 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     }
 
     @Override
+    public int countUnfinishedForMission(Mission mission) {
+        return commonDao.mapper(RepairOrder.class).sql("countUnfinishedForMission").session()
+                .selectOne(mission);
+    }
+
+    @Override
     public void update(RepairOrder repairOrder) throws Exception {
         repairOrder.setUpdateTime(new Date());
         commonDao.mapper(RepairOrder.class).sql("updateByPrimaryKeySelective").session().update(repairOrder);
+    }
+
+    @Override
+    public void updateSid(RepairOrder repairOrder) {
+        commonDao.mapper(RepairOrder.class).sql("updateSid").session().update(repairOrder);
     }
 
     @Override

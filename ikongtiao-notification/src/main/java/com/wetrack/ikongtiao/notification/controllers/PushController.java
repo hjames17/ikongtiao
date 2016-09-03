@@ -63,4 +63,13 @@ public class PushController {
         notificationService.finishUnattendedMissions();
         return "ok";
     }
+
+    public static void main(String[] args){
+        PushController p1 = new PushController();
+        PushController p2 = new PushController();
+
+        System.out.println(p1.getClass() == p2.getClass());
+        System.out.println("Logger.class name " + Logger.class.getName());
+        System.out.println("logger.getClass() name " + logger.getClass().getName());
+    }
 }

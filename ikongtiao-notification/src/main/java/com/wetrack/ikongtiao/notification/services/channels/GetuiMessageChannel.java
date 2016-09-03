@@ -1,28 +1,31 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
-import com.wetrack.auth.domain.Token;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.Constants;
-import com.wetrack.ikongtiao.domain.FixerDevice;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.notification.services.AbstractMessageChannel;
 import com.wetrack.ikongtiao.notification.services.Message;
 import com.wetrack.ikongtiao.notification.services.MessageAdapter;
+import com.wetrack.ikongtiao.notification.services.messages.GetuiMessage;
+import com.wetrack.ikongtiao.notification.services.messages.JPushMessage;
+import com.wetrack.ikongtiao.notification.util.JPusher;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerDeviceRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
-import com.wetrack.message.*;
-import com.wetrack.ikongtiao.notification.services.messages.GetuiMessage;
+import com.wetrack.message.GetuiPush;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,14 +52,16 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
+                message.setId(MessageId.ASSIGNED_MISSION);
+                int fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
+//                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(fixerId);
 //                message.setReceiver(fixerDevice.getClientId());
-                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
                 message.setTitle("有新的任务分配给你");
-                message.setContent(String.format("任务号是%d,点击查看详情", params.get(MessageParamKey.MISSION_ID)));
+                message.setContent(String.format("任务号是%s,点击查看详情", params.get(MessageParamKey.MISSION_SID)));
                 // 任务id，
-                Map<String, Object> map = new HashMap<>();
-                map.put(MessageParamKey.MISSION_ID, params.get(MessageParamKey.MISSION_ID));
+                Map<String, String> map = new HashMap<>();
+                map.put(MessageParamKey.MISSION_ID, params.get(MessageParamKey.MISSION_SID).toString());
                 map.put("type", "mission");
                 message.setData(map);
                 return message;
@@ -66,14 +71,16 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
+                message.setId(MessageId.ASSIGNED_FIXER);
+                int fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
+//                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(fixerId);
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
                 message.setTitle("有新的维修单分配给你");
-                message.setContent(String.format("维修单号是%d,点击查看详情", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+                message.setContent(String.format("维修单号是%s,点击查看详情", params.get(MessageParamKey.REPAIR_ORDER_SID)));
                 // 任务id，
-                Map<String, Object> map = new HashMap<>();
-                map.put(MessageParamKey.MISSION_ID, params.get(MessageParamKey.MISSION_ID));
-                map.put(MessageParamKey.REPAIR_ORDER_ID, params.get(MessageParamKey.REPAIR_ORDER_ID));
+                Map<String, String> map = new HashMap<>();
+                map.put(MessageParamKey.MISSION_ID, params.get(MessageParamKey.MISSION_SID).toString());
+                map.put(MessageParamKey.REPAIR_ORDER_ID, params.get(MessageParamKey.REPAIR_ORDER_SID).toString());
                 map.put("type", "mission");
                 message.setData(map);
                 return message;
@@ -84,8 +91,10 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
+                message.setId(messageId);
+                int fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
+//                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
                 String auditText , resultText, content = "点击查看详情";
                 Object auditInfo = params.get(MessageParamKey.FIXER_AUDIT_INFO);
                 switch (messageId){
@@ -128,11 +137,11 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                 message.setTitle(String.format("您的%s认证%s", auditText, resultText));
                 message.setContent(content);
                 // 任务id，
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.FIXER_ID));
+                Map<String, String> map = new HashMap<>();
+                map.put("id", params.get(MessageParamKey.FIXER_ID).toString());
                 map.put("type", "certificate");
-                map.put("auditType", messageId%10);
-                map.put("auditInfo", auditInfo);
+                map.put("auditType", String.format("%d", messageId%10));
+//                map.put("auditInfo", auditInfo);
                 message.setData(map);
                 return message;
             }
@@ -149,13 +158,15 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
+                message.setId(MessageId.IM_NOTIFY_FIXER);
+                int fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
+//                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
                 message.setTitle("你有新的消息");
                 message.setContent("你有新的消息，请点击查看");
                 // 任务id，
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID));
+                Map<String, String> map = new HashMap<>();
+                map.put("id", params.get(MessageParamKey.IM_PUSH_NOTIFY_SESSION_ID).toString());
                 map.put("type", "message");
                 message.setData(map);
                 return message;
@@ -165,16 +176,18 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
                 GetuiMessage message = new GetuiMessage();
-                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
-                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerDevice.getFixerId());
+                message.setId(MessageId.COMMENT_REPAIR_ORDER);
+                int fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
+//                FixerDevice fixerDevice = fixerDeviceRepo.getFixerDeviceByFixerId(Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString()));
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
                 message.setTitle("您的维修服务已经被评价");
-                message.setContent(String.format("你的维修单%d获得了%d星评价，请点击查看",
-                        params.get(MessageParamKey.REPAIR_ORDER_ID), params.get(MessageParamKey.REPAIR_ORDER_COMMENT_RATE)));
+                message.setContent(String.format("你的维修单%s获得了%d星评价，请点击查看",
+                        params.get(MessageParamKey.REPAIR_ORDER_SID), params.get(MessageParamKey.REPAIR_ORDER_COMMENT_RATE)));
                 // 任务id，
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", params.get(MessageParamKey.FIXER_ID));
+                Map<String, String> map = new HashMap<>();
+                map.put("id", params.get(MessageParamKey.FIXER_ID).toString());
                 map.put("type", "comment");
-                map.put(MessageParamKey.REPAIR_ORDER_COMMENT_ID, params.get(MessageParamKey.REPAIR_ORDER_COMMENT_ID));
+                map.put(MessageParamKey.REPAIR_ORDER_COMMENT_ID, params.get(MessageParamKey.REPAIR_ORDER_COMMENT_ID).toString());
                 message.setData(map);
                 return message;
             }
@@ -184,6 +197,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
 
     @Resource
     private GetuiPush getuiPush;
+
 
     @Override
     protected void callSend(){
@@ -222,27 +236,41 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
         }
     }
 
+
+    @Resource
+    JPusher jPusher;
+
     @Override
     protected void doSend(Message message) {
         GetuiMessage getui = (GetuiMessage)message;
-        logger.info("个推发送消息，消息内容为:{}", Jackson.base().writeValueAsString(getui));
-        boolean success = getuiPush
-                .pushNotificationToUserId(getui.getReceiver(), getui.getTitle(), getui.getContent(),
-                        Jackson.mobile().writeValueAsString(getui.getData()));
+        logger.info("jpush发送消息，消息内容为:{}", Jackson.base().writeValueAsString(getui));
+//        boolean success = getuiPush
+//                .pushNotificationToUserId(getui.getReceiver(), getui.getTitle(), getui.getContent(),
+//                        Jackson.mobile().writeValueAsString(getui.getData()));
+
+        JPushMessage jpMessage = new JPushMessage();
+        jpMessage.setId(message.getId());
+        jpMessage.setTitle(getui.getTitle());
+        jpMessage.setContent(getui.getContent());
+        jpMessage.setAliasList(Arrays.asList(getui.getReceiver()));
+        ObjectMapper m = new ObjectMapper();
+        jpMessage.setExtras(m.convertValue(getui.getData(), Map.class));
+        boolean success = jPusher.pushEvent(jpMessage);
     }
 
     @Autowired
     TokenService tokenService;
     private boolean clientOffLine(Integer fixerId){
-        Collection<Token> tokens = tokenService.findAllByUserId(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
-        if(tokens != null && tokens.size() > 0){
-            for(Token token : tokens){
-                if(!token.isExpired() && !token.isLoggedout()){
-                    return false;
-                }
-            }
-        }
-        return true;
+//        Collection<Token> tokens = tokenService.findAllByUserId(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
+//        if(tokens != null && tokens.size() > 0){
+//            for(Token token : tokens){
+//                if(!token.isExpired() && !token.isLoggedout()){
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+        return false;
     }
 
     @Override

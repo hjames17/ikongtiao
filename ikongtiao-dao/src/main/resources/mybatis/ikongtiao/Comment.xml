@@ -3,8 +3,8 @@
 <mapper namespace="com.wetrack.ikongtiao.domain.repairOrder.Comment" >
   <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.repairOrder.Comment" >
     <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="repair_order_id" property="repairOrderId" jdbcType="BIGINT" />
-    <result column="mission_id" property="missionId" jdbcType="INTEGER" />
+    <result column="repair_order_id" property="repairOrderId" jdbcType="VARCHAR" />
+    <result column="mission_id" property="missionId" jdbcType="VARCHAR" />
     <result column="fixer_id" property="fixerId" jdbcType="INTEGER" />
     <result column="comment" property="comment" jdbcType="LONGVARCHAR" />
     <result column="rate" property="rate" jdbcType="SMALLINT" />
@@ -18,7 +18,7 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into comment (repair_order_id, mission_id, fixer_id, comment,rate)
-    values (#{repairOrderId,jdbcType=BIGINT}, #{missionId,jdbcType=INTEGER}, #{fixerId,jdbcType=INTEGER}, #{comment,jdbcType=LONGVARCHAR}, #{rate,jdbcType=SMALLINT})
+    values (#{repairOrderId}, #{missionId}, #{fixerId,jdbcType=INTEGER}, #{comment,jdbcType=LONGVARCHAR}, #{rate,jdbcType=SMALLINT})
   </insert>
 
   <select id="query" parameterType="com.wetrack.ikongtiao.param.CommentQueryParam" resultMap="BaseResultMap">
@@ -27,6 +27,7 @@
     <if test="fixerId!=null or userId!=null">
       LEFT OUTER JOIN repair_order
       ON comment.repair_order_id = repair_order.id
+      or comment.repair_order_id = repair_order.serial_number
     </if>
     <where>
       <if test="fixerId!=null">
@@ -56,6 +57,7 @@
     <if test="fixerId!=null or userId!=null">
       LEFT OUTER JOIN repair_order
       ON comment.repair_order_id = repair_order.id
+      or comment.repair_order_id = repair_order.serial_number
     </if>
     <where>
       <if test="fixerId!=null">

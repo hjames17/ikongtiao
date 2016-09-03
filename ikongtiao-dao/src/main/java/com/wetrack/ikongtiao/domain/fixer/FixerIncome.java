@@ -14,7 +14,7 @@ public class FixerIncome {
      * 单位为分
      */
     Integer amount;
-    Long repairOrderId;
+    String repairOrderId;
     Date createTime;
     /**
      * 关联表
@@ -46,11 +46,11 @@ public class FixerIncome {
         this.amount = amount;
     }
 
-    public Long getRepairOrderId() {
+    public String getRepairOrderId() {
         return repairOrderId;
     }
 
-    public void setRepairOrderId(Long repairOrderId) {
+    public void setRepairOrderId(String repairOrderId) {
         this.repairOrderId = repairOrderId;
     }
 

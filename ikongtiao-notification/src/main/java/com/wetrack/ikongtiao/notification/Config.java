@@ -1,5 +1,6 @@
 package com.wetrack.ikongtiao.notification;
 
+import cn.jpush.api.JPushClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -36,5 +37,10 @@ public class Config {
     @Bean
     TaskScheduler taskScheduler(){
         return new ThreadPoolTaskScheduler();
+    }
+
+    @Bean
+    JPushClient jPushClient(){
+        return new JPushClient("fe0caa09a87a788a1af2ddd1", "b4d83e537a8289c9f9d2b5ce");
     }
 }

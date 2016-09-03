@@ -9,5 +9,5 @@ import com.wetrack.ikongtiao.param.CommentQueryParam;
  */
 public interface CommentService {
     PageList<Comment> listComments(CommentQueryParam param);
-    void createComment(Long repairOrderId, Integer rate, String commentString) throws Exception;
+    void createComment(String repairOrderId, Integer rate, String commentString) throws Exception;
 }

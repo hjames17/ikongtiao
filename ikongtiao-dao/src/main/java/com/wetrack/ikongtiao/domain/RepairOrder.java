@@ -194,8 +194,7 @@ public class RepairOrder implements Serializable {
     @Transient
     List<RoImage> images;
 
-    @Transient
-    Boolean warranty; //保修单，免费
+    Boolean quick; //快速现场维修，直接把维修单分配给提交人，并且进入就绪状态
 
 
     /**
@@ -474,12 +473,12 @@ public class RepairOrder implements Serializable {
     }
 
 
-    public Boolean getWarranty() {
-        return warranty;
+    public Boolean getQuick() {
+        return quick;
     }
 
-    public void setWarranty(Boolean warranty) {
-        this.warranty = warranty;
+    public void setQuick(Boolean quick) {
+        this.quick = quick;
     }
 
     /**

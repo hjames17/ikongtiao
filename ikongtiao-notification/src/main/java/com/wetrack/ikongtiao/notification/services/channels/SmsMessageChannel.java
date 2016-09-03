@@ -47,7 +47,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的任务已经创建成功，任务号%d。查看详细信息，请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_ID)));
+                message.setText(String.format("你的任务已经创建成功，任务号%s。查看详细信息，请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_SID)));
                 return message;
             }
         });
@@ -57,7 +57,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的任务已经被受理了，任务号%d。查看详细信息，请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_ID)));
+                message.setText(String.format("你的任务已经被受理了，任务号%s。查看详细信息，请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_SID)));
                 return message;
             }
         });
@@ -67,7 +67,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的任务已经被拒绝了,任务号%d。查看详细信息,请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_ID)));
+                message.setText(String.format("你的任务已经被拒绝了,任务号%s。查看详细信息,请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.MISSION_SID)));
                 return message;
             }
         });
@@ -78,8 +78,8 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的任务%d被分配给维修员%s请等待维修员与你联系,查看详细信息,请进入微信公众号［维大师之爱空调］"
-                        , params.get(MessageParamKey.MISSION_ID), fixer.getName()));
+                message.setText(String.format("你的任务%s被分配给维修员%s请等待维修员与你联系,查看详细信息,请进入微信公众号［维大师之爱空调］"
+                        , params.get(MessageParamKey.MISSION_SID), fixer.getName()));
                 return message;
             }
         });
@@ -90,8 +90,8 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的维修单%d被分配给维修员%s请等待维修员与你联系,查看详细信息,请进入微信公众号［维大师之爱空调］"
-                        , params.get(MessageParamKey.REPAIR_ORDER_ID), fixer.getName()));
+                message.setText(String.format("你的维修单%s被分配给维修员%s请等待维修员与你联系,查看详细信息,请进入微信公众号［维大师之爱空调］"
+                        , params.get(MessageParamKey.REPAIR_ORDER_SID), fixer.getName()));
                 return message;
             }
         });
@@ -102,8 +102,8 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的任务%d已经由维修员%s完成了,查看详细信息,请进入微信公众号［维大师之爱空调］"
-                        , params.get(MessageParamKey.REPAIR_ORDER_ID), fixer.getName()));
+                message.setText(String.format("你的任务%s已经由维修员%s完成了,查看详细信息,请进入微信公众号［维大师之爱空调］"
+                        , params.get(MessageParamKey.REPAIR_ORDER_SID), fixer.getName()));
                 return message;
             }
         });
@@ -114,7 +114,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的维修单%d已经生成价格，请确认,查看详细信息,请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+                message.setText(String.format("你的维修单%s已经生成价格，请确认,查看详细信息,请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.REPAIR_ORDER_SID)));
                 return message;
             }
         });
@@ -124,7 +124,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
                 message.setReceiver(userInfo.getPhone());
-                message.setText(String.format("你的维修单%d已经完成了,查看详细信息,请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+                message.setText(String.format("你的维修单%s已经完成了,查看详细信息,请进入微信公众号［维大师之爱空调］", params.get(MessageParamKey.REPAIR_ORDER_SID)));
                 return message;
             }
         });
@@ -137,7 +137,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixer.getPhone());
-                message.setText(String.format("有新的任务分配给你, 任务号%s,请打开维大师app查看详情", params.get(MessageParamKey.MISSION_ID)));
+                message.setText(String.format("有新的任务分配给你, 任务号%s,请打开维大师app查看详情", params.get(MessageParamKey.MISSION_SID)));
                 return message;
             }
         });
@@ -147,7 +147,7 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixer.getPhone());
-                message.setText(String.format("有新的维修单分配给你,维修单号%d,请打开维大师app查看详情", params.get(MessageParamKey.REPAIR_ORDER_ID)));
+                message.setText(String.format("有新的维修单分配给你,维修单号%s,请打开维大师app查看详情", params.get(MessageParamKey.REPAIR_ORDER_SID)));
                 return message;
             }
         });
@@ -226,8 +226,8 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 SmsMessage message = new SmsMessage();
                 Fixer fixer = fixerRepo.getFixerById((Integer) params.get(MessageParamKey.FIXER_ID));
                 message.setReceiver(fixer.getPhone());
-                message.setText(String.format("你的维修单%d获得了%d星评价，请打开维大师app查看详情",
-                        params.get(MessageParamKey.REPAIR_ORDER_ID), params.get(MessageParamKey.REPAIR_ORDER_COMMENT_RATE)));
+                message.setText(String.format("你的维修单%s获得了%s星评价，请打开维大师app查看详情",
+                        params.get(MessageParamKey.REPAIR_ORDER_SID), params.get(MessageParamKey.REPAIR_ORDER_COMMENT_RATE)));
                 return message;
             }
         });

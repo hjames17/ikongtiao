@@ -34,7 +34,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     fixer.id, name, password, avatar, phone, fixer.province_id, fixer.city_id, fixer.jk_maintainer,
-    fixer.district_id, fixer.address, fixer.latitude, fixer.longitude, type,
+    fixer.district_id, fixer.address, fixer.latitude, fixer.longitude, type, fixer.deleted,
     dw_create_time, dw_update_time, operate_id, in_service, certificate_state, insurance_state, welder_state, electrician_state
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -48,6 +48,7 @@
     <include refid="Base_Column_List" />
     from fixer
     where phone = #{phone,jdbcType=VARCHAR}
+    limit 0, 1
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
@@ -206,7 +207,10 @@
         electrician_state = #{electricianState,jdbcType=TINYINT},
       </if>
       <if test="jkMaintainer!=null">
-        and jk_maintainer = #{jkMaintainer}
+        jk_maintainer = #{jkMaintainer},
+      </if>
+      <if test="deleted!=null">
+        deleted = #{deleted}
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -258,6 +262,9 @@
       <if test="address != null ">
         and fixer.address LIKE #{address}
       </if>
+      <if test="deleted != null ">
+        and fixer.deleted = #{deleted}
+      </if>
       <if test="longitude!=null and latitude!=null">
         and fixer.longitude between @lon1 and @lon2
         and fixer.latitude between @lat1 and @lat2
@@ -299,6 +306,9 @@
       </if>
       <if test="insured == true ">
         and  insurance_state = 1
+      </if>
+      <if test="deleted != null ">
+        and deleted = #{deleted}
       </if>
       <if test="phone != null ">
         and  phone LIKE #{phone}

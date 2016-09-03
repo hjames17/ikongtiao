@@ -25,6 +25,8 @@ public class RepairOrderQueryParam extends BaseCondition {
 
 	String userName;
 	String phone;
+	String fixerName;
+
 
 	Date createTimeStart;
 	Date createTimeEnd;
@@ -107,5 +109,12 @@ public class RepairOrderQueryParam extends BaseCondition {
 
 	public void setState(Byte state) {
 		this.state = state;
+	}
+	public String getFixerName() {
+		return fixerName;
+	}
+
+	public void setFixerName(String fixerName) {
+		this.fixerName = fixerName;
 	}
 }

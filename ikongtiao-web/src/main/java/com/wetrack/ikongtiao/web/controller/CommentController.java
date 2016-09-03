@@ -38,8 +38,8 @@ public class CommentController {
     @SignTokenAuth
     @RequestMapping(value = "/list", method = {RequestMethod.GET})
     public PageList<Comment> listComments(HttpServletRequest request,
-                                          @RequestParam(required = false, value = "missionId") Integer missionId,
-                                          @RequestParam(required = false, value = "repairOrderId") Long repairOrderId,
+                                          @RequestParam(required = false, value = "missionId") String missionId,
+                                          @RequestParam(required = false, value = "repairOrderId") String repairOrderId,
                                           @RequestParam(required = false, value = "rateStart") Integer rateStart,
                                           @RequestParam(required = false, value = "rateEnd") Integer rateEnd,
                                           @RequestParam(required = false, value = "createTimeStart") Date createTimeStart,

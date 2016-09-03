@@ -141,6 +141,7 @@ public class Fixer implements Serializable {
 
     boolean deleted; //逻辑删除
 
+
     /**
      * 负责的任务和维修单数量, 查表计算后映射字段
      */

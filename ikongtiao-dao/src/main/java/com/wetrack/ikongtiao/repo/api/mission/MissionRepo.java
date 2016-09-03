@@ -18,6 +18,8 @@ public interface MissionRepo {
 
 	int update(Mission mission);
 
+	void updateSid(Mission mission);
+
 	/**
 	 * 根据任务id获取任务信息
 	 *

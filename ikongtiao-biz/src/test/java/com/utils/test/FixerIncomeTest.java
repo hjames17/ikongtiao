@@ -38,7 +38,7 @@ public class FixerIncomeTest {
     @Test
     public void testAllInterface(){
         //add
-        FixerIncome fixerIncome = fixerIncomeRepo.save(1, 2L, 3);
+        FixerIncome fixerIncome = fixerIncomeRepo.save(1, "2", 3);
         //list
         List<FixerIncome> list = fixerIncomeService.listIncome(1, null, null, false);
         Assert.assertTrue(list.size() == 1);

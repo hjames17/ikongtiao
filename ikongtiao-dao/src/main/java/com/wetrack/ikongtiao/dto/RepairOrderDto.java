@@ -14,4 +14,5 @@ import lombok.Data;
 public class RepairOrderDto extends RepairOrder {
     String fixerName;
     String organization;
+    String contacterName;
 }

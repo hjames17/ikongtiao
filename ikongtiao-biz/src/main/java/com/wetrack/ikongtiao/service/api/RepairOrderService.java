@@ -4,8 +4,10 @@ import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
+import com.wetrack.ikongtiao.param.StatsQueryParam;
 
 import java.util.List;
 
@@ -44,4 +46,5 @@ public interface RepairOrderService {
 
     void update(RepairOrder newOrder, RepairOrder oldOrder) throws Exception;
 
+    List<StatsCount> statsRepairOrder(StatsQueryParam queryParam);
 }

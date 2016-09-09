@@ -110,4 +110,18 @@ public class ImSessionRepoImpl implements ImSessionRepo {
 		}
 		return result.getTotalSize() == null ? 0 : result.getTotalSize();
 	}
+
+	public static void main(String[] args){
+		List<Integer> list = Arrays.asList(4,2,3,1,222,9,5,6);
+		list.sort(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return o1 - o2;
+			}
+		});
+
+		for(Integer i : list){
+			System.out.println(i);
+		}
+	}
 }

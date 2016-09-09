@@ -4,7 +4,7 @@ import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.RepairOrder;
-import com.wetrack.ikongtiao.domain.statistics.AreaCount;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.domain.statistics.MonthStats;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
@@ -79,7 +79,7 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
         param.setStates(new Integer[]{MissionState.NEW.getCode(), MissionState.ACCEPT.getCode(),
                 MissionState.DISPATCHED.getCode(), MissionState.FIXING.getCode(), MissionState.COMPLETED.getCode()});
         int newMissionCount = missionRepo.countMissionByStatsParam(param);
-        List<AreaCount> areaCounts = missionRepo.groupMissionByArea(param);
+        List<StatsCount> statsCounts = missionRepo.groupMissionByArea(param);
 
         //统计本周完成任务
         StatsQueryParam param2 = new StatsQueryParam();
@@ -133,23 +133,23 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
         map.put("income", (laborCost + accessoryCost) / 100f);
         map.put("incomeCent", laborCost + accessoryCost);
 
-        if(areaCounts != null&& areaCounts.size() > 0){
-            areaCounts.forEach(areaCount -> {
+        if(statsCounts != null&& statsCounts.size() > 0){
+            statsCounts.forEach(areaCount -> {
                 String pId = null;
                 try{
-                    pId = areaCount.getProvinceId().toString();
+                    pId = areaCount.getId();
                 }catch (Exception e){
 
                 }
 
                 Map<String, Object> province = (Map<String, Object>)areaMap.get(pId);
                 if(province != null) {
-                    areaCount.setProvinceName(province.get("name").toString());
+                    areaCount.setName(province.get("name").toString());
                 }else{
-                    areaCount.setProvinceName("其他");
+                    areaCount.setName("其他");
                 }
             });
-            map.put("areaList", areaCounts);
+            map.put("areaList", statsCounts);
         }
 
         return map;

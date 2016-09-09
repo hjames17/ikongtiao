@@ -67,7 +67,7 @@
         </tr>
         #foreach($item in $areaList)
             <tr>
-                <td>$item.getProvinceName()</td>
+                <td>$item.getName()</td>
                 <td>$item.getCount()</td>
             </tr>
         #end

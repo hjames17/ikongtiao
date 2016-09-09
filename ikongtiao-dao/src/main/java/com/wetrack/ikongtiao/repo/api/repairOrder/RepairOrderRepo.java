@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.repo.api.repairOrder;
 
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
@@ -28,4 +29,6 @@ public interface RepairOrderRepo {
 
     RepairOrder getById(Long id);
     RepairOrder getBySid(String sid);
+
+    List<StatsCount> statsRepairOrder(StatsQueryParam queryParam);
 }

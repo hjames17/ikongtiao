@@ -5,6 +5,7 @@ import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
@@ -141,5 +142,23 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
     @Override
     public RepairOrder getBySid(String sid) {
         return commonDao.mapper(RepairOrder.class).sql("selectBySid").session().selectOne(sid);
+    }
+
+    @Override
+    public List<StatsCount> statsRepairOrder(StatsQueryParam queryParam) {
+
+
+        String selectStatement = null;
+        switch (queryParam.getGroupType()){
+            case BY_FIXER:
+                selectStatement = "groupByFixer";
+                break;
+            case BY_KEFU:
+                selectStatement ="groupByKefu";
+                break;
+        }
+
+        return commonDao.mapper(RepairOrder.class).sql(selectStatement).session()
+                .selectList(queryParam);
     }
 }

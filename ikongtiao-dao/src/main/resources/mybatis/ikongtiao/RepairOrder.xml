@@ -459,4 +459,82 @@
       and repair_order_state &gt;= 0
     </where>
   </select>
+
+  <select id="groupByKefu" resultType="com.wetrack.ikongtiao.domain.statistics.StatsCount" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as count, admin_user_id as id, admin.name as name
+    from repair_order
+    left outer join admin
+    on repair_order.admin_user_id = admin.id
+    <where>
+      <if test="states != null">
+        repair_order_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and repair_order.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and repair_order.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and repair_order.update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and repair_order.update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+    GROUP BY admin_user_id
+    ORDER BY COUNT
+    <choose>
+      <when test="descent==true">
+        DESC
+      </when>
+      <when test="descent==false">
+        ASC
+      </when>
+    </choose>
+  </select>
+
+  <select id="groupByFixer" resultType="com.wetrack.ikongtiao.domain.statistics.StatsCount" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as count, fixer_id as id, fixer.name as name
+    from repair_order
+    left outer join fixer
+    on repair_order.fixer_id = fixer.id
+    <where>
+      <if test="states != null">
+        repair_order_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and repair_order.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and repair_order.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and repair_order.update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and repair_order.update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+    GROUP BY fixer_id
+    ORDER BY COUNT
+    <choose>
+      <when test="descent==true">
+        DESC
+      </when>
+      <when test="descent==false">
+        ASC
+      </when>
+    </choose>
+  </select>
+
+
 </mapper>

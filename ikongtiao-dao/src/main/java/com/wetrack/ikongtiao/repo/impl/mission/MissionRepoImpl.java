@@ -3,7 +3,7 @@ package com.wetrack.ikongtiao.repo.impl.mission;
 import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.statistics.AreaCount;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
@@ -95,7 +95,7 @@ public class MissionRepoImpl implements MissionRepo {
 	}
 
 	@Override
-	public List<AreaCount> groupMissionByArea(StatsQueryParam param) {
+	public List<StatsCount> groupMissionByArea(StatsQueryParam param) {
 
 		return commonDao.mapper(Mission.class).sql("groupByProvince").session()
 				.selectList(param);
@@ -121,6 +121,29 @@ public class MissionRepoImpl implements MissionRepo {
 		BaseCondition baseCondition =  commonDao.mapper(MissionDto.class).sql("countMissionByFixerQueryParam").session().selectOne(param);
 		Integer count = baseCondition == null ? 0 : baseCondition.getTotalSize();
 		return count == null ? 0 : count;
+	}
+
+	@Override
+	public List<StatsCount> statsMissions(StatsQueryParam queryParam) {
+
+		String selectStatement = null;
+		switch (queryParam.getGroupType()){
+			case BY_FIXER:
+				selectStatement = "groupByFixer";
+				break;
+			case BY_KEFU:
+				selectStatement ="groupByKefu";
+				break;
+			case BY_ADDRESS:
+				selectStatement ="groupByAddress";
+				break;
+			case BY_PROVINCE:
+				selectStatement ="groupByProvince";
+				break;
+		}
+
+		return commonDao.mapper(Mission.class).sql(selectStatement).session()
+				.selectList(queryParam);
 	}
 
 }

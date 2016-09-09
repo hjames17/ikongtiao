@@ -3,9 +3,11 @@ package com.wetrack.ikongtiao.service.api.mission;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
+import com.wetrack.ikongtiao.param.StatsQueryParam;
 
 import java.util.List;
 
@@ -49,4 +51,6 @@ public interface MissionService {
 	void update(Mission mission);
 
 	List<FaultType> listFaultType();
+
+	List<StatsCount> statsMission(StatsQueryParam queryParam);
 }

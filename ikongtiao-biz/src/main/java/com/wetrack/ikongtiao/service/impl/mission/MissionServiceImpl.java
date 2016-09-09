@@ -7,6 +7,7 @@ import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
 import com.wetrack.ikongtiao.exception.BusinessException;
@@ -14,6 +15,7 @@ import com.wetrack.ikongtiao.geo.GeoLocation;
 import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
+import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
@@ -359,5 +361,10 @@ public class MissionServiceImpl implements MissionService {
 	@Override
 	public List<FaultType> listFaultType() {
 		return faultTypeRepo.findAll();
+	}
+
+	@Override
+	public List<StatsCount> statsMission(StatsQueryParam queryParam) {
+		return missionRepo.statsMissions(queryParam);
 	}
 }

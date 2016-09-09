@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.repo.api.mission;
 
 import com.wetrack.ikongtiao.domain.Mission;
-import com.wetrack.ikongtiao.domain.statistics.AreaCount;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
@@ -50,7 +50,7 @@ public interface MissionRepo {
 	int countMissionByAppQueryParam(AppMissionQueryParam param);
 	int countMissionByStatsParam(StatsQueryParam param);
 
-	List<AreaCount> groupMissionByArea(StatsQueryParam param);
+	List<StatsCount> groupMissionByArea(StatsQueryParam param);
 
 
 	int deleteMission(Integer missionId) throws Exception;
@@ -59,4 +59,6 @@ public interface MissionRepo {
 	List<MissionDto> listMissionIdByFixer(FixerMissionQueryParam param) throws Exception;
 
 	Integer countMissionByFixer(FixerMissionQueryParam param) throws Exception;
+
+	List<StatsCount> statsMissions(StatsQueryParam queryParam);
 }

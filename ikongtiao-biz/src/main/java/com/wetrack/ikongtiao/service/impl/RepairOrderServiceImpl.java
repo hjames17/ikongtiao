@@ -10,9 +10,11 @@ import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.AuditInfo;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
+import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerIncomeRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.*;
@@ -427,6 +429,13 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 	public void update(RepairOrder newOrder, RepairOrder oldOrder) throws Exception {
 		boolean imageUpdated = updateImages(newOrder, oldOrder);
 		repairOrderRepo.update(newOrder);
+	}
+
+	@Override
+	public List<StatsCount> statsRepairOrder(StatsQueryParam queryParam) {
+
+		return repairOrderRepo.statsRepairOrder(queryParam);
+
 	}
 
 	private boolean updateImages(RepairOrder newOrder, RepairOrder oldOrder){

@@ -11,11 +11,25 @@ import java.util.Date;
 @Data
 public class StatsQueryParam extends BaseCondition {
 
+	Boolean finished;
 	Integer[] states;
+
+	GroupType groupType;
 
 	Date createTimeStart;
 	Date createTimeEnd;
 
 	Date updateTimeStart;
 	Date updateTimeEnd;
+
+	boolean descent;
+
+
+	public enum GroupType{
+		BY_PROVINCE,
+		BY_FIXER,
+		BY_KEFU,
+		BY_ADDRESS
+
+	}
 }

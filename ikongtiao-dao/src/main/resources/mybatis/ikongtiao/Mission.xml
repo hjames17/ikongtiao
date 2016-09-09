@@ -297,14 +297,129 @@
     </where>
   </select>
 
-  <resultMap id="areaCountAsProvince" type="com.wetrack.ikongtiao.domain.statistics.AreaCount" >
-    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
-    <result column="count" property="count" jdbcType="INTEGER" />
-  </resultMap>
+  <!--<resultMap id="statsCount" type="com.wetrack.ikongtiao.domain.statistics.StatsCount" >-->
+    <!--<result column="province_id" property="provinceId" jdbcType="INTEGER" />-->
+    <!--<result column="count" property="count" jdbcType="INTEGER" />-->
+  <!--</resultMap>-->
 
-  <select id="groupByProvince" resultMap="areaCountAsProvince" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+  <select id="groupByProvince" resultType="com.wetrack.ikongtiao.domain.statistics.StatsCount" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
     select
-    count(*) as count, province_id
+    count(*) as count, province_id as id
+    from mission
+    <where>
+      <if test="states != null">
+        mission_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and mission.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and mission.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and mission.update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and mission.update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+    GROUP BY province_id
+    ORDER BY COUNT
+    <choose>
+      <when test="descent==true">
+        DESC
+      </when>
+      <when test="descent==false">
+        ASC
+      </when>
+    </choose>
+  </select>
+
+
+  <select id="groupByKefu" resultType="com.wetrack.ikongtiao.domain.statistics.StatsCount" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as count, admin_user_id as id, admin.name as name
+    from mission
+    left outer join admin
+    on mission.admin_user_id = admin.id
+    <where>
+      <if test="states != null">
+        mission_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and mission.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and mission.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and mission.update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and mission.update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+    GROUP BY admin_user_id
+    ORDER BY COUNT
+    <choose>
+      <when test="descent==true">
+        DESC
+      </when>
+      <when test="descent==false">
+        ASC
+      </when>
+    </choose>
+  </select>
+
+  <select id="groupByFixer" resultType="com.wetrack.ikongtiao.domain.statistics.StatsCount" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as count, fixer_id as id, fixer.name as name
+    from mission
+    left outer join fixer
+    on mission.fixer_id = fixer.id
+    <where>
+      <if test="states != null">
+        mission_state in
+        <foreach collection="states" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="createTimeStart != null">
+        and mission.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and mission.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and mission.update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and mission.update_time &lt;= #{updateTimeEnd}
+      </if>
+    </where>
+    GROUP BY fixer_id
+    ORDER BY COUNT
+    <choose>
+      <when test="descent==true">
+        DESC
+      </when>
+      <when test="descent==false">
+        ASC
+      </when>
+    </choose>
+  </select>
+
+
+
+  <select id="groupByAddress" resultType="com.wetrack.ikongtiao.domain.statistics.StatsCount" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    select
+    count(*) as count, address as name
     from mission
     <where>
       <if test="states != null">
@@ -326,7 +441,16 @@
         and update_time &lt;= #{updateTimeEnd}
       </if>
     </where>
-    GROUP BY province_id
-    ORDER BY COUNT DESC
+    GROUP BY address
+    ORDER BY COUNT
+    <choose>
+            <when test="descent==true">
+              DESC
+            </when>
+            <when test="descent==false">
+              ASC
+            </when>
+    </choose>
+    , address
   </select>
 </mapper>

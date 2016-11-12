@@ -4,10 +4,12 @@ import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.constant.MissionState;
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
+import com.wetrack.ikongtiao.dto.MissionDetail;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.error.UserErrorMessage;
 import com.wetrack.ikongtiao.exception.BusinessException;
@@ -45,9 +47,9 @@ import java.util.Map;
  * Created by zhangsong on 15/12/15.
  */
 @Service("missionService")
-public class MissionServiceImpl implements MissionService {
+public class MissionServiceImpl implements MissionService{
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(MissionServiceImpl.class);
+	private final static Logger logger = LoggerFactory.getLogger(MissionServiceImpl.class);
 
 	@Resource
 	private MissionRepo missionRepo;
@@ -80,11 +82,13 @@ public class MissionServiceImpl implements MissionService {
 		Mission mission = doSave(param, userInfo);
 
 		//发送消息
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, mission.getId());
-		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
-		params.put(MessageParamKey.USER_ID, mission.getUserId());
-		messageService.send(MessageId.NEW_COMMISSION, params);
+//		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.MISSION_ID, mission.getId());
+//		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
+//		params.put(MessageParamKey.USER_ID, mission.getUserId());
+//		messageService.send(MessageId.NEW_COMMISSION, params);
+		notify(mission.getId(), MissionState.NEW, null, AccountType.CUSTOMER, param.getUserId());
+
 
 		//加入提醒任务
 		taskMonitorService.putTask(Constants.TASK_MISSION + mission.getId());
@@ -162,6 +166,9 @@ public class MissionServiceImpl implements MissionService {
 		page.setData(missionDtos);
 		return page;
 	}
+	@Override public List<MissionDetail> listMissionFullByAppQueryParam(AppMissionQueryParam param) {
+		return  missionRepo.listMissionFullByAppQueryParam(param);
+	}
 
 	@Override
 	public PageList<MissionDto> ListFixerMissionByParam(FixerMissionQueryParam param) throws Exception {
@@ -202,12 +209,15 @@ public class MissionServiceImpl implements MissionService {
 		missionRepo.update(mission);
 
 		//发送消息
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, mission.getId());
-		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
-		params.put(MessageParamKey.USER_ID, mission.getUserId());
-		params.put(MessageParamKey.ADMIN_ID, adminUserId);
-		messageService.send(MessageId.ACCEPT_MISSION, params);
+//		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.MISSION_ID, mission.getId());
+//		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
+//		params.put(MessageParamKey.USER_ID, mission.getUserId());
+//		params.put(MessageParamKey.ADMIN_ID, adminUserId);
+//		messageService.send(MessageId.ACCEPT_MISSION, params);
+
+
+		notify(mission.getId(), MissionState.ACCEPT, null, AccountType.ADMIN, adminUserId.toString());
 	}
 
 	@Override
@@ -229,12 +239,15 @@ public class MissionServiceImpl implements MissionService {
 		missionRepo.update(mission);
 
 		//发送消息
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, mission.getId());
-		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
-		params.put(MessageParamKey.USER_ID, mission.getUserId());
-		params.put(MessageParamKey.ADMIN_ID, adminUserId);
-		messageService.send(MessageId.REJECT_MISSION, params);
+//		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.MISSION_ID, mission.getId());
+//		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
+//		params.put(MessageParamKey.USER_ID, mission.getUserId());
+//		params.put(MessageParamKey.ADMIN_ID, adminUserId);
+//		messageService.send(MessageId.REJECT_MISSION, params);
+
+		notify(mission.getId(), MissionState.CLOSED, null, AccountType.ADMIN, adminUserId.toString());
+
 	}
 
 	@Override
@@ -251,13 +264,16 @@ public class MissionServiceImpl implements MissionService {
 		}
 
 		//发送消息
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_ID, mission.getId());
-		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
-		params.put(MessageParamKey.USER_ID, mission.getUserId());
-		params.put(MessageParamKey.FIXER_ID, fixerId);
-		params.put(MessageParamKey.ADMIN_ID, adminUserId);
-		messageService.send(MessageId.ASSIGNED_MISSION, params);
+//		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.MISSION_ID, mission.getId());
+//		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
+//		params.put(MessageParamKey.USER_ID, mission.getUserId());
+//		params.put(MessageParamKey.FIXER_ID, fixerId);
+//		params.put(MessageParamKey.ADMIN_ID, adminUserId);
+//		messageService.send(MessageId.ASSIGNED_MISSION, params);
+
+		notify(mission.getId(), MissionState.DISPATCHED, null, AccountType.ADMIN, adminUserId.toString());
+
 	}
 
 
@@ -320,7 +336,7 @@ public class MissionServiceImpl implements MissionService {
 	RepairOrderRepo repairOrderRepo;
 
 	@Override
-	public void finishMission(String id) throws Exception {
+	public void finishMission(String id, AccountType operatorType, String operatorId) throws Exception {
 
 		Mission mission = new Mission();
 		try{
@@ -341,13 +357,16 @@ public class MissionServiceImpl implements MissionService {
 		missionRepo.update(mission);
 
 		//发送消息
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.MISSION_SID, id);
-		params.put(MessageParamKey.USER_ID, mission.getUserId());
-		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
-		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
-		params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
-		messageService.send(MessageId.COMPLETED_MISSION, params);
+//		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put(MessageParamKey.MISSION_SID, id);
+//		params.put(MessageParamKey.USER_ID, mission.getUserId());
+//		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
+//		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
+//		params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
+//		messageService.send(MessageId.COMPLETED_MISSION, params);
+
+
+		notify(mission.getId(), MissionState.COMPLETED, null, operatorType, operatorId);
 	}
 
 	@Override
@@ -367,4 +386,61 @@ public class MissionServiceImpl implements MissionService {
 	public List<StatsCount> statsMission(StatsQueryParam queryParam) {
 		return missionRepo.statsMissions(queryParam);
 	}
+
+	@Override
+	public void notify(int missionId, MissionState newState, MissionState oldState, AccountType operatorType, String operatorId){
+
+		Integer messageId = null;
+		try {
+			switch (newState) {
+				case NEW:
+					messageId = MessageId.NEW_COMMISSION;
+					break;
+				case ACCEPT:
+					messageId = MessageId.ACCEPT_MISSION;
+					break;
+				case DISPATCHED:
+					messageId = MessageId.ASSIGNED_MISSION;
+				case FIXING:
+					break;
+				case CLOSED:
+//					sendUserDeniedEvent(repairOrder);
+					messageId = MessageId.REJECT_MISSION;
+					break;
+				case COMPLETED:
+//					sendCompleteEvent(repairOrder);
+					messageId = MessageId.COMPLETED_MISSION;
+					break;
+				default:
+					break;
+			}
+			if(messageId != null) {
+				Mission mission = missionRepo.getMissionById(missionId);
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put(MessageParamKey.MISSION_STATE, newState.getCode());
+				params.put(MessageParamKey.MISSION_ID, missionId);
+				params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
+				if(!StringUtils.isEmpty(mission.getUserId())) {
+					params.put(MessageParamKey.USER_ID, mission.getUserId());
+				}
+				if(mission.getAdminUserId() != null) {
+					params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
+				}
+				if(mission.getFixerId() != null){
+					params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
+				}
+				params.put(MessageParamKey.OPERATOR_ID, operatorId);
+				params.put(MessageParamKey.OPERATOR_TYPE, operatorType);
+				params.put(MessageParamKey.TIME, System.currentTimeMillis());
+
+				messageService.send(messageId, params);
+			}
+		}catch (Exception e){
+			logger.error("mission notify event failed on state {}, operatorType {}", newState, operatorType);
+		}
+
+
+	}
+
+
 }

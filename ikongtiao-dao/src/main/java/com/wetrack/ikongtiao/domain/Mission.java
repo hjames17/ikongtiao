@@ -79,6 +79,12 @@ public class Mission implements Serializable {
     private String contacterPhone;
     @Column(name = "fault_type")
     String faultType;
+    @Column(name = "field_contacter_name")
+    private String fieldContacterName;
+    @Column(name = "field_contacter_phone")
+    private String fieldContacterPhone;
+    @Column(name = "request_arrive_time")
+    private Date requestArriveTime;
 
     /**
      * province_id:所在省份id
@@ -382,5 +388,29 @@ public class Mission implements Serializable {
 
     public void setSetupSheet(String setupSheet) {
         this.setupSheet = setupSheet;
+    }
+
+    public String getFieldContacterName() {
+        return fieldContacterName;
+    }
+
+    public void setFieldContacterName(String fieldContacterName) {
+        this.fieldContacterName = fieldContacterName;
+    }
+
+    public String getFieldContacterPhone() {
+        return fieldContacterPhone;
+    }
+
+    public void setFieldContacterPhone(String fieldContacterPhone) {
+        this.fieldContacterPhone = fieldContacterPhone;
+    }
+
+    public Date getRequestArriveTime() {
+        return requestArriveTime;
+    }
+
+    public void setRequestArriveTime(Date requestArriveTime) {
+        this.requestArriveTime = requestArriveTime;
     }
 }

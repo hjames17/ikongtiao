@@ -1,6 +1,7 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
 import com.wetrack.base.utils.jackson.Jackson;
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
@@ -187,6 +188,32 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.FIXER_SUBMIT_CERT_AUDIT, fixerAuditMessageAdapter);
         registerAdapter(MessageId.FIXER_SUBMIT_INSURANCE_AUDIT, fixerAuditMessageAdapter);
         registerAdapter(MessageId.FIXER_SUBMIT_PROFESS_AUDIT, fixerAuditMessageAdapter);
+
+
+        registerAdapter(MessageId.SERVICE_LOG_NOTIFY, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+                if(targetUserType != AccountType.ADMIN){
+                    return null;
+                }
+
+                WebNotificationMessage message = new WebNotificationMessage();
+                message.setId(MessageId.SERVICE_LOG_NOTIFY);
+                message.setReceiver(params.get(MessageParamKey.OPERATOR_ID).toString());
+                message.setType(WebNotificationMessage.RECEIVER_TYPE_ID);
+                String missionId = params.get(MessageParamKey.MISSION_SID).toString();
+                String repairOrderId = null;
+                if(params.get(MessageParamKey.REPAIR_ORDER_SID) != null){
+                    repairOrderId = params.get(MessageParamKey.REPAIR_ORDER_SID).toString();
+                }
+                String typeText = repairOrderId != null ? "维修单" : "任务";
+                message.setTitle("你有"+typeText+"尚未填写服务进度");
+                message.setContent(typeText + (repairOrderId == null ? missionId : repairOrderId) + "今日服务进度需要填写");
+                message.setData(params);
+                return message;
+            }
+        });
     }
 
 //    @Value("${host.admin}")

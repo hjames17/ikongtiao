@@ -7,6 +7,7 @@ import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
+import com.wetrack.ikongtiao.dto.RepairOrderFull;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
@@ -66,6 +67,25 @@ public class RepairOrderRepoImpl implements RepairOrderRepo {
         }
 
         return commonDao.mapper(RepairOrder.class).sql("listByQueryParam").session().selectList(param);
+    }
+
+    @Override
+    public List<RepairOrderFull> listFullByQueryParam(RepairOrderQueryParam param) {
+
+        if(param.getPhone() != null){
+            //加上sql like查询通配符
+            param.setPhone("%" + param.getPhone() + "%");
+        }
+        if(param.getUserName() != null){
+            //加上sql like查询通配符
+            param.setUserName("%" + param.getUserName() + "%");
+        }
+        if(param.getFixerName() != null){
+            //加上sql like查询通配符
+            param.setFixerName("%" + param.getFixerName() + "%");
+        }
+
+        return commonDao.mapper(RepairOrderFull.class).sql("listByQueryParam").session().selectList(param);
     }
 
 

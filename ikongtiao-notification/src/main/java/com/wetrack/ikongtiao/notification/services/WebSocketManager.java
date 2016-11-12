@@ -81,33 +81,6 @@ public class WebSocketManager {
 	public static void pushMessage(String messageTo, Integer type, String message) {
 		TextMessage textMessag = new TextMessage(message);
 		List<String> keys = new ArrayList<>();
-//		if (false) {
-//			Map<String, Map<String, WebSocketSession>> datas = WebSocketManager.get();
-//			if (datas != null) {
-//				for (Map<String, WebSocketSession> data : datas.values()) {
-//					if (data != null) {
-//						for (Map.Entry<String, WebSocketSession> temp : data.entrySet()) {
-//							WebSocketSession session = temp.getValue();
-//							if (session != null) {
-//								if (session.isOpen()) {
-//									try {
-//
-//										session.sendMessage(textMessag);
-//										LOGGER.info("发送websocket消息addLog，发送给adminId:{};消息内容:{};", temp.getKey(),
-//												message);
-//									} catch (IOException e) {
-//										LOGGER.info("发送websocket消息失败，发送给adminId:{};消息内容:{};", temp.getKey(), message);
-//									}
-//								} else {
-//									// 清除无效的链接
-//									keys.add(temp.getKey());
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		} else
 		if(type != null && type.equals(WebNotificationMessage.RECEIVER_TYPE_ROLE)){
 		//if (Role.KEFU.toString().equals(messageTo)) {
 			Map<String, WebSocketSession> datas = WebSocketManager.get(messageTo);

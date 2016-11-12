@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.web.controller.mission;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
@@ -71,7 +72,7 @@ public class MissionController {
 		if(!mission.getUserId().equals(form.getUserId())){
 			throw new BusinessException("不是您的任务!");
 		}
-		missionService.finishMission(id);
+		missionService.finishMission(id, AccountType.CUSTOMER, mission.getUserId());
 	}
 
 	@ResponseBody

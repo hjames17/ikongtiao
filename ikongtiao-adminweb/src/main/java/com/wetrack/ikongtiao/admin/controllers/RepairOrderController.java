@@ -7,6 +7,7 @@ import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
+import com.wetrack.ikongtiao.dto.RepairOrderFull;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
@@ -45,6 +46,13 @@ public class RepairOrderController {
     public PageList<RepairOrderDto> list(@RequestBody RepairOrderQueryParam param) throws Exception{
 
         return repairOrderService.list(param);
+    }
+
+    @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")
+    @RequestMapping(value = BASE_PATH + "/listfull" , method = {RequestMethod.POST})
+    public List<RepairOrderFull> listFull(@RequestBody RepairOrderQueryParam param) throws Exception{
+
+        return repairOrderService.listFull(param);
     }
 
     @SignTokenAuth(roleNameRequired = "VIEW_REPAIR_ORDER")

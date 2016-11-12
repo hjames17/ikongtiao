@@ -2,6 +2,7 @@ package com.wetrack.ikongtiao.repo.api.mission;
 
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
+import com.wetrack.ikongtiao.dto.MissionDetail;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
@@ -40,6 +41,8 @@ public interface MissionRepo {
 	 * @return
 	 */
 	List<MissionDto> listMissionByAppQueryParam(AppMissionQueryParam param);
+
+	List<MissionDetail> listMissionFullByAppQueryParam(AppMissionQueryParam param);
 
 	/**
 	 * 根据条件查询数量

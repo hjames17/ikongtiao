@@ -3,9 +3,7 @@ package com.wetrack.ikongtiao.notification;
 import cn.jpush.api.JPushClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 
 import java.util.HashMap;
@@ -34,10 +32,10 @@ public class Config {
         return velocityConfigurer;
     }
 
-    @Bean
-    TaskScheduler taskScheduler(){
-        return new ThreadPoolTaskScheduler();
-    }
+//    @Bean
+//    TaskScheduler taskScheduler(){
+//        return new ThreadPoolTaskScheduler();
+//    }
 
     @Bean
     JPushClient jPushClient(){

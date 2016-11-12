@@ -13,7 +13,11 @@ public class MessageId {
     public static final int REJECT_MISSION = 3;
     public static final int ASSIGNED_MISSION = 4;
     public static final int COMPLETED_MISSION = 5;
-    public static final int CANCELL_MISSION = 6;
+    public static final int ADD_MISSION_DESC = 6;
+
+    //其他
+    public static final int SERVICE_LOG_NOTIFY = 51;
+    public static final int SERVICE_LOG = 52; //消息日志生成的通知
 
 
     /**
@@ -28,7 +32,6 @@ public class MessageId {
     public static final int COMPLETED_FIX_ORDER = 106;
     public static final int COMMENT_REPAIR_ORDER = 107;
     public static final int REPAIR_ORDER_PAID = 108;
-    public static final int REPAIR_ORDER_UPDATE = 109;
 
     /**
      * 认证提交

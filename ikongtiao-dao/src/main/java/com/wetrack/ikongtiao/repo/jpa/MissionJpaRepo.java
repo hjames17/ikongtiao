@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.repo.jpa;
 import com.wetrack.ikongtiao.domain.Mission;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -11,4 +12,5 @@ import java.util.List;
 public interface MissionJpaRepo extends JpaRepository<Mission, Integer>{
     //select id from mission where mission_state=#{MissionState.Fixing.getCode()}
     List<Mission> findByMissionState(int missionState);
+    List<Mission> findByMissionStateAndCreateTimeAfter(int missionState, Date createTime);
 }

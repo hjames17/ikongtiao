@@ -140,10 +140,11 @@ public class ImTokenServiceImpl implements ImTokenService {
 		}
 		//获取列表中客服的当前活跃会话数
 		List<ImSessionCount> sessionCountList = imSessionRepo.countActiveSessionsForKefus(kefuCloudIdList);
-		//返回第一个客服
+		//返回第一个客服,他/她的服务人数最少
 		if(sessionCountList != null && sessionCountList.size() > 0){
 			return sessionCountList.get(0).getPeerId();
 		}
+
 		return null;
 	}
 

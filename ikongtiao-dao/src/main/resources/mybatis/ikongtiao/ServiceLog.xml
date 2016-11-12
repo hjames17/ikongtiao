@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.ServiceLog" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.ServiceLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="mission_id" property="missionId" jdbcType="VARCHAR" />
+    <result column="repair_order_Id" property="repairOrderId" jdbcType="VARCHAR" />
+    <result column="log" property="log" jdbcType="VARCHAR" />
+    <!--enum actually-->
+    <result column="creator_type" property="creatorType" jdbcType="VARCHAR" />
+    <result column="creator_id" property="creatorId" jdbcType="VARCHAR" />
+    <result column="missed" property="missed" jdbcType="TINYINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="target_date" property="targetDate" jdbcType="TIMESTAMP" />
+    <result column="creator_name" property="creatorName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    service_log.id, service_log.mission_id, service_log.repair_order_id, service_log.log, service_log.creator_type, service_log.creator_id, service_log.missed,
+    service_log.target_date, service_log.create_date, creator_name
+  </sql>
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.ServiceLog" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into service_log (mission_id, log, creator_type, creator_id, missed, creator_name, create_date, target_date
+    <if test="repairOrderId != null" >
+      , repair_order_Id
+    </if>
+    )
+    values ( #{missionId}, #{log}, #{creatorType}, #{creatorId}, #{missed}, #{creatorName}, #{createDate}, #{targetDate}
+    <if test="repairOrderId != null" >
+      , #{repairOrderId}
+    </if>
+    )
+  </insert>
+
+  <select id="searchWithParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.ServiceLogQueryParam" >
+    select 
+    <include refid="Base_Column_List" />
+    from service_log
+    <where>
+      <if test="missionId != null">
+        mission_id = #{missionId}
+      </if>
+      <if test="repairOrderId">
+        and repair_order_id = #{repairOrderId}
+      </if>
+      <if test="creatorType != null">
+        and creator_type = #{creatorType}
+      </if>
+      <if test="creatorId != null">
+        and creator_id = #{creatorId}
+      </if>
+    </where>
+    order by target_date DESC, create_date
+    limit #{start},#{pageSize}
+  </select>
+
+  <select id="countWithParam" resultType="java.lang.Integer" parameterType="com.wetrack.ikongtiao.param.ServiceLogQueryParam" >
+    select count(service_log.id) as totalSize
+    from service_log
+    <where>
+      <if test="missionId != null">
+        mission_id = #{missionId}
+      </if>
+      <if test="repairOrderId">
+        and repair_order_id = #{repairOrderId}
+      </if>
+      <if test="creatorType != null">
+        and creator_type = #{creatorType}
+      </if>
+      <if test="creatorId != null">
+        and creator_id = #{creatorId}
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from service_log
+    where id = #{id}
+  </delete>
+
+  <select id="findByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from service_log
+    where id = #{id}
+  </select>
+  
+  <select id="findMissionIdsWithParam" resultType="java.lang.String" parameterType="com.wetrack.ikongtiao.param.ServiceLogQueryParam">
+    select DISTINCT mission_id
+    from service_log
+    <where>
+      <if test="missionIds != null">
+        mission_id in <foreach collection="missionIds" separator="," open="(" close=")" item="missionId">
+        #{missionId}
+      </foreach>
+      </if>
+      <if test="targetDateStart != null">
+        and target_date &gt;= #{targetDateStart}
+      </if>
+      <if test="targetDateEnd != null">
+        and target_date &lt;= #{targetDateEnd}
+      </if>
+    </where>
+  </select>
+
+</mapper>

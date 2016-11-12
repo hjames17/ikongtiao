@@ -14,12 +14,16 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <!--<result column="mission_address_id" property="missionAddressId" jdbcType="INTEGER" />-->
     <result column="admin_user_id" property="adminUserId" jdbcType="INTEGER" />
-    <result column="name" property="adminName" jdbcType="VARCHAR" />
+    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+    <result column="fixer_name" property="fixerName" jdbcType="VARCHAR" />
     <result column="operator" property="operator" jdbcType="VARCHAR" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="repair_order_count" property="repairOrderCount" jdbcType="INTEGER" />
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
+    <result column="field_contacter_name" property="fieldContacterName" jdbcType="VARCHAR" />
     <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
+    <result column="field_contacter_phone" property="fieldContacterPhone" jdbcType="VARCHAR" />
+    <result column="request_arrive_time" property="requestArriveTime" jdbcType="TIMESTAMP" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="fault_type" property="faultType" jdbcType="VARCHAR" />
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
@@ -30,16 +34,17 @@
     <result column="latitude" property="latitude" jdbcType="DOUBLE" />
     <result column="setup_sheet" property="setupSheet" jdbcType="VARCHAR" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, serial_number, user_id, mission_desc, mission_state, is_need_more, fixer_id, fault_type
-    admin_user_id, operator, create_time, update_time
-  </sql>
+  <!--<sql id="Base_Column_List" >-->
+    <!--id, serial_number, user_id, mission_desc, mission_state, is_need_more, fixer_id, fault_type-->
+    <!--admin_user_id, operator, create_time, update_time-->
+  <!--</sql>-->
   <sql id="Mission_Dto_List" >
     mission.id, mission.serial_number, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.close_reason, mission.is_need_more, mission.fixer_id,
     mission.admin_user_id, mission.operator, mission.create_time, mission.update_time, mission.setup_sheet,
     organization, contacter_name, contacter_phone,
-    province_id, city_id, district_id, address, longitude, latitude,
-    admin.name
+    mission.province_id, mission.city_id, mission.district_id, mission.address, mission.longitude, mission.latitude,
+    mission.field_contacter_name, mission.field_contacter_phone, mission.request_arrive_time,
+    admin.name as admin_name
   </sql>
 
 
@@ -63,10 +68,17 @@
 
   <select id="listMissionByAppQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
     SELECT DISTINCT <include refid="Mission_Dto_List"/> , COUNT(repair_order.id) as repair_order_count
+    <if test="fixerName!=null">
+      , fixer.name as fixer_name
+    </if>
     from mission LEFT OUTER JOIN repair_order
     ON repair_order.mission_id = mission.id
     LEFT OUTER JOIN admin
     ON admin.id = mission.admin_user_id
+    <if test="fixerName!=null">
+      LEFT OUTER JOIN fixer
+      ON mission.fixer_id = fixer.id
+    </if>
     <where>
       <if test="userId!=null">
         and mission.user_id = #{userId,jdbcType=VARCHAR}
@@ -112,6 +124,9 @@
       <if test="createTimeEnd != null">
         and mission.create_time &lt;= #{createTimeEnd}
       </if>
+      <if test="fixerName!=null">
+        and fixer.name LIKE #{fixerName}
+      </if>
     </where>
     GROUP BY mission.id
     order by create_time desc limit #{start},#{pageSize}
@@ -119,8 +134,12 @@
 
   <select id="countMissionByAppQueryParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
     select
-    count(*) as totalSize
+    count(mission.id) as totalSize
     from mission
+    <if test="fixerName!=null">
+      LEFT OUTER JOIN fixer
+      ON mission.fixer_id = fixer.id
+    </if>
     <where>
       <if test="userId!=null">
         and user_id = #{userId,jdbcType=VARCHAR}
@@ -165,6 +184,9 @@
       </if>
       <if test="createTimeEnd != null">
         and mission.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="fixerName!=null">
+        and fixer.name LIKE #{fixerName}
       </if>
     </where>
   </select>

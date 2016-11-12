@@ -17,7 +17,10 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     <result column="contacter_name" property="contacterName" jdbcType="VARCHAR" />
+    <result column="field_contacter_name" property="fieldContacterName" jdbcType="VARCHAR" />
     <result column="contacter_phone" property="contacterPhone" jdbcType="VARCHAR" />
+    <result column="field_contacter_phone" property="fieldContacterPhone" jdbcType="VARCHAR" />
+    <result column="request_arrive_time" property="requestArriveTime" jdbcType="TIMESTAMP" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="province_id" property="provinceId" jdbcType="INTEGER" />
     <result column="city_id" property="cityId" jdbcType="INTEGER" />
@@ -32,6 +35,7 @@
     admin_user_id, operator, create_time, update_time,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude, setup_sheet
+    ,  field_contacter_name, field_contacter_phone, request_arrive_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -120,6 +124,15 @@
       <if test="setupSheet != null" >
         setup_sheet,
       </if>
+      <if test="fieldContacterName != null" >
+        field_contacter_name,
+      </if>
+      <if test="fieldContacterPhone != null" >
+        field_contacter_phone,
+      </if>
+      <if test="requestArriveTime != null">
+        request_arrive_time,
+      </if>
 
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -182,6 +195,15 @@
       </if>
       <if test="setupSheet != null" >
         #{setupSheet},
+      </if>
+      <if test="fieldContacterName != null" >
+        #{fieldContacterName},
+      </if>
+      <if test="fieldContacterPhone != null" >
+        #{fieldContacterPhone},
+      </if>
+      <if test="requestArriveTime != null">
+        #{requestArriveTime},
       </if>
     </trim>
   </insert>
@@ -250,6 +272,15 @@
       </if>
       <if test="setupSheet != null" >
         setup_sheet = #{setupSheet},
+      </if>
+      <if test="fieldContacterName != null" >
+        field_contacter_name = #{fieldContacterName},
+      </if>
+      <if test="fieldContacterPhone != null" >
+        field_contacter_phone = #{fieldContacterPhone},
+      </if>
+      <if test="requestArriveTime != null">
+        request_arrive_time = #{requestArriveTime},
       </if>
     </set>
     <where>

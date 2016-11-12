@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Created by zhanghong on 16/3/7.
  */
 @Configuration
-@EnableScheduling
 public class MessageConfig{
 
     @Autowired
@@ -24,6 +22,8 @@ public class MessageConfig{
     GetuiMessageChannel getuiMessageChannel;
     @Autowired
     EmailMessageChannel emailMessageChannel;
+    @Autowired
+    ServiceEventLogChannel serviceEventLogChannel;
 
     @Bean(autowire = Autowire.BY_NAME, name = "defaultMessageService")
     MessageMultiChannelService configMessageService(){
@@ -33,6 +33,7 @@ public class MessageConfig{
         messageService.registerChannel(smsMessageChannel);
         messageService.registerChannel(getuiMessageChannel);
         messageService.registerChannel(emailMessageChannel);
+        messageService.registerChannel(serviceEventLogChannel);
 
         return messageService;
     }

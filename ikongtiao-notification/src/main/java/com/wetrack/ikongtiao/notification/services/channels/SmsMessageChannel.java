@@ -1,5 +1,6 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
@@ -8,11 +9,12 @@ import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.notification.services.AbstractMessageChannel;
 import com.wetrack.ikongtiao.notification.services.Message;
 import com.wetrack.ikongtiao.notification.services.MessageAdapter;
+import com.wetrack.ikongtiao.notification.services.messages.SmsMessage;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.sms.util.SendWeSms;
-import com.wetrack.message.*;
-import com.wetrack.ikongtiao.notification.services.messages.SmsMessage;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -241,6 +243,34 @@ public class SmsMessageChannel extends AbstractMessageChannel {
                 message.setText(String.format("您在［维大师］的账号已经创建，手机号码是您的账号，密码为%s, 登录后请修改",
                         params.get(MessageParamKey.PASSWORD)));
                 return message;
+            }
+        });
+
+
+
+        registerAdapter(MessageId.SERVICE_LOG_NOTIFY, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+                if(targetUserType != AccountType.FIXER){
+                    return null;
+                }
+                SmsMessage message = new SmsMessage();
+                message.setId(MessageId.SERVICE_LOG_NOTIFY);
+                Integer fixerId = Integer.valueOf(params.get(MessageParamKey.OPERATOR_ID).toString());
+                Fixer fixer = fixerRepo.getFixerById(fixerId);
+                message.setReceiver(fixer.getPhone());
+
+                String missionId = params.get(MessageParamKey.MISSION_SID).toString();
+                String repairOrderId = null;
+                if(params.get(MessageParamKey.REPAIR_ORDER_SID) != null){
+                    repairOrderId = params.get(MessageParamKey.REPAIR_ORDER_SID).toString();
+                }
+                String typeText = repairOrderId != null ? "维修单" : "任务";
+                message.setText(typeText + (repairOrderId == null ? missionId : repairOrderId) + "今日服务进度需要填写");
+
+                return message;
+
             }
         });
     }

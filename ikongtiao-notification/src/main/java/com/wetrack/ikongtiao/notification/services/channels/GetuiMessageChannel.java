@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.Constants;
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
@@ -16,7 +17,6 @@ import com.wetrack.ikongtiao.notification.util.JPusher;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerDeviceRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
-import com.wetrack.message.GetuiPush;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import org.slf4j.Logger;
@@ -192,11 +192,47 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
                 return message;
             }
         });
+
+
+        registerAdapter(MessageId.SERVICE_LOG_NOTIFY, new MessageAdapter() {
+            @Override
+            public Message build(int messageId, Map<String, Object> params) {
+                AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+                if(targetUserType != AccountType.FIXER){
+                    return null;
+                }
+                GetuiMessage message = new GetuiMessage();
+                message.setId(MessageId.SERVICE_LOG_NOTIFY);
+                Integer fixerId = Integer.valueOf(params.get(MessageParamKey.OPERATOR_ID).toString());
+                String missionId = params.get(MessageParamKey.MISSION_SID).toString();
+                String repairOrderId = null;
+                if(params.get(MessageParamKey.REPAIR_ORDER_SID) != null){
+                    repairOrderId = params.get(MessageParamKey.REPAIR_ORDER_SID).toString();
+                }
+                message.setReceiver(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
+                String typeText = repairOrderId != null ? "维修单" : "任务";
+
+                message.setTitle("你有"+typeText+"尚未填写服务进度");
+
+                message.setContent(typeText + (repairOrderId == null ? missionId : repairOrderId) + "今日服务进度需要填写");
+
+                Map<String, String> map = new HashMap<>();
+                map.put(MessageParamKey.MISSION_ID, missionId);
+                if(repairOrderId != null) {
+                    map.put(MessageParamKey.REPAIR_ORDER_ID, repairOrderId);
+                }
+                map.put("type", "serviceLog");
+                message.setData(map);
+
+                return message;
+
+            }
+        });
     }
 
 
-    @Resource
-    private GetuiPush getuiPush;
+//    @Resource
+//    private GetuiPush getuiPush;
 
 
     @Override
@@ -205,7 +241,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
             try {
                 MessageRaw messageRaw = bufList.take();
                 if (adapterMap.get(messageRaw.id) != null) {
-                    if(!clientOffLine(Integer.valueOf(messageRaw.params.get(MessageParamKey.FIXER_ID).toString()))) {
+                    if(!clientOffLine(messageRaw.params)) {
 
                         Message message = null;
                         try {
@@ -260,7 +296,19 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
 
     @Autowired
     TokenService tokenService;
-    private boolean clientOffLine(Integer fixerId){
+    private boolean clientOffLine(Map<String, Object> params){
+        Integer fixerId = null;
+        if(params.get(MessageParamKey.FIXER_ID) != null) {
+            fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
+        }else {
+            AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+            if(targetUserType == AccountType.FIXER){
+                fixerId = Integer.valueOf(params.get(MessageParamKey.OPERATOR_ID).toString());
+            }
+        }
+        if(fixerId == null){
+            return true;
+        }
 //        Collection<Token> tokens = tokenService.findAllByUserId(Constants.TOKEN_ID_PREFIX_FIXER + fixerId);
 //        if(tokens != null && tokens.size() > 0){
 //            for(Token token : tokens){
@@ -270,6 +318,7 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
 //            }
 //        }
 //        return true;
+//        }
         return false;
     }
 

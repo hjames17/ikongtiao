@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.dto.RepairOrderFull" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.dto.RepairOrderFull" autoMapping="true" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <association property="mission" columnPrefix="m_" autoMapping="true" javaType="com.wetrack.ikongtiao.domain.Mission">
+      <id column="id" property="id" jdbcType="INTEGER" />
+    </association>
+  </resultMap>
+  <sql id="columns" >
+    mission.id as m_id,
+    mission.fault_type as m_fault_type, mission.mission_desc as m_mission_desc, mission.mission_state as m_mission_state,
+    mission.fixer_id as m_fixer_id, mission.admin_user_id as m_admin_user_id, mission.create_time as m_create_time,
+    mission.update_time as m_update_time, mission.organization as m_organization, mission.contacter_name as m_contacter_name,
+    mission.contacter_phone as m_contacter_phone, mission.province_id as m_province_id, mission.city_id as m_city_id,
+    mission.district_id as m_district_id, mission.address as m_address,
+    mission.field_contacter_name as m_field_contacter_name, mission.field_contacter_phone as m_field_contacter_phone,
+    fixer.name as fixer_name, creatorFixer.name as creator_fixer_name,
+    repair_order.*
+  </sql>
+
+
+  <select id="listByQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.RepairOrderQueryParam" >
+    SELECT DISTINCT <include refid="columns"/>
+    from repair_order LEFT OUTER JOIN mission
+    ON repair_order.mission_id = mission.id
+    LEFT OUTER JOIN fixer
+    ON repair_order.fixer_id = fixer.id
+    LEFT OUTER JOIN fixer as creatorFixer
+    ON repair_order.creator_fixer_id = creatorFixer.id
+    <where>
+      <if test="userId!=null">
+        and repair_order.user_id = #{userId,jdbcType=VARCHAR}
+      </if>
+      <if test="userName!=null">
+        and
+        (
+        mission.contacter_name LIKE #{userName,jdbcType=VARCHAR}
+        or mission.organization LIKE #{userName,jdbcType=VARCHAR}
+        )
+      </if>
+      <if test="phone!=null">
+        and mission.contacter_phone LIKE #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="type!=null">
+        <choose>
+          <when test="type==0">
+            and repair_order_state &lt; 6
+            and repair_order_state &gt;= 0
+          </when>
+          <when test="type==1">
+            and (repair_order_state = 6
+            or repair_order_state = -1)
+          </when>
+        </choose>
+      </if>
+      <if test="adminUserId!=null">
+        and  repair_order.admin_user_id = #{adminUserId}
+      </if>
+      <if test="notForAdminUserId!=null">
+        and repair_order.admin_user_id is not NULL
+        and repair_order.admin_user_id != #{notForAdminUserId}
+      </if>
+      <if test="fixerId!=null">
+        and (
+          repair_order.fixer_id = #{fixerId}
+          or
+          repair_order.creator_fixer_id = #{fixerId}
+        )
+      </if>
+      <if test="state!=null">
+        and  repair_order_state = #{state}
+      </if>
+      <if test="createTimeStart != null">
+        and repair_order.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and repair_order.create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="fixerName != null">
+        and fixer.name LIKE #{fixerName}
+      </if>
+    </where>
+    order by create_time
+  </select>
+</mapper>

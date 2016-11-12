@@ -12,6 +12,7 @@ public class MessageParamKey {
     public static final String REPAIR_ORDER_ID = "repairOrderId";
     public static final String REPAIR_ORDER_SID = "rsid";
     public static final String ADMIN_ID = "adminId";
+    public static final String OPERATOR_ID = "operatorId";
     public static final String FIXER_AUDIT_INFO = "fixerAuditInfo";
     public static final String FIXER_AUDIT_RESULT = "fixerAuditResult";
     public static final String REPAIR_ORDER_COMMENT_RATE = "commentRate";
@@ -22,6 +23,11 @@ public class MessageParamKey {
     public static final String IM_PUSH_NOTIFY_MESSAGE_UID = "messageId";
     public static final String PASSWORD = "password";
     public static final String REPEAT = "repeat";
+    public static final String OPERATOR_TYPE = "operatorType";
+    public static final String MISSION_STATE = "missionState";
+    public static final String REPAIR_ORDER_STATE = "repairOrderState";
+    public static final String TIME = "time";
+    public static final String LOG_TEXT = "log_text";
 
 
     public static final String TITLE = "title";

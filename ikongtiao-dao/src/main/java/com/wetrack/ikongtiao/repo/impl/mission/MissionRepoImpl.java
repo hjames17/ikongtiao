@@ -4,6 +4,7 @@ import com.wetrack.base.dao.api.CommonDao;
 import com.wetrack.base.page.BaseCondition;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
+import com.wetrack.ikongtiao.dto.MissionDetail;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
@@ -66,8 +67,30 @@ public class MissionRepoImpl implements MissionRepo {
 			//加上sql like查询通配符
 			param.setUserName("%" + param.getUserName() + "%");
 		}
+		if(param.getFixerName() != null){
+			//加上sql like查询通配符
+			param.setFixerName("%" + param.getFixerName() + "%");
+		}
 
 		return commonDao.mapper(MissionDto.class).sql("listMissionByAppQueryParam").session().selectList(param);
+	}
+
+	@Override public List<MissionDetail> listMissionFullByAppQueryParam(AppMissionQueryParam param) {
+
+		if(param.getPhone() != null){
+			//加上sql like查询通配符
+			param.setPhone("%" + param.getPhone() + "%");
+		}
+		if(param.getUserName() != null){
+			//加上sql like查询通配符
+			param.setUserName("%" + param.getUserName() + "%");
+		}
+		if(param.getFixerName() != null){
+			//加上sql like查询通配符
+			param.setFixerName("%" + param.getFixerName() + "%");
+		}
+
+		return commonDao.mapper(MissionDetail.class).sql("listByQueryParam").session().selectList(param);
 	}
 
 	@Override public int countMissionByAppQueryParam(AppMissionQueryParam param) {
@@ -78,6 +101,10 @@ public class MissionRepoImpl implements MissionRepo {
 		if(param.getUserName() != null){
 			//加上sql like查询通配符
 			param.setUserName("%" + param.getUserName() + "%");
+		}
+		if(param.getFixerName() != null){
+			//加上sql like查询通配符
+			param.setFixerName("%" + param.getFixerName() + "%");
 		}
 		BaseCondition baseCondition = commonDao.mapper(MissionDto.class).sql("countMissionByAppQueryParam").session()
 		                                       .selectOne(param);

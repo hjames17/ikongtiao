@@ -16,6 +16,7 @@ public abstract class AbstractMessageChannel implements MessageChannel {
 
     protected Map<Integer, MessageAdapter> adapterMap;
     protected BlockingQueue<MessageRaw> bufList;
+    private Thread thread;
 //    List<MessageRaw> bufList;
 
     protected static class MessageRaw{
@@ -32,13 +33,14 @@ public abstract class AbstractMessageChannel implements MessageChannel {
         adapterMap = new HashMap<Integer, MessageAdapter>();
 //        bufList = new ArrayList<MessageRaw>();
         bufList = new LinkedBlockingQueue<MessageRaw>();
-        Thread t = new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 callSend();
             }
         });
-        t.start();
+        thread.setName(getName() + "-sender");
+        thread.start();
     }
 
     public void registerAdapter(int messageId, MessageAdapter adapter){

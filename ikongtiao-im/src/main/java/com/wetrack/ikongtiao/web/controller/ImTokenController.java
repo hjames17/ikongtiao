@@ -32,7 +32,8 @@ public class ImTokenController {
 
 	@RequestMapping("/token/get")
 	@ResponseBody
-	public AjaxResult<ImToken> getToken(String systemUserId, Integer roleType) {
+	public AjaxResult<ImToken> getToken(@RequestParam(value = "systemUserId", required = false) String systemUserId,
+										@RequestParam(value = "roleType", required = false) Integer roleType) {
 		return new AjaxResult<>(
 				imTokenService.getTokenBySystemIdAndRoleType(systemUserId, ImRoleType.parseCode(roleType)));
 	}
@@ -46,7 +47,7 @@ public class ImTokenController {
 	@RequestMapping("/cloud/id/get")
 	@ResponseBody
 	public AjaxResult<String> getCloudId(@RequestParam(value = "systemUserId", required = false) String systemUserId,
-			Integer roleType) throws Exception{
+										 @RequestParam(value = "roleType", required = false) Integer roleType) throws Exception{
 		ImRoleType imRoleType = ImRoleType.parseCode(roleType);
 		if (imRoleType == null) {
 			throw new AjaxException("CLOUD_ROLE_TYPE_IS_NULL", "获取角色id为空");
@@ -62,7 +63,7 @@ public class ImTokenController {
 
 	@RequestMapping("/cloud/checkOnline")
 	@ResponseBody
-	public AjaxResult<String> checkCouldOnline(String cloudId) {
+	public AjaxResult<String> checkCouldOnline(@RequestParam(value = "cloudId", required = false) String cloudId) {
 		SdkHttpResult result = null;
 		try {
 			result = rongCloudApiService.checkOnline(cloudId, FormatType.json);

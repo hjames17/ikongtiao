@@ -4,26 +4,23 @@ import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.constant.MissionState;
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.dto.MissionDetail;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
-import com.wetrack.message.MessageId;
-import com.wetrack.message.MessageParamKey;
-import com.wetrack.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -39,8 +36,8 @@ public class MissionController {
     @Autowired
     UserInfoService userInfoService;
 
-    @Autowired
-    MessageService messageService;
+//    @Autowired
+//    MessageService messageService;
 
     @ResponseBody
     @SignTokenAuth(roleNameRequired = "VIEW_MISSION")
@@ -51,6 +48,16 @@ public class MissionController {
         }
 
         return missionService.listMissionByAppQueryParam(param);
+    }
+    @ResponseBody
+    @SignTokenAuth(roleNameRequired = "VIEW_MISSION")
+    @RequestMapping(value = BASE_PATH + "/listfull" , method = {RequestMethod.POST})
+    public List<MissionDetail> listMissionFull(@RequestBody AppMissionQueryParam param) throws Exception{
+        if (param == null) {
+            throw new BusinessException("查询任务参数为空");
+        }
+
+        return missionService.listMissionFullByAppQueryParam(param);
     }
 
     @ResponseBody
@@ -75,11 +82,13 @@ public class MissionController {
         Mission created = missionService.saveMission(param);
 
         //发送消息
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put(MessageParamKey.MISSION_ID, created.getSerialNumber());
-        params.put(MessageParamKey.USER_ID, created.getUserId());
-        params.put(MessageParamKey.ADMIN_ID, created.getAdminUserId());
-        messageService.send(MessageId.ACCEPT_MISSION, params);
+//        Map<String, Object> params = new HashMap<String, Object>();
+//        params.put(MessageParamKey.MISSION_ID, created.getSerialNumber());
+//        params.put(MessageParamKey.USER_ID, created.getUserId());
+//        params.put(MessageParamKey.ADMIN_ID, created.getAdminUserId());
+//        messageService.send(MessageId.ACCEPT_MISSION, params);
+
+        missionService.notify(created.getId(), MissionState.fromCode(created.getMissionState()), null, AccountType.ADMIN, user.getId());
 
         return created.getId();
     }
@@ -87,9 +96,9 @@ public class MissionController {
     @SignTokenAuth(roleNameRequired = "EDIT_MISSION")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/finish/{id}", method = {RequestMethod.POST})
-    public void finishMission(@PathVariable(value = "id") String id ) throws Exception{
-        //TODO 操作纪录
-        missionService.finishMission(id);
+    public void finishMission(@PathVariable(value = "id") String id , HttpServletRequest request) throws Exception{
+        User user = (User)request.getAttribute("user");
+        missionService.finishMission(id, AccountType.ADMIN, user.getId());
     }
 
     @ResponseBody

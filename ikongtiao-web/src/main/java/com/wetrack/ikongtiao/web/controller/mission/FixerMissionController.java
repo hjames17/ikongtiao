@@ -3,6 +3,7 @@ package com.wetrack.ikongtiao.web.controller.mission;
 import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
+import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
@@ -55,7 +56,9 @@ public class FixerMissionController {
 
 	@ResponseBody
 	@RequestMapping(value = BASE_PATH + "/finish/{id}", method = {RequestMethod.POST})
-	public void finishMission(@PathVariable(value = "id") String id ) throws Exception{
+	public void finishMission(@PathVariable(value = "id") String id, HttpServletRequest request ) throws Exception{
+		User user = (User)request.getAttribute("user");
+
 		//如果任务类型不是开机调试，不允许该操作
 		Mission mission = missionService.getMission(id);
 		if(mission == null){
@@ -69,6 +72,6 @@ public class FixerMissionController {
 		if(!"开机调试".equals(faultType.getName())){
 			throw new BusinessException("非开机调试任务不允许服务人员设为完成");
 		}
-		missionService.finishMission(id);
+		missionService.finishMission(id, AccountType.FIXER, user.getId());
 	}
 }

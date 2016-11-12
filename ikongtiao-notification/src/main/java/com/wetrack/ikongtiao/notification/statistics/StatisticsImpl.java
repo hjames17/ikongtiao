@@ -75,6 +75,7 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
         //统计新增任务
         StatsQueryParam param = new StatsQueryParam();
         param.setCreateTimeStart(start.toDate());
+        param.setDescent(true);
         param.setCreateTimeEnd(end.toDate());
         param.setStates(new Integer[]{MissionState.NEW.getCode(), MissionState.ACCEPT.getCode(),
                 MissionState.DISPATCHED.getCode(), MissionState.FIXING.getCode(), MissionState.COMPLETED.getCode()});

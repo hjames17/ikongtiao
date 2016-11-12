@@ -6,6 +6,7 @@ import com.wetrack.ikongtiao.domain.repairOrder.Accessory;
 import com.wetrack.ikongtiao.domain.repairOrder.RoImage;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.dto.RepairOrderDto;
+import com.wetrack.ikongtiao.dto.RepairOrderFull;
 import com.wetrack.ikongtiao.param.RepairOrderQueryParam;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
 
@@ -47,4 +48,6 @@ public interface RepairOrderService {
     void update(RepairOrder newOrder, RepairOrder oldOrder) throws Exception;
 
     List<StatsCount> statsRepairOrder(StatsQueryParam queryParam);
+
+    List<RepairOrderFull> listFull(RepairOrderQueryParam param);
 }

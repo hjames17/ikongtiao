@@ -10,6 +10,7 @@ import lombok.Data;
 public class MissionDto extends Mission{
 
 	String adminName;
+	String fixerName;
 	Integer repairOrderCount;
 
 }

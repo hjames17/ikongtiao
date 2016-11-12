@@ -81,7 +81,7 @@ public class JPusher implements InitializingBean {
 		Audience audience = null;
 		// FIXME 线上环境把apnsProduction(true)
 		Options.Builder optionBuilder = Options.newBuilder()
-											.setApnsProduction(!dev)
+											.setApnsProduction(true)
 											.setSendno(jpm.getId());
 		JsonObject jsonObject = new JsonObject();
 		for(String key : jpm.getExtras().keySet()){

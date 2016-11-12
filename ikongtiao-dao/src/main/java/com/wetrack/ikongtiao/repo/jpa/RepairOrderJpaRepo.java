@@ -17,4 +17,6 @@ public interface RepairOrderJpaRepo extends JpaRepository<RepairOrder, Long> {
     List<Integer> findNonFinished(List<Integer> missionIds, List<Byte> states);
     //select * from repair_order where mission_id in #{list2} and repair_order_state=6 order by update_time desc
     List<RepairOrder> findByMissionIdInAndRepairOrderState(List<Integer> missionIds, Byte state, Sort sort);
+
+    List<RepairOrder> findByMissionSerialNumberInAndRepairOrderState(List<String> fixingMissionSerialNumbers, Byte state, Sort sort);
 }

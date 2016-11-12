@@ -2,7 +2,7 @@ package com.wetrack.ikongtiao.notification.controllers;
 
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.notification.services.MessageMultiChannelService;
-import com.wetrack.ikongtiao.notification.services.NotificationService;
+import com.wetrack.ikongtiao.notification.services.ScheduledTaskService;
 import com.wetrack.ikongtiao.notification.statistics.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class PushController {
     MessageMultiChannelService messageService;
 
     @Autowired
-    NotificationService notificationService;
+    ScheduledTaskService scheduledTaskService;
 
     /**
      * TODO 接口的访问安全性
@@ -60,7 +60,13 @@ public class PushController {
     @ResponseBody
     @RequestMapping("/unAM")
     public String finishUnattendedMission(){
-        notificationService.finishUnattendedMissions();
+        scheduledTaskService.finishUnattendedMissions();
+        return "ok";
+    }
+    @ResponseBody
+    @RequestMapping("/test/sl")
+    public String testServiceLogNoti(){
+        scheduledTaskService.serviceLogNotification();
         return "ok";
     }
 

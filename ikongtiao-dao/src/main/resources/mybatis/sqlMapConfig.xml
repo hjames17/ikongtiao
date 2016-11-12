@@ -3,6 +3,7 @@
 <configuration>
 	<settings>
 		<setting name="autoMappingBehavior" value="PARTIAL" />
+		<setting name="mapUnderscoreToCamelCase" value="true" />
 		<setting name="defaultExecutorType" value="SIMPLE" />
 		<setting name="defaultStatementTimeout" value="30" />
 		<setting name="logImpl" value="SLF4J" />

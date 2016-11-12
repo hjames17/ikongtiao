@@ -263,6 +263,24 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 				return message;
 			}
 		});
+
+		registerAdapter(MessageId.SERVICE_LOG, new MessageAdapter() {
+			@Override
+			public Message build(int messageId, Map<String, Object> params) {
+				WechatMessage message = new WechatMessage();
+				UserInfo userInfo = userInfoRepo.getById((String) params.get(MessageParamKey.USER_ID));
+				message.setReceiver(userInfo.getWechatOpenId());
+				message.setTitle("任务有新的进展");
+
+				String content = String.format("任务%s最新进度:%s", params.get(MessageParamKey.MISSION_SID), params.get(MessageParamKey.LOG_TEXT));
+				message.setContent(content);
+				message.setPicUrl(staticHost + "/images/ikongtiao/m_3.png");
+				String url = String.format("%s%s&action=%s&uid=%s&id=%s",
+						weixinPageHost, weixinMissionPage, ACTION_DETAIL, userInfo.getId(), params.get(MessageParamKey.MISSION_SID));
+				message.setUrl(url);
+				return message;
+			}
+		});
 	}
 
 	@Autowired

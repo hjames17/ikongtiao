@@ -86,6 +86,19 @@ public class ImSessionRepoImpl implements ImSessionRepo {
 			}
 		}
 
+		//如果有当前会话的客服个数少于全部的在线客服个数，则说明有些客服完全空闲，这时候把他们优先返回
+		if(map.size() < kefuCloudIdList.size()){
+			//随机找个一个即可
+			for(String cloudId : kefuCloudIdList){
+				if(map.get(cloudId) == null){
+					ImSessionCount zeroCount = new ImSessionCount();
+					zeroCount.setCount(0);
+					zeroCount.setPeerId(cloudId);
+					map.put(cloudId, zeroCount);
+				}
+			}
+		}
+
 		//排序
 		Collection<ImSessionCount> collection = map.values();
 		List<ImSessionCount> list = new ArrayList<ImSessionCount>(collection);
@@ -95,6 +108,7 @@ public class ImSessionRepoImpl implements ImSessionRepo {
 				return o1.getCount() - o2.getCount();
 			}
 		});
+
 		return list;
 	}
 

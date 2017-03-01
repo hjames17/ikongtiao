@@ -62,6 +62,9 @@ public interface MissionRepo {
 	List<MissionDto> listMissionIdByFixer(FixerMissionQueryParam param) throws Exception;
 
 	Integer countMissionByFixer(FixerMissionQueryParam param) throws Exception;
+	Long countMissionDuration(StatsQueryParam param);
 
 	List<StatsCount> statsMissions(StatsQueryParam queryParam);
+
+	List<MissionDetail> listMissionFullByDuration(StatsQueryParam param);
 }

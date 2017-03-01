@@ -55,4 +55,6 @@ public interface UserInfoRepo {
 	List<UserInfo> listInIds(List<String> ids);
 
 	UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone);
+
+	UserInfo findByAccountEmail(String email);
 }

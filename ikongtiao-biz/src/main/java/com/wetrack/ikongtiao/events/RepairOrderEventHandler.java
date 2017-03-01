@@ -1,6 +1,6 @@
 package com.wetrack.ikongtiao.events;
 
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.ServiceLog;
@@ -98,7 +98,7 @@ public class RepairOrderEventHandler implements EventHandler {
             case PREPARED:
                 return "确认了配件已到位";
             case FIXING:
-                if(event.getOperatorType() == AccountType.FIXER){
+                if(event.getOperatorType() == OperatorType.FIXER){
                     return "创建了快速维修单";
                 }else{
                     return "指派了维修员";

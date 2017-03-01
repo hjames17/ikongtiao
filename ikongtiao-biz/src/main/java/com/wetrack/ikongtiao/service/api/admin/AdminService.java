@@ -1,9 +1,9 @@
 package com.wetrack.ikongtiao.service.api.admin;
 
-import com.wetrack.auth.domain.Token;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.param.AdminQueryForm;
+import studio.wetrack.accountService.auth.domain.Token;
 
 /**
  * Created by zhanghong on 15/12/30.

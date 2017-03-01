@@ -18,6 +18,10 @@
     ro.repair_order_state as ro_repair_order_state
   </sql>
 
+  <sql id="no_r_o_columns" >
+    mission.*, fixer.name as fixer_name
+  </sql>
+
 
   <select id="listByQueryParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.AppMissionQueryParam" >
     SELECT DISTINCT <include refid="columns"/>
@@ -85,5 +89,29 @@
       </if>
     </where>
     order by create_time desc
+  </select>
+
+  <select id="listForDurationQuery" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam" >
+    SELECT DISTINCT <include refid="no_r_o_columns"/>
+    from mission
+    LEFT OUTER JOIN fixer
+    ON mission.fixer_id = fixer.id
+    <where>
+        mission_state = 10
+      <if test="updateTimeStart != null">
+        and update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and update_time &lt;= #{updateTimeEnd}
+      </if>
+      <if test="durationStart != null">
+        and timestampdiff(hour, create_time, update_time) &gt;= #{durationStart}
+      </if>
+      <if test="durationEnd != null">
+        and timestampdiff(hour, create_time, update_time) &lt; #{durationEnd}
+      </if>
+    </where>
+    order by create_time desc
+    limit #{start},#{pageSize}
   </select>
 </mapper>

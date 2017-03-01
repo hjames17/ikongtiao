@@ -7,7 +7,7 @@
  */
 package com.wetrack.ikongtiao.domain;
 
-import com.wetrack.ikongtiao.domain.fixer.FixerType;
+import com.wetrack.ikongtiao.domain.admin.UserType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -37,7 +37,7 @@ public class Fixer implements Serializable {
      */
     Boolean jkMaintainer;
 
-    FixerType type;
+    UserType type;
 
     /**
      * avatar:维修员头像

@@ -38,40 +38,47 @@
     </style>
 </head>
 <body>
-    <h2>维大师运营周报$fromDay 到 $endDay</h2>
-    <table class="dataintable">
-        <tbody>
-            <tr>
-                <th>本周新增任务数量</th>
-                <th>本周完成任务数量</th>
-                <th>截止目前剩余未完成的任务数量</th>
-                <th>本周任务应收合计</th>
-            </tr>
+<h2>维大师运营周报$fromDay 到 $endDay</h2>
+<table class="dataintable">
+    <tbody>
+    <tr>
+        <th>本周新增任务数量</th>
+        <th>本周完成任务数量</th>
+        <th>截止目前剩余未完成的任务数量</th>
+        <th>本周任务应收合计</th>
+    </tr>
 
-            <tr>
-                <td>$newMissionCount </td>
-                <td>$finishedMissionCount </td>
-                <td>$unfinishedMissionCount </td>
-                #set($acr=${activeRate}*100)
-                <td>¥$income </td>
-            </tr>
-        </tbody>
-    </table>
+    <tr>
+        <td>$newMissionCount </td>
+        <td>$finishedMissionCount </td>
+        <td>$unfinishedMissionCount </td>
+        #set($acr=${activeRate}*100)
+        <td>¥$income </td>
+    </tr>
+    </tbody>
+</table>
 
-    <h2>新增任务地区分布</h2>
-    <table class="dataintable">
-        <tbody>
-        <tr>
-            <th>省份</th>
-            <th>单数</th>
-        </tr>
+<h2>新增任务地区分布</h2>
+<table class="dataintable">
+    <tbody>
+    <tr>
+        <th>省份</th>
+        <th>单数</th>
+    </tr>
         #foreach($item in $areaList)
-            <tr>
-                <td>$item.getName()</td>
-                <td>$item.getCount()</td>
-            </tr>
+        <tr>
+            <td>$item.getName()</td>
+            <td>$item.getCount()</td>
+        </tr>
         #end
-        </tbody>
-    </table>
+    </tbody>
+</table>
+<h2>完成任务的时长分布</h2>
+
+<div style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+    <img src="$chartUrl" >
+    <a href="$adminPage?start=$startTime&end=$endTime#/statistical-fan">点击在浏览器中查看明细</a>
+</div>
+
 </body>
 </html>

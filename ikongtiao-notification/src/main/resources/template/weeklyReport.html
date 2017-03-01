@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>[维大师运营周报]$fromDay 到 $endDay </title>
+    <style>
+        table.dataintable {
+            margin-top:10px;
+            border-collapse:collapse;
+            border:1px solid #aaa;
+            width:100%;
+        }
+
+        table.dataintable th {
+            vertical-align:baseline;
+            padding:5px 15px 5px 6px;
+            background-color:#d5d5d5;
+            border:1px solid #aaa;
+            text-align:left;
+        }
+
+        table.dataintable td {
+            vertical-align:text-top;
+            padding:6px 15px 6px 6px;
+            background-color:#efefef;
+            border:1px solid #aaa;
+        }
+
+        table.dataintable pre {
+            width:auto;
+            margin:0;
+            padding:0;
+            border:0;
+            background-color:transparent;
+        }
+
+        table.dataintable p {margin:0 0 2px 0;}
+    </style>
+</head>
+<body>
+<h2>维大师运营周报$fromDay 到 $endDay</h2>
+<table class="dataintable">
+    <tbody>
+    <tr>
+        <th>本周新增任务数量</th>
+        <th>本周完成任务数量</th>
+        <th>截止目前剩余未完成的任务数量</th>
+        <th>本周任务应收合计</th>
+    </tr>
+
+    <tr>
+        <td>$newMissionCount </td>
+        <td>$finishedMissionCount </td>
+        <td>$unfinishedMissionCount </td>
+        #set($acr=${activeRate}*100)
+        <td>¥$income </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>新增任务地区分布</h2>
+<table class="dataintable">
+    <tbody>
+    <tr>
+        <th>省份</th>
+        <th>单数</th>
+    </tr>
+    #foreach($item in $areaList)
+    <tr>
+        <td>$item.getName()</td>
+        <td>$item.getCount()</td>
+    </tr>
+    #end
+    </tbody>
+</table>
+
+<h2>完成任务的时长分布</h2>
+
+<div style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+    <img src="http://static.wetrack.studio/images/chart/20170102.png" >
+
+</div>
+
+<!--<script src="https://code.highcharts.com/highcharts.js"></script>-->
+<!--<script src="https://code.highcharts.com/modules/exporting.js"></script>-->
+<!--<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>-->
+<!--<div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>-->
+<!--<button id="button">Export chart</button>-->
+<!--<script>-->
+    <!--$(function () {-->
+
+        <!--// Radialize the colors-->
+        <!--Highcharts.getOptions().colors = Highcharts.map(Highcharts.getOptions().colors, function (color) {-->
+            <!--return {-->
+                <!--radialGradient: {-->
+                    <!--cx: 0.5,-->
+                    <!--cy: 0.3,-->
+                    <!--r: 0.7-->
+                <!--},-->
+                <!--stops: [-->
+                    <!--[0, color],-->
+                    <!--[1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken-->
+                <!--]-->
+            <!--};-->
+        <!--});-->
+
+        <!--// Build the chart-->
+        <!--var chart = Highcharts.chart('container', {-->
+            <!--chart: {-->
+                <!--plotBackgroundColor: null,-->
+                <!--plotBorderWidth: null,-->
+                <!--plotShadow: false,-->
+                <!--type: 'pie'-->
+            <!--},-->
+            <!--title: {-->
+                <!--text: '本周完成的任务时长分布'-->
+            <!--},-->
+            <!--tooltip: {-->
+                <!--pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'-->
+            <!--},-->
+            <!--plotOptions: {-->
+                <!--pie: {-->
+                    <!--allowPointSelect: true,-->
+                    <!--cursor: 'pointer',-->
+                    <!--dataLabels: {-->
+                        <!--enabled: true,-->
+                        <!--format: '<b>{point.name}</b>: {point.percentage:.1f} %',-->
+                        <!--style: {-->
+                            <!--color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'-->
+                        <!--},-->
+                        <!--connectorColor: 'silver'-->
+                    <!--}-->
+                <!--}-->
+            <!--},-->
+            <!--series: [{-->
+                <!--name: '占比',-->
+                <!--colorByPoint: true,-->
+                <!--data: [{-->
+                    <!--name: '24小时内',-->
+                    <!--y: 56.33-->
+                <!--}, {-->
+                    <!--name: '3天以内',-->
+                    <!--y: 24.03,-->
+                    <!--sliced: true,-->
+                    <!--selected: true-->
+                <!--}, {-->
+                    <!--name: '3到7天',-->
+                    <!--y: 10.38-->
+                <!--}, {-->
+                    <!--name: '7天以上',-->
+                    <!--y: 4.77-->
+                <!--}, {-->
+                    <!--name: '1个月以上',-->
+                    <!--y: 0.91-->
+                <!--}]-->
+            <!--}]-->
+        <!--});-->
+
+        <!--// the button handler-->
+        <!--$('#button').click(function () {-->
+            <!--chart.exportChart({-->
+                <!--type: 'application/pdf',-->
+                <!--filename: 'my-pdf'-->
+            <!--});-->
+        <!--});-->
+    <!--});-->
+<!--</script>-->
+</body>
+</html>

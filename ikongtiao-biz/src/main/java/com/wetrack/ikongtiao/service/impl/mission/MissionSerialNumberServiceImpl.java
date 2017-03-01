@@ -4,6 +4,7 @@ import com.wetrack.ikongtiao.service.api.mission.MissionSerialNumberService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -19,6 +20,7 @@ import java.util.Locale;
 public class MissionSerialNumberServiceImpl implements MissionSerialNumberService, InitializingBean {
 
     @Autowired
+    @Qualifier("redisTemplate")
     RedisTemplate<String, Long> redisTemplate;
 
     private static final String REDIS_PREFIX = "MS_";

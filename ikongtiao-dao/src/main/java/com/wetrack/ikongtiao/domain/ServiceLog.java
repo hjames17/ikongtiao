@@ -17,7 +17,7 @@ public class ServiceLog {
     String log;
     Date targetDate; //日志针对的服务时间
     Date createDate; //日志填写的时间
-    AccountType creatorType;
+    OperatorType creatorType;
     String creatorId;
     Boolean missed;//是不是补写的
     String creatorName;

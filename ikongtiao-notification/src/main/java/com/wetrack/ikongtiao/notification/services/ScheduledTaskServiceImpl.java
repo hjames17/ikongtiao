@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.param.ServiceLogQueryParam;
@@ -127,7 +127,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
             //保存更新队列，发送消息
             for(Integer missionId : finishedIds){
                 try {
-                    missionService.finishMission(missionId.toString(), AccountType.SYSTEM, null);
+                    missionService.finishMission(missionId.toString(), OperatorType.SYSTEM, null);
                 } catch (Exception e) {
                     log.error("can't update mission {} to finish state, {}", missionId, e.getMessage());
                     e.printStackTrace();
@@ -177,7 +177,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
             if(ordersOfFixing != null && ordersOfFixing.size() > 0){
                 for(RepairOrder order : ordersOfFixing){
                     Map<String, Object> params = new HashMap<String, Object>();
-                    params.put(MessageParamKey.OPERATOR_TYPE, AccountType.FIXER);
+                    params.put(MessageParamKey.OPERATOR_TYPE, OperatorType.FIXER);
                     params.put(MessageParamKey.OPERATOR_ID, order.getFixerId());
                     params.put(MessageParamKey.MISSION_SID, order.getMissionSerialNumber());
                     params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
@@ -195,7 +195,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
             if(ordersOfNew.size() > 0){
                 for(RepairOrder order : ordersOfNew){
                     Map<String, Object> params = new HashMap<String, Object>();
-                    params.put(MessageParamKey.OPERATOR_TYPE, AccountType.ADMIN);
+                    params.put(MessageParamKey.OPERATOR_TYPE, OperatorType.ADMIN);
                     params.put(MessageParamKey.OPERATOR_ID, order.getAdminUserId());
                     params.put(MessageParamKey.MISSION_SID, order.getMissionSerialNumber());
                     params.put(MessageParamKey.REPAIR_ORDER_SID, order.getSerialNumber());
@@ -211,7 +211,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
         if(acceptedList.size() > 0){
             for(Mission mission : acceptedList){
                 Map<String, Object> params = new HashMap<String, Object>();
-                params.put(MessageParamKey.OPERATOR_TYPE, AccountType.ADMIN);
+                params.put(MessageParamKey.OPERATOR_TYPE, OperatorType.ADMIN);
                 params.put(MessageParamKey.OPERATOR_ID, mission.getAdminUserId());
                 params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
                 defaultMessageService.send(MessageId.SERVICE_LOG_NOTIFY, params);
@@ -224,7 +224,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
         if(assignedList.size() > 0){
             for(Mission mission : acceptedList){
                 Map<String, Object> params = new HashMap<String, Object>();
-                params.put(MessageParamKey.OPERATOR_TYPE, AccountType.FIXER);
+                params.put(MessageParamKey.OPERATOR_TYPE, OperatorType.FIXER);
                 params.put(MessageParamKey.OPERATOR_ID, mission.getFixerId());
                 params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
                 defaultMessageService.send(MessageId.SERVICE_LOG_NOTIFY, params);

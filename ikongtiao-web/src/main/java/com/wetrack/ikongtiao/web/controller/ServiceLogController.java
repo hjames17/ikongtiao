@@ -1,6 +1,5 @@
 package com.wetrack.ikongtiao.web.controller;
 
-import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.ServiceLog;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

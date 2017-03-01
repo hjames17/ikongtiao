@@ -1,9 +1,6 @@
 package com.wetrack.ikongtiao.web.controller;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.*;
 import com.wetrack.ikongtiao.exception.BusinessException;
@@ -18,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.domain.User;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -84,7 +84,7 @@ public class FixerController {
     @SignTokenAuth
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/logout", method = RequestMethod.POST)
-    void logout(@RequestBody LoginOut form, HttpServletRequest request) throws Exception{
+    void logout(@RequestBody LoginOut form) throws Exception{
         tokenService.logout(form.getToken());
     }
 

@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.param;
 
 import com.wetrack.base.page.BaseCondition;
-import com.wetrack.ikongtiao.domain.admin.AdminType;
+import com.wetrack.ikongtiao.domain.admin.UserType;
 
 /**
  * Created by zhanghong on 15/12/30.
@@ -12,7 +12,7 @@ public class AdminQueryForm extends BaseCondition {
     String phone;
     String name;
     String email;
-    AdminType adminType;
+    UserType adminType;
 
 
     public Boolean isInService() {
@@ -47,11 +47,11 @@ public class AdminQueryForm extends BaseCondition {
         this.email = email;
     }
 
-    public AdminType getAdminType() {
+    public UserType getAdminType() {
         return adminType;
     }
 
-    public void setAdminType(AdminType adminType) {
+    public void setAdminType(UserType adminType) {
         this.adminType = adminType;
     }
 }

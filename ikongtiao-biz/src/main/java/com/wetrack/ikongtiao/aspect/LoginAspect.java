@@ -1,10 +1,11 @@
 package com.wetrack.ikongtiao.aspect;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.domain.User;
-import com.wetrack.auth.service.TokenService;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.domain.User;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 /**
  * Created by zhanghong on 16/4/6.

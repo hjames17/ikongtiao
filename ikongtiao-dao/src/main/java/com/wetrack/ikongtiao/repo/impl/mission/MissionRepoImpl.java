@@ -151,6 +151,11 @@ public class MissionRepoImpl implements MissionRepo {
 	}
 
 	@Override
+	public Long countMissionDuration(StatsQueryParam param) {
+		return commonDao.mapper(Mission.class).sql("countDurationBetween").session().selectOne(param);
+	}
+
+	@Override
 	public List<StatsCount> statsMissions(StatsQueryParam queryParam) {
 
 		String selectStatement = null;
@@ -171,6 +176,11 @@ public class MissionRepoImpl implements MissionRepo {
 
 		return commonDao.mapper(Mission.class).sql(selectStatement).session()
 				.selectList(queryParam);
+	}
+
+	@Override
+	public List<MissionDetail> listMissionFullByDuration(StatsQueryParam param) {
+		return commonDao.mapper(MissionDetail.class).sql("listForDurationQuery").session().selectList(param);
 	}
 
 }

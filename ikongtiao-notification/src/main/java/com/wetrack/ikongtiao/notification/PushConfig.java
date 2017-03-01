@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Configuration
 @EnableScheduling
-public class Config {
+public class PushConfig {
 
 
     String velocityResourcePath = "classpath:/template";

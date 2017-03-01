@@ -10,6 +10,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -38,6 +39,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     @Value("${sms.password}")
     String password;
     @Autowired
+    @Qualifier("redisTemplate")
     private RedisTemplate<Serializable, Serializable> jedisTemplate;
 
     @Override

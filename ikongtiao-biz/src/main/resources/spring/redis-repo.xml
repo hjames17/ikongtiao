@@ -44,4 +44,8 @@
 	<property name="connectionFactory" ref="jedisConnFactory" />
 	<property name="hashKeySerializer" ref="stringRedisSerializer" />
 	</bean>
+	<bean id="tokenRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+	<property name="connectionFactory" ref="jedisConnFactory" />
+	<property name="hashKeySerializer" ref="stringRedisSerializer" />
+	</bean>
 </beans>

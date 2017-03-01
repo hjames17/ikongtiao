@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.dto.MachineUnitDto" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.dto.MachineUnitDto" autoMapping="true">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <!--<collection property="values" columnPrefix="muv_" ofType="com.wetrack.ikongtiao.dto.MachineUnitValueDto" autoMapping="true">-->
+    <collection property="values" ofType="com.wetrack.ikongtiao.dto.MachineUnitValueDto" select="selectValues" column="id" autoMapping="true">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    </collection>
+
+  </resultMap>
+  <sql id="fields" >
+    machine_unit.*,
+--     machine_unit_value.field_id as muv_field_id, machine_unit_value.unit_id as muv_unit_id, machine_unit_value.value as muv_value,
+--     machine_type.name as type_name, machine_type.img as type_img,
+    plate_template.template_html as plate_template_html, plate_template.title as plate_title
+--     machine_field_def.name as muv_name
+  </sql>
+
+
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    SELECT <include refid="fields"/>
+    from machine_unit
+    <!--LEFT OUTER JOIN machine_type-->
+    <!--ON machine_type.id = machine_unit.type_id-->
+    LEFT OUTER JOIN plate_template
+    ON plate_template.id = machine_unit.plate_template_id
+    <!--LEFT OUTER JOIN machine_model-->
+    <!--ON machine_model.id = machine_type.machine_model_id-->
+    LEFT OUTER JOIN machine_unit_value
+    ON machine_unit_value.unit_id = machine_unit.id
+    LEFT OUTER JOIN machine_field_def
+    ON machine_unit_value.field_id = machine_field_def.id
+    WHERE machine_unit.id = #{id}
+  </select>
+
+
+  <select id="searchByParam" parameterType="com.wetrack.ikongtiao.param.MachineUnitQueryParam" resultMap="BaseResultMap" >
+    SELECT <include refid="fields"/>
+    from machine_unit
+    LEFT OUTER JOIN plate_template
+    ON plate_template.id = machine_unit.plate_template_id
+    <!--LEFT OUTER JOIN machine_unit_value-->
+    <!--ON machine_unit_value.unit_id = machine_unit.id-->
+    <!--LEFT OUTER JOIN machine_field_def-->
+    <!--ON machine_unit_value.field_id = machine_field_def.id-->
+    <where>
+      <if test="plateTemplateId!=null">
+        plate_template_id = #{plateTemplateId}
+      </if>
+    </where>
+    order by id desc
+    limit #{start}, #{pageSize}
+  </select>
+
+  <select id="countByParam" parameterType="com.wetrack.ikongtiao.param.MachineUnitQueryParam" resultType="com.wetrack.base.page.BaseCondition"  >
+    SELECT COUNT(*) as totalSize
+    from machine_unit
+    <where>
+      <if test="plateTemplateId!=null">
+        plate_template_id = #{plateTemplateId}
+      </if>
+    </where>
+</select>
+
+  <select id="selectValues" parameterType="java.lang.Long" resultType="com.wetrack.ikongtiao.dto.MachineUnitValueDto">
+    SELECT * from machine_unit_value
+    LEFT OUTER JOIN machine_field_def
+    ON machine_unit_value.field_id = machine_field_def.id
+    WHERE unit_id=#{id}
+  </select>
+</mapper>

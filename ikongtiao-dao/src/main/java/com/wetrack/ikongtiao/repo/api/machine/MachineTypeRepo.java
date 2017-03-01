@@ -1,6 +1,6 @@
 package com.wetrack.ikongtiao.repo.api.machine;
 
-import com.wetrack.ikongtiao.domain.MachineType;
+import com.wetrack.ikongtiao.domain.machine.MachineType;
 
 import java.util.List;
 
@@ -18,12 +18,13 @@ public interface MachineTypeRepo {
 	 * @param machineTypeId
 	 * @return
 	 */
-	MachineType getMachineTypeById(Integer machineTypeId);
+	MachineType getMachineTypeById(Long machineTypeId);
 
 	/**
 	 * 获取所有机器类型,限制了只有100
 	 * @param parentId 0表示获取所有一级，其他表示获取该级别下面的
 	 * @return
 	 */
-	List<MachineType> listAllMachineType(Integer parentId);
+	List<MachineType> listAllMachineType(Long parentId);
+
 }

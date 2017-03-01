@@ -25,6 +25,11 @@ public class StatsQueryParam extends BaseCondition {
 	boolean descent;
 
 
+	//任务持续的时长，单位小时
+	Integer durationStart;
+	Integer durationEnd;
+
+
 	public enum GroupType{
 		BY_PROVINCE,
 		BY_FIXER,

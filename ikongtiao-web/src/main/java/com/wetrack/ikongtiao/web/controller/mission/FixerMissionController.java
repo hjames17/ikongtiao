@@ -1,11 +1,10 @@
 package com.wetrack.ikongtiao.web.controller.mission;
 
-import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
-import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.FixerMissionQueryParam;
@@ -15,6 +14,7 @@ import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.User;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +72,6 @@ public class FixerMissionController {
 		if(!"开机调试".equals(faultType.getName())){
 			throw new BusinessException("非开机调试任务不允许服务人员设为完成");
 		}
-		missionService.finishMission(id, AccountType.FIXER, user.getId());
+		missionService.finishMission(id, OperatorType.FIXER, user.getId());
 	}
 }

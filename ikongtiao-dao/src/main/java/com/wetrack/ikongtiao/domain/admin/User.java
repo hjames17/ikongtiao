@@ -33,7 +33,7 @@ public class User {
     //便于存储
     //格式: kefu;financial
 //    String rolesString;
-    AdminType adminType;
+    UserType adminType;
 
     public String getEmail() {
         return email;
@@ -73,12 +73,6 @@ public class User {
 
     public String[] getRolesArrayString(){
         return adminType.getRolesStringArray();
-//        if(rolesString == null || rolesString.isEmpty()){
-//            return null;
-//        }
-//
-//        String[] parts = rolesString.split(DELIMITER);
-//        return parts;
     }
 
 //    public String getRolesString() {
@@ -148,11 +142,11 @@ public class User {
 //        this.roles = roles;
 //    }
 
-    public AdminType getAdminType() {
+    public UserType getAdminType() {
         return adminType;
     }
 
-    public void setAdminType(AdminType adminType) {
+    public void setAdminType(UserType adminType) {
         this.adminType = adminType;
     }
 

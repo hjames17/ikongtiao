@@ -1,6 +1,6 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
@@ -251,8 +251,8 @@ public class SmsMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.SERVICE_LOG_NOTIFY, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
-                AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
-                if(targetUserType != AccountType.FIXER){
+                OperatorType targetUserType = OperatorType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+                if(targetUserType != OperatorType.FIXER){
                     return null;
                 }
                 SmsMessage message = new SmsMessage();

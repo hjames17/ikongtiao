@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.repo.impl.machine;
 
 import com.wetrack.base.dao.api.CommonDao;
-import com.wetrack.ikongtiao.domain.MachineType;
+import com.wetrack.ikongtiao.domain.machine.MachineType;
 import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
 import org.springframework.stereotype.Repository;
 
@@ -27,11 +27,11 @@ public class MachineTypeRepoImpl implements MachineTypeRepo {
 		return commonDao.mapper(MachineType.class).sql("updateByPrimaryKeySelective").session().update(machineType);
 	}
 
-	@Override public MachineType getMachineTypeById(Integer machineTypeId) {
+	@Override public MachineType getMachineTypeById(Long machineTypeId) {
 		return commonDao.mapper(MachineType.class).sql("selectByPrimaryKey").session().selectOne(machineTypeId);
 	}
 
-	@Override public List<MachineType> listAllMachineType(Integer parentId) {
+	@Override public List<MachineType> listAllMachineType(Long parentId) {
 		return commonDao.mapper(MachineType.class).sql("listAllMachineType").session().selectList(parentId);
 	}
 }

@@ -10,6 +10,7 @@ import com.wetrack.message.MessageService;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class PaymentServiceImpl implements PaymentService, InitializingBean {
 
 
     @Autowired
+    @Qualifier("redisTemplate")
     RedisTemplate<String, String> redisTemplate;
     BoundHashOperations<String, String, String> tokenHashOps;
 

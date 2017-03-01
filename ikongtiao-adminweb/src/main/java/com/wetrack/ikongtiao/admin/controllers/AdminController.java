@@ -1,34 +1,41 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
-import com.wetrack.auth.domain.SimpleGrantedAuthority;
-import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.exceptions.TokenAuthorizationException;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.auth.filter.SignTokenAuthInterceptor;
-import com.wetrack.auth.service.AuthorizationService;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.utils.encrypt.MD5;
-import com.wetrack.ikongtiao.domain.admin.AdminType;
+import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.admin.Role;
 import com.wetrack.ikongtiao.domain.admin.User;
+import com.wetrack.ikongtiao.domain.admin.UserType;
+import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AdminQueryForm;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
+import com.wetrack.ikongtiao.service.api.fixer.FixerService;
+import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.ikongtiao.utils.Util;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.SimpleGrantedAuthority;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.service.AuthorizationService;
+import studio.wetrack.accountService.auth.service.TokenService;
+import studio.wetrack.accountService.domain.Type;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wetrack.ikongtiao.domain.admin.AdminType.MANAGER;
+import static com.wetrack.ikongtiao.domain.admin.UserType.MANAGER;
 
 /**
  * Created by zhanghong on 15/12/28.
@@ -55,7 +62,7 @@ public class AdminController {
     public PageList<User> list(@RequestParam(required = false, value = "inService") Boolean inService,
                                 @RequestParam(required = false, value = "name") String name,
                                 @RequestParam(required = false, value = "email") String email,
-                                @RequestParam(required = false, value = "adminType") AdminType adminType,
+                                @RequestParam(required = false, value = "adminType") UserType adminType,
                                 @RequestParam(required = false, value = "phone") String phone,
                                 @RequestParam(required = false, value = "page") Integer page,
                                 @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
@@ -110,12 +117,78 @@ public class AdminController {
         return out;
     }
 
+//    @Autowired
+//    AccountService accountService;
+    @Autowired
+    FixerService fixerService;
+    @Autowired
+    UserInfoService userInfoService;
+    @ResponseBody
+    @RequestMapping(value = "/unifyLogin", method = RequestMethod.POST)
+    studio.wetrack.accountService.domain.LoginOut unifyLogin(@RequestBody UnifiedLoginForm unifiedLoginForm) throws Exception{
+
+        switch (unifiedLoginForm.getType().getName()){
+            case AccountType.ADMIN:
+                LoginForm alf = new LoginForm();
+                alf.setEmail(unifiedLoginForm.getEmail());
+                alf.setPassword(unifiedLoginForm.getPassword());
+                LoginOut lo = login(alf);
+                studio.wetrack.accountService.domain.LoginOut out = new studio.wetrack.accountService.domain.LoginOut();
+                out.setToken(lo.getToken());
+                out.setId(lo.getId());
+                out.setType(toUserType(lo.getUserInfo().getAdminType()));
+                return out;
+            case AccountType.FIXER:
+                return fixerLogin(unifiedLoginForm.getPhone(), unifiedLoginForm.getPassword());
+            case AccountType.CUSTOMER:
+                return customerLogin(unifiedLoginForm.getPhone() == null ? unifiedLoginForm.getEmail() : unifiedLoginForm.getPhone(), unifiedLoginForm.getPassword());
+            default:
+                throw new BusinessException("无效的用户类型" + unifiedLoginForm.getType().getName());
+        }
+
+    }
+
+    private Type toUserType(UserType userType) {
+        return new Type() {
+            @Override
+            public String getName() {
+                return userType.getName();
+            }
+
+            @Override
+            public String[] getRolesStringArray() {
+                return userType.getRolesStringArray();
+            }
+        };
+    }
+
+
+    studio.wetrack.accountService.domain.LoginOut fixerLogin(String phone, String password) throws Exception{
+        Token token = fixerService.login(phone, password);
+        studio.wetrack.accountService.domain.LoginOut out = new studio.wetrack.accountService.domain.LoginOut();
+        out.setToken(token.getToken());
+        out.setId(fixerService.getFixerIdFromTokenUser(token.getUser()).toString());
+        Fixer fixer = fixerService.getFixer(fixerService.getFixerIdFromTokenUser(token.getUser()));
+        out.setType(toUserType(fixer.getType()));
+        return out;
+    }
+
+    studio.wetrack.accountService.domain.LoginOut customerLogin(String accountName, String password) throws Exception{
+        Token token = userInfoService.login(accountName, password);
+        UserInfo userInfo = userInfoService.findByAccountName(accountName);
+        studio.wetrack.accountService.domain.LoginOut out = new studio.wetrack.accountService.domain.LoginOut();
+        out.setToken(token.getToken());
+        out.setId(userInfoService.userIdFromToken(token.getUser().getId()));
+        out.setType(toUserType(userInfo.getUserType()));
+        return out;
+    }
+
     @SignTokenAuth
     @ResponseBody
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     void login(@RequestBody LoginOut form, HttpServletRequest request) throws Exception{
         tokenService.logout(form.getToken());
-        com.wetrack.auth.domain.User user = (com.wetrack.auth.domain.User)request.getAttribute("user");
+        studio.wetrack.accountService.auth.domain.User user = (studio.wetrack.accountService.auth.domain.User)request.getAttribute("user");
         adminService.dutyOn(Integer.valueOf(user.getId()), false);
     }
 
@@ -123,7 +196,7 @@ public class AdminController {
     @ResponseBody
     @RequestMapping(value = "/duty", method = RequestMethod.POST)
     void dutyOnOff(@RequestParam(value = "on", required = true) boolean on, HttpServletRequest request) throws Exception{
-        com.wetrack.auth.domain.User user = (com.wetrack.auth.domain.User)request.getAttribute("user");
+        studio.wetrack.accountService.auth.domain.User user = (studio.wetrack.accountService.auth.domain.User)request.getAttribute("user");
         adminService.dutyOn(Integer.valueOf(user.getId()), on);
     }
 
@@ -282,7 +355,7 @@ public class AdminController {
 //        }
     }
 
-    static class LoginForm{
+    public static class LoginForm{
         String email;
         String password;
 
@@ -301,5 +374,13 @@ public class AdminController {
         public void setPassword(String password) {
             this.password = password;
         }
+    }
+
+    @Data
+    static class UnifiedLoginForm{
+        String email;
+        String phone;
+        String password;
+        AccountType type;
     }
 }

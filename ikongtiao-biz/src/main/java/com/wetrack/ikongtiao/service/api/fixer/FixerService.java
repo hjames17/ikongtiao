@@ -1,13 +1,13 @@
 package com.wetrack.ikongtiao.service.api.fixer;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.domain.User;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.domain.User;
 
 import java.util.List;
 

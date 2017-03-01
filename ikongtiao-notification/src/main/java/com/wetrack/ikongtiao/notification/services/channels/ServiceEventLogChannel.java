@@ -2,7 +2,7 @@ package com.wetrack.ikongtiao.notification.services.channels;
 
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.events.*;
 import com.wetrack.ikongtiao.notification.services.AbstractMessageChannel;
 import com.wetrack.ikongtiao.notification.services.Message;
@@ -36,7 +36,7 @@ public class ServiceEventLogChannel extends AbstractMessageChannel {
 
                 MissionEvent event = new MissionEvent();
                 event.setOperatorId(params.get(MessageParamKey.OPERATOR_ID).toString());
-                event.setOperatorType(AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString()));
+                event.setOperatorType(OperatorType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString()));
                 event.setMissionId(params.get(MessageParamKey.MISSION_SID).toString());
                 event.setState(MissionState.fromCode(Integer.valueOf(params.get(MessageParamKey.MISSION_STATE).toString())));
                 event.setTime(new Date(Long.valueOf(params.get(MessageParamKey.TIME).toString())));
@@ -65,7 +65,7 @@ public class ServiceEventLogChannel extends AbstractMessageChannel {
                 event.setRepairOrderId(params.get(MessageParamKey.REPAIR_ORDER_SID).toString());
                 event.setMissionId(params.get(MessageParamKey.MISSION_SID).toString());
                 event.setOperatorId(params.get(MessageParamKey.OPERATOR_ID).toString());
-                event.setOperatorType(AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString()));
+                event.setOperatorType(OperatorType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString()));
                 event.setTime(new Date(Long.valueOf(params.get(MessageParamKey.TIME).toString())));
 
                 ServiceLogMessage message = new ServiceLogMessage();

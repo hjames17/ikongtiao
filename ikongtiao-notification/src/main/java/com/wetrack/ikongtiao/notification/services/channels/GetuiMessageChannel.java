@@ -1,10 +1,9 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.Constants;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
@@ -197,8 +196,8 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.SERVICE_LOG_NOTIFY, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
-                AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
-                if(targetUserType != AccountType.FIXER){
+                OperatorType targetUserType = OperatorType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+                if(targetUserType != OperatorType.FIXER){
                     return null;
                 }
                 GetuiMessage message = new GetuiMessage();
@@ -294,15 +293,15 @@ public class GetuiMessageChannel extends AbstractMessageChannel {
         boolean success = jPusher.pushEvent(jpMessage);
     }
 
-    @Autowired
-    TokenService tokenService;
+//    @Autowired
+//    TokenService tokenService;
     private boolean clientOffLine(Map<String, Object> params){
         Integer fixerId = null;
         if(params.get(MessageParamKey.FIXER_ID) != null) {
             fixerId = Integer.valueOf(params.get(MessageParamKey.FIXER_ID).toString());
         }else {
-            AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
-            if(targetUserType == AccountType.FIXER){
+            OperatorType targetUserType = OperatorType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+            if(targetUserType == OperatorType.FIXER){
                 fixerId = Integer.valueOf(params.get(MessageParamKey.OPERATOR_ID).toString());
             }
         }

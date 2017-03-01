@@ -1,0 +1,52 @@
+{
+chart: {
+    plotBackgroundColor: null,
+    plotBorderWidth: null,
+    plotShadow: false,
+    type: "pie"
+},
+title: {
+    text: "本周完成的任务时长分布"
+},
+tooltip: {
+    pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>"
+},
+plotOptions: {
+    pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+            enabled: true,
+            format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+            style: {
+                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || "black"
+            },
+            connectorColor: "silver"
+        }
+    }
+},
+series: [{
+    name: "占比",
+    colorByPoint: true,
+    data: [{
+            name: "24小时内",
+            y: $durations.get(0),
+            sliced: true,
+            selected: true
+        }, {
+            name: "3天以内",
+            y: $durations.get(1)
+        }, {
+            name: "3到7天",
+            y: $durations.get(2)
+        }, {
+            name: "7到15天",
+            y: $durations.get(3)
+        },{
+            name: "7天以上",
+            y: $durations.get(4)
+        }, {
+            name: "1个月以上",
+            y: $durations.get(5)
+    }]
+}]}

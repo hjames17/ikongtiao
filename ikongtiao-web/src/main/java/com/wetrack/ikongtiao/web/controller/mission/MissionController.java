@@ -2,7 +2,7 @@ package com.wetrack.ikongtiao.web.controller.mission;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.dto.MissionDto;
@@ -64,15 +64,11 @@ public class MissionController {
 	@RequestMapping("/mission/finish")
 	@ResponseBody
 	public void finishMission(@RequestBody UpdateForm form) throws Exception{
-		String id = form.getSerialNumber();
-		if(StringUtils.isEmpty(id)){
-			id = form.getMissionId().toString();
-		}
-		Mission mission = missionService.getMission(id);
+		Mission mission = missionService.getMission(form.getMissionId());
 		if(!mission.getUserId().equals(form.getUserId())){
 			throw new BusinessException("不是您的任务!");
 		}
-		missionService.finishMission(id, AccountType.CUSTOMER, mission.getUserId());
+		missionService.finishMission(form.getMissionId(), OperatorType.CUSTOMER, mission.getUserId());
 	}
 
 	@ResponseBody
@@ -87,23 +83,22 @@ public class MissionController {
 	MessageService messageService;
 //	@ResponseBody
 //	@RequestMapping(value = "/faultType/add", method = RequestMethod.POST)
+//	@RequestMapping(value = "/faultType/add", method = RequestMethod.POST)
 //	public String addFaultType(@RequestParam(value = "name") String name){
 //		faultTypeRepo.create(name, 18);
 //		return name;
 //	}
 
 	static class UpdateForm {
-		@Deprecated
-		Integer missionId;
+		String missionId;
 
-		String serialNumber;
 		String userId;
 
-		public Integer getMissionId() {
+		public String getMissionId() {
 			return missionId;
 		}
 
-		public void setMissionId(Integer missionId) {
+		public void setMissionId(String missionId) {
 			this.missionId = missionId;
 		}
 
@@ -113,14 +108,6 @@ public class MissionController {
 
 		public void setUserId(String userId) {
 			this.userId = userId;
-		}
-
-		public String getSerialNumber() {
-			return serialNumber;
-		}
-
-		public void setSerialNumber(String serialNumber) {
-			this.serialNumber = serialNumber;
 		}
 	}
 }

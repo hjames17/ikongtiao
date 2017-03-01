@@ -4,17 +4,32 @@ import com.wetrack.base.utils.jackson.Jackson;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
 import com.wetrack.ikongtiao.domain.RepairOrder;
-import com.wetrack.ikongtiao.domain.statistics.StatsCount;
+import com.wetrack.ikongtiao.domain.statistics.MissionCompDuration;
 import com.wetrack.ikongtiao.domain.statistics.MonthStats;
+import com.wetrack.ikongtiao.domain.statistics.StatsCount;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.AccessoryRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
 import com.wetrack.ikongtiao.repo.jpa.statistics.MonthStatsRepo;
+import com.wetrack.ikongtiao.service.api.StatisticService;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import com.wetrack.message.MessageService;
+import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,14 +38,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * Created by zhanghong on 15/5/4.
@@ -38,22 +51,13 @@ import java.util.Map;
 @Service
 public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoaderAware {
 
-//    @Value("${email.smtp}")
-//    String mailHost;
-//
-//    @Value("${email.userName}")
-//    String userName;
-//
-//    @Value("${email.password}")
-//    String password;
+    static Logger log = LoggerFactory.getLogger(StatisticsImpl.class);
 
     @Value("${email.receipt.all}")
     String allMailString;
 
-
-//    private JavaMailSenderImpl javaMailSender;
-//    private List<String> allReceipt;
-
+    @Value("${admin.page.host}")
+    String adminPage;
 
     @Autowired
     OutputService<String> outputService;
@@ -67,10 +71,10 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
     @Autowired
     AccessoryRepo accessoryRepo;
 
+    @Autowired
+    StatisticService statisticService;
 
     private Map<String, Object> stats(DateTime start, DateTime end){
-
-
 
         //统计新增任务
         StatsQueryParam param = new StatsQueryParam();
@@ -120,6 +124,11 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
 
         }
 
+        //统计本周完成的任务的时间分布
+        MissionCompDuration duration = statisticService.statsDuration(start.toDate(), end.toDate());
+
+        Long all = duration.countAll();
+
         //TODO 任务按省排列
 
 
@@ -133,6 +142,14 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
         map.put("unfinishedMissionCount", unfinishedMissionCount);
         map.put("income", (laborCost + accessoryCost) / 100f);
         map.put("incomeCent", laborCost + accessoryCost);
+        map.put("startTime", start.getMillis());
+        map.put("endTime", end.getMillis());
+        map.put("adminPage", adminPage);
+        if(all > 0) {
+            map.put("durations", Arrays.asList(duration.getDay1() / all.doubleValue(), duration.getDay3() / all.doubleValue(), duration.getDay7() / all.doubleValue(), duration.getDay15() / all.doubleValue(), duration.getDay30() / all.doubleValue(), duration.getDayMax()/all.doubleValue()));
+        }else{
+            map.put("durations", Arrays.asList(0,0,0,0,0,0));
+        }
 
         if(statsCounts != null&& statsCounts.size() > 0){
             statsCounts.forEach(areaCount -> {
@@ -170,6 +187,13 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
 
         Map<String, Object> map = stats(mondayMorning, sundayNight);
 
+        String pieChartString = outputService.getOutput(map, "piechart");
+
+        String url = getPiechartFileUrl(pieChartString, mondayMorning.toString("yyyyMMdd"));
+
+//        String trueUrl = storePiechartFile(tempUrl, mondayMorning.toString("yyyyMMdd"));
+
+        map.put("chartUrl", url);
 
         sendMail("维大师运营周报[" + mondayMorning.toLocalDate() + "到" + sundayNight.toLocalDate() + "]",
                 outputService.getOutput(map, "weeklyReport"));
@@ -185,6 +209,11 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
         DateTime lastDayEnd = new DateTime().withDayOfMonth(1).minusDays(1).withMinuteOfHour(23).withMinuteOfHour(59);
 
         Map<String, Object> map = stats(firstDayStart, lastDayEnd);
+
+        String pieChartString = outputService.getOutput(map, "piechart");
+        String url = getPiechartFileUrl(pieChartString, firstDayStart.toString("yyyyMM"));
+        map.put("chartUrl", url);
+
         int month = Integer.valueOf(firstDayStart.toString("yyyyMM"));
         map.put("month", month);
 
@@ -204,6 +233,100 @@ public class StatisticsImpl implements Statistics, InitializingBean, ResourceLoa
         ms.setIncome(Integer.valueOf(map.get("incomeCent").toString()));
         monthStatsRepo.save(ms);
     }
+
+    @Value("${store.dir}${store.dir.image.chart}")
+    String chartPath;
+
+    @Value("${host.static}${store.dir.image.chart}")
+    String chartUriPath;
+
+    private String storePiechartFile(String uri, String fileName){
+        if(StringUtils.isEmpty(uri)){
+            return null;
+        }
+
+        try {
+            URI parseUri = new URI(uri);
+            URIBuilder builder = new URIBuilder();
+            builder.setScheme("https")
+                    .setHost("export.highchats.com").setPath(parseUri.getPath());
+
+            HttpGet httpGet = new HttpGet(builder.build());
+
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(httpGet);
+            if(response != null && response.getStatusLine() != null) {
+
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    String fileNameAndType = fileName + ".png";
+                    FileUtils.copyInputStreamToFile(response.getEntity().getContent(), new File(chartPath + "/" + fileNameAndType));
+                    return chartUriPath + "/" + fileNameAndType;
+                } else {
+                    return null;
+                }
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String getPiechartFileUrl(String pieChartString, String fileName) {
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("infile", pieChartString);
+        jsonMap.put("async", false);
+        jsonMap.put("asyncRendering", false);
+        jsonMap.put("type", "image/png");
+        jsonMap.put("width", false);
+        jsonMap.put("styleMode", false);
+        jsonMap.put("scale", false);
+        jsonMap.put("constr", "Chart");
+
+
+        String dataString = Jackson.base().writeValueAsString(jsonMap);
+
+        try {
+            URIBuilder builder = new URIBuilder();
+            builder.setScheme("https")
+                    .setHost("export.highcharts.com").setPath("/");
+
+            HttpPost httpPost = new HttpPost(builder.build());
+
+            httpPost.setEntity(new StringEntity(dataString, ContentType.APPLICATION_JSON));
+
+            CloseableHttpClient client = HttpClients.createDefault();
+            CloseableHttpResponse response = client.execute(httpPost);
+            if(response != null && response.getStatusLine() != null) {
+
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+//                    String dataStr = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+//                    return dataStr;
+                    String fileNameAndType = fileName + ".png";
+                    FileUtils.copyInputStreamToFile(response.getEntity().getContent(), new File(chartPath + "/" + fileNameAndType));
+                    return chartUriPath + "/" + fileNameAndType;
+                } else {
+                    return null;
+                }
+            }
+
+        } catch (URISyntaxException e) {
+            log.error("generate request for high charts pie chart converter error : " + e.getMessage());
+            return null;
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
 
 
     @Autowired

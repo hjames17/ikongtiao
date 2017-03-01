@@ -1,6 +1,5 @@
 package com.wetrack.ikongtiao.web.controller;
 
-import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.repairOrder.Comment;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import studio.wetrack.accountService.auth.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;

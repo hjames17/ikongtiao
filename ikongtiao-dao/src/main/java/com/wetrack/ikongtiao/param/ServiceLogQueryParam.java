@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.param;
 
 import com.wetrack.base.page.BaseCondition;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,7 +20,7 @@ public class ServiceLogQueryParam extends BaseCondition {
     String repairOrderId;
     //exclusive with repairOrderId
     List<String> repairOrderIds;
-    AccountType creatorType;
+    OperatorType creatorType;
     Date targetDateStart;
     Date targetDateEnd;
     String creatorId;

@@ -1,10 +1,10 @@
 package com.wetrack.ikongtiao.service.api.user;
 
-import com.wetrack.auth.domain.Token;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
+import studio.wetrack.accountService.auth.domain.Token;
 
 import java.util.List;
 
@@ -21,6 +21,8 @@ public interface UserInfoService {
 
     UserInfo getBasicInfoById(String id);
 
+    String userIdFromToken(String tokenId);
+
     void update(UserInfo userInfo) throws Exception;
 
     //    Address createAddress(Address address) throws Exception;
@@ -29,8 +31,9 @@ public interface UserInfoService {
 
     List<UserInfo> listInIds(List<String> ids);
 
-    Token login(String contacterPhone, String password) throws Exception;
+    Token login(String accountName, String password) throws Exception;
 
     UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone);
+    UserInfo findByAccountName(String accountName);
 }
 

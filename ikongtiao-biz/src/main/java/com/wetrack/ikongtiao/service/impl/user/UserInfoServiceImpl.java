@@ -1,8 +1,5 @@
 package com.wetrack.ikongtiao.service.impl.user;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.domain.User;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
@@ -16,12 +13,16 @@ import com.wetrack.ikongtiao.service.api.admin.AdminService;
 import com.wetrack.ikongtiao.service.api.im.ImMessageService;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
+import com.wetrack.ikongtiao.utils.RegExUtil;
 import com.wetrack.ikongtiao.utils.SequenceGenerator;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.domain.User;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -84,14 +85,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public void update(UserInfo userInfo) throws Exception {
-		if(!StringUtils.isEmpty(userInfo.getContacterPhone())){
-			UserInfo exist = findByOrganizationOrContacterPhone(null, userInfo.getContacterPhone());
+	public String userIdFromToken(String tokenId) {
+		return tokenId.substring(Constants.TOKEN_ID_PREFIX_CUSTOMER.length());
 
-			if(userInfo.getContacterPhone().equals(exist.getContacterPhone())){
-				throw new BusinessException("联系人手机"+userInfo.getContacterPhone()+"已被占用，不能重复使用");
-			}
-		}
+	}
+
+	@Override
+	public void update(UserInfo userInfo) throws Exception {
+//		if(!StringUtils.isEmpty(userInfo.getContacterPhone())){
+//			UserInfo exist = findByOrganizationOrContacterPhone(null, userInfo.getContacterPhone());
+//
+//			if(userInfo.getContacterPhone().equals(exist.getContacterPhone())){
+//				throw new BusinessException("联系人手机"+userInfo.getContacterPhone()+"已被占用，不能重复使用");
+//			}
+//		}
 		if (!StringUtils.isEmpty(userInfo.getAddress()) && (userInfo.getLongitude() == null
 				|| userInfo.getLatitude() == null)) {
 			try {
@@ -147,20 +154,49 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public Token login(String contacterPhone, String password) throws Exception {
-		UserInfo userInfo = userInfoRepo.findByOrganizationOrContacterPhone(null, contacterPhone);
-		if(userInfo == null){
-			throw new BusinessException("不存在的联系人号码");
+	public Token login(String accountName, String password) throws Exception {
+		UserInfo userInfo = null;
+		if(RegExUtil.isMobilePhone(accountName)){
+			userInfo = userInfoRepo.findByOrganizationOrContacterPhone(null, accountName);
+			if (userInfo == null) {
+				throw new BusinessException("不存在的联系人号码");
+			}
+		}else if(RegExUtil.isValidEmail(accountName)){
+			userInfo = userInfoRepo.findByAccountEmail(accountName);
+			if (userInfo == null) {
+				throw new BusinessException("不存在的帐号邮箱");
+			}
+		}else {
+			throw new BusinessException("不存在的帐号");
+		}
+		if(StringUtils.isEmpty(userInfo.getPassword())){
+			throw new BusinessException("未设置密码，请先重置密码");
 		}
 		if(!password.equals(userInfo.getPassword())){
 			throw new BusinessException("密码错误");
 		}
-		User authUser = new User(Constants.TOKEN_ID_PREFIX_CUSTOMER + userInfo.getId(), password, User.NEVER_EXPIRED, "JK_LEVEL_1");
+		if(userInfo.getUserType() == null){
+			throw new BusinessException("无效的用户类型" + userInfo.getType());
+		}
+
+		User authUser = new User(Constants.TOKEN_ID_PREFIX_CUSTOMER + userInfo.getId(), password, User.NEVER_EXPIRED, userInfo.getUserType().getRolesStringArray());
 		return tokenService.login(authUser);
 	}
 
 	@Override
 	public UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone) {
 		return userInfoRepo.findByOrganizationOrContacterPhone(organization, contacterPhone);
+	}
+
+	@Override
+	public UserInfo findByAccountName(String accountName) {
+		if(RegExUtil.isMobilePhone(accountName)){
+			return userInfoRepo.findByOrganizationOrContacterPhone(null, accountName);
+
+		}else if(RegExUtil.isValidEmail(accountName)){
+			return userInfoRepo.findByAccountEmail(accountName);
+		}
+
+		return null;
 	}
 }

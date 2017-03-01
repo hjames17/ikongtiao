@@ -287,7 +287,7 @@
       #{item}
     </foreach>
   </select>
-  <select id="selectByOrganizationOrContacterPhone" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
+  <select id="selectByAccountField" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.domain.customer.UserInfo" >
     select
     <include refid="Base_Column_List" />
     from user_info
@@ -297,6 +297,9 @@
         </if>
         <if test="contacterPhone != null">
           or contacter_phone = #{contacterPhone}
+        </if>
+        <if test="accountEmail != null">
+          or account_email = #{accountEmail}
         </if>
     </where>
     limit 1

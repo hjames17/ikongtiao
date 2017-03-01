@@ -2,7 +2,7 @@ package com.wetrack.ikongtiao.service.api.mission;
 
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.constant.MissionState;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
@@ -59,7 +59,7 @@ public interface MissionService {
 
 	Mission getMission(String id) throws Exception;
 
-	void finishMission(String id, AccountType operatorType, String operatorId) throws Exception;
+	void finishMission(String id, OperatorType operatorType, String operatorId) throws Exception;
 
 	void update(Mission mission);
 
@@ -67,5 +67,5 @@ public interface MissionService {
 
 	List<StatsCount> statsMission(StatsQueryParam queryParam);
 
-	void notify(int missionId, MissionState newState, MissionState oldState, AccountType operatorType, String operatorId);
+	void notify(int missionId, MissionState newState, MissionState oldState, OperatorType operatorType, String operatorId);
 }

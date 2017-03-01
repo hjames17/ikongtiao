@@ -54,7 +54,7 @@ public class FixerController {
 		messageSimple.setUserId(userId);
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(MessageParamKey.FIXER_ID, ImRongyunPrex.FIXER.getPrex() + fixerId);
+		params.put(MessageParamKey.FIXER_ID, ImRongyunPrex.COMMON.getPrex() + fixerId);
 		params.put(MessageParamKey.USER_ID, userId);
 		messageService.send(MessageId.FIXER_NOTIFY_WECHAT, params);
 		return "ok";

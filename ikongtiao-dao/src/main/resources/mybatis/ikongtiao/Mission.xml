@@ -484,4 +484,33 @@
     </choose>
     , address
   </select>
+
+  <select id="countDurationBetween" resultType="java.lang.Long" parameterType="com.wetrack.ikongtiao.param.StatsQueryParam">
+    select
+    count(id) as totalSize
+    from mission
+    <where>
+      <if test="finished != null and finished == true ">
+        mission_state = 10
+      </if>
+      <if test="createTimeStart != null">
+        and create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd != null">
+        and create_time &lt;= #{createTimeEnd}
+      </if>
+      <if test="updateTimeStart != null">
+        and update_time &gt;= #{updateTimeStart}
+      </if>
+      <if test="updateTimeEnd != null">
+        and update_time &lt;= #{updateTimeEnd}
+      </if>
+      <if test="durationStart != null">
+        and timestampdiff(hour, create_time, update_time) &gt;= #{durationStart}
+      </if>
+      <if test="durationEnd != null">
+        and timestampdiff(hour, create_time, update_time) &lt; #{durationEnd}
+      </if>
+    </where>
+  </select>
 </mapper>

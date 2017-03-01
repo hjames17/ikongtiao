@@ -1,7 +1,5 @@
 package com.wetrack.ikongtiao.service.impl.admin;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.domain.admin.User;
 import com.wetrack.ikongtiao.exception.BusinessException;
@@ -12,6 +10,8 @@ import com.wetrack.ikongtiao.utils.RegExUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 import java.util.List;
 
@@ -66,8 +66,8 @@ public class AdminServiceImpl implements AdminService{
             throw new BusinessException("用户已禁用");
         }
         if(user.getPassword().equals(password)){
-            com.wetrack.auth.domain.User tokenUser = new com.wetrack.auth.domain.User
-                    (user.getId().toString(), user.getPassword(), com.wetrack.auth.domain.User.NEVER_EXPIRED, user.getRolesArrayString());
+            studio.wetrack.accountService.auth.domain.User tokenUser = new studio.wetrack.accountService.auth.domain.User
+                    (user.getId().toString(), user.getPassword(), studio.wetrack.accountService.auth.domain.User.NEVER_EXPIRED, user.getRolesArrayString());
 
             return tokenService.login(tokenUser);
 //            return tokenService.login(user.getId().toString(), password);

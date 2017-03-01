@@ -132,7 +132,14 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 		UserInfo user = new UserInfo();
 		user.setOrganization(organization);
 		user.setContacterPhone(contacterPhone);
-		return commonDao.mapper(UserInfo.class).sql("selectByOrganizationOrContacterPhone").session().selectOne(user);
+		return commonDao.mapper(UserInfo.class).sql("selectByAccountField").session().selectOne(user);
+	}
+
+	@Override
+	public UserInfo findByAccountEmail(String email) {
+		UserInfo user = new UserInfo();
+		user.setAccountEmail(email);
+		return commonDao.mapper(UserInfo.class).sql("selectByAccountField").session().selectOne(user);
 	}
 
 

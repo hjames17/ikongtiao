@@ -1,12 +1,11 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
-import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.constant.MissionState;
-import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.dto.MissionDetail;
 import com.wetrack.ikongtiao.dto.MissionDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -88,7 +88,7 @@ public class MissionController {
 //        params.put(MessageParamKey.ADMIN_ID, created.getAdminUserId());
 //        messageService.send(MessageId.ACCEPT_MISSION, params);
 
-        missionService.notify(created.getId(), MissionState.fromCode(created.getMissionState()), null, AccountType.ADMIN, user.getId());
+        missionService.notify(created.getId(), MissionState.fromCode(created.getMissionState()), null, OperatorType.ADMIN, user.getId());
 
         return created.getId();
     }
@@ -98,7 +98,7 @@ public class MissionController {
     @RequestMapping(value = BASE_PATH + "/finish/{id}", method = {RequestMethod.POST})
     public void finishMission(@PathVariable(value = "id") String id , HttpServletRequest request) throws Exception{
         User user = (User)request.getAttribute("user");
-        missionService.finishMission(id, AccountType.ADMIN, user.getId());
+        missionService.finishMission(id, OperatorType.ADMIN, user.getId());
     }
 
     @ResponseBody

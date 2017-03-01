@@ -4,7 +4,7 @@ import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.PaymentInfo;
 import com.wetrack.ikongtiao.domain.RepairOrder;
@@ -190,7 +190,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 			}
 		}
 
-		notify(repairOrder.getId(), RepairOrderState.fromCode(repairOrder.getRepairOrderState()), null, AccountType.FIXER);
+		notify(repairOrder.getId(), RepairOrderState.fromCode(repairOrder.getRepairOrderState()), null, OperatorType.FIXER);
 
 		return repairOrder;
 	}
@@ -240,7 +240,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		missionRepo.update(mission);
 
 
-		notify(order.getId(), RepairOrderState.FIXING, oldState, AccountType.ADMIN);
+		notify(order.getId(), RepairOrderState.FIXING, oldState, OperatorType.ADMIN);
 	}
 
 	@Override
@@ -284,7 +284,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setRepairOrderState(newState.getCode());
 		repairOrderRepo.update(repairOrder);
 
-		notify(repairOrder.getId(), newState, null, AccountType.ADMIN);
+		notify(repairOrder.getId(), newState, null, OperatorType.ADMIN);
 
 	}
 
@@ -318,7 +318,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		 */
 		fixerIncomeRepo.save(repairOrder.getFixerId(), repairOrder.getSerialNumber(), repairOrder.getLaborCost() == null ? 0 : repairOrder.getLaborCost());
 
-		notify(repairOrder.getId(), RepairOrderState.COMPLETED, oldState, AccountType.FIXER);
+		notify(repairOrder.getId(), RepairOrderState.COMPLETED, oldState, OperatorType.FIXER);
 	}
 
 
@@ -397,7 +397,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		}
 
 		//消息发送
-		notify(repairOrder.getId(), newState, oldState, AccountType.CUSTOMER);
+		notify(repairOrder.getId(), newState, oldState, OperatorType.CUSTOMER);
 	}
 
 	@Autowired
@@ -434,7 +434,7 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 		repairOrder.setRepairOrderState(newState.getCode());
 		repairOrderRepo.update(repairOrder);
 
-		notify(repairOrder.getId(), newState, oldState, AccountType.AUDITOR);
+		notify(repairOrder.getId(), newState, oldState, OperatorType.AUDITOR);
 	}
 
 	@Override
@@ -533,13 +533,13 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 //	}
 
 
-	private void notify(long repairOrderId, RepairOrderState newState, RepairOrderState oldState, AccountType operatorType){
+	private void notify(long repairOrderId, RepairOrderState newState, RepairOrderState oldState, OperatorType operatorType){
 
 		Integer messageId = null;
 		try {
 			switch (newState) {
 				case NEW:
-					if(AccountType.AUDITOR == operatorType){
+					if(OperatorType.AUDITOR == operatorType){
 						//TODO 报价审核驳回通知
 					}else {
 //						sendNew(repairOrder);
@@ -561,13 +561,13 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 					messageId = MessageId.CONFIRM_FIX_ORDER;
 					break;
 				case PREPARED:
-					if (operatorType == AccountType.CUSTOMER) {
+					if (operatorType == OperatorType.CUSTOMER) {
 //						sendUserConfirmed(repairOrder);
 						messageId = MessageId.CONFIRM_FIX_ORDER;
 					}
 					break;
 				case FIXING:
-					if(operatorType != AccountType.FIXER) {
+					if(operatorType != OperatorType.FIXER) {
 //						sendAssignedFixer(repairOrder);
 						messageId = MessageId.ASSIGNED_FIXER;
 					}else{
@@ -721,8 +721,8 @@ public class RepairOrderServiceImpl implements RepairOrderService {
 //	}
 
 	public static void main(String[] args){
-		AccountType type = AccountType.FIXER;
-		System.out.println("type is FIXER " + (type==AccountType.FIXER));
+		OperatorType type = OperatorType.FIXER;
+		System.out.println("type is FIXER " + (type== OperatorType.FIXER));
 
 
 	}

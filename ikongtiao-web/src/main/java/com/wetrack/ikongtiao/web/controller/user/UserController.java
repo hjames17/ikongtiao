@@ -1,11 +1,10 @@
 package com.wetrack.ikongtiao.web.controller.user;
 
-import com.wetrack.auth.domain.Token;
 import com.wetrack.auth.filter.SignTokenAuth;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.exception.BusinessException;
+import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.verification.VerificationCodeService;
@@ -14,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -58,14 +59,41 @@ public class UserController {
 	@ResponseBody
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	LoginOut login(@RequestBody LoginForm loginForm) throws Exception{
-		if(StringUtils.isEmpty(loginForm.getContacterPhone())){
-			throw new BusinessException("请使用联系人手机号码登录");
+		if(StringUtils.isEmpty(loginForm.getAccount())){
+			throw new BusinessException("请输入帐号");
 		}
-		Token token = userInfoService.login(loginForm.getContacterPhone(), loginForm.getPassword());
+		Token token = userInfoService.login(loginForm.getAccount(), loginForm.getPassword());
 		LoginOut out = new LoginOut();
 		out.setToken(token.getToken());
 		out.setId(token.getUser().getId().substring(Constants.TOKEN_ID_PREFIX_CUSTOMER.length()));
 		return out;
+	}
+
+	@Autowired
+	UserInfoRepo userInfoRepo;
+	//需要提供用户名，密码，密码是md5加密过的
+	@ResponseBody
+	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+	UserInfo signup(@RequestBody UserInfo userInfo) throws Exception{
+		if(StringUtils.isEmpty(userInfo.getAccountEmail()) && StringUtils.isEmpty(userInfo.getContacterPhone())){
+			throw new BusinessException("请输入帐号邮箱或者联系手机");
+		}
+		if(StringUtils.isEmpty(userInfo.getPassword())){
+			throw new BusinessException("请输入密码");
+		}
+		if(!StringUtils.isEmpty(userInfo.getAccountEmail())){
+			if(userInfoRepo.findByAccountEmail(userInfo.getAccountEmail()) != null){
+				throw new BusinessException("注册邮箱已存在");
+			}
+		}
+		if(!StringUtils.isEmpty(userInfo.getContacterPhone())){
+			if(userInfoService.findByOrganizationOrContacterPhone(null, userInfo.getContacterPhone()) != null){
+				throw new BusinessException("注册手机已存在");
+			}
+		}
+
+		userInfo = userInfoService.create(userInfo);
+		return userInfo;
 	}
 
 	@ResponseBody
@@ -115,15 +143,15 @@ public class UserController {
 	}
 
 	static class LoginForm{
-		String contacterPhone;
+		String account;
 		String password;
 
-		public String getContacterPhone() {
-			return contacterPhone;
+		public String getAccount() {
+			return account;
 		}
 
-		public void setContacterPhone(String contacterPhone) {
-			this.contacterPhone = contacterPhone;
+		public void setAccount(String account) {
+			this.account = account;
 		}
 
 		public String getPassword() {
@@ -131,6 +159,7 @@ public class UserController {
 		}
 
 		public void setPassword(String password) {
+
 			this.password = password;
 		}
 	}

@@ -73,5 +73,12 @@
         #end
         </tbody>
     </table>
+
+    <h2>完成任务的时长分布</h2>
+
+    <div style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+        <img src="$chartUrl" >
+        <a href="$adminPage?start=$startTime&end=$endTime#/statistical-fan">点击在浏览器中查看明细</a>
+    </div>
 </body>
 </html>

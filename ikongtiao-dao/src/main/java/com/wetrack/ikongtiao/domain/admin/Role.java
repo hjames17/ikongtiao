@@ -44,7 +44,13 @@ public enum Role {
     JK_LEVEL_1("JK_LEVEL_1"),//集控系统用户级权限
     JK_LEVEL_2("JK_LEVEL_2"),//集控系统维护级权限
     JK_LEVEL_3("JK_LEVEL_3"),//集控系统厂商级权限
-    FIXER("FIXER"),
+    FIXER("COMMON"),
+    VIEW_MACHINE("VIEW_MACHINE"),
+    EDIT_MACHINE("EDIT_MACHINE"),
+    VIEW_MISSION_SELF("VIEW_MISSION_SELF"),
+    EDIT_MISSION_SELF("EDIT_MISSION_SELF"),
+    VIEW_REPAIR_ORDER_SELF("VIEW_REPAIR_ORDER_SELF"),
+    EDIT_REPAIR_ORDER_SELF("EDIT_REPAIR_ORDER_SELF"),
     ;
 
     private final String roleName;

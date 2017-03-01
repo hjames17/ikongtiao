@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.wetrack.ikongtiao.domain.MachineType" >
-  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.MachineType" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="parent_id" property="parentId" jdbcType="INTEGER"/>
+<mapper namespace="com.wetrack.ikongtiao.domain.machine.MachineType" >
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.machine.MachineType" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+    <result column="machine_model_id" property="machineModelId" jdbcType="BIGINT"/>
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="img" property="img" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
+
     <result column="is_valid" property="isValid" jdbcType="TINYINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id,parent_id, name, img, remark, is_valid
+    id,parent_id, name, img, remark, is_valid, machine_model_id
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
     from machine_type
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </select>
-  <select id="listAllMachineType" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  <select id="listAllMachineType" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select
     <include refid="Base_Column_List" />
     from machine_type
-    where parent_id = #{parentId,jdbcType=INTEGER}
+    where parent_id = #{parentId}
     limit 100;
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
     delete from machine_type
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </delete>
-  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.MachineType" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+  <insert id="insert" parameterType="com.wetrack.ikongtiao.domain.machine.MachineType" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into machine_type (name, img, remark, 
@@ -38,8 +40,8 @@
     values (#{name,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
       #{isValid,jdbcType=TINYINT})
   </insert>
-  <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.MachineType" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+  <insert id="insertSelective" parameterType="com.wetrack.ikongtiao.domain.machine.MachineType" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into machine_type
@@ -62,7 +64,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="parentId != null" >
-        #{parentId,jdbcType=Integer},
+        #{parentId},
       </if>
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
@@ -78,11 +80,11 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.MachineType" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.wetrack.ikongtiao.domain.machine.MachineType" >
     update machine_type
     <set >
       <if test="parentId != null" >
-        #{parentId,jdbcType=Integer},
+        #{parentId},
       </if>
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
@@ -97,14 +99,14 @@
         is_valid = #{isValid,jdbcType=TINYINT},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.MachineType" >
+  <update id="updateByPrimaryKey" parameterType="com.wetrack.ikongtiao.domain.machine.MachineType" >
     update machine_type
     set name = #{name,jdbcType=VARCHAR},
       img = #{img,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       is_valid = #{isValid,jdbcType=TINYINT}
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id}
   </update>
 </mapper>

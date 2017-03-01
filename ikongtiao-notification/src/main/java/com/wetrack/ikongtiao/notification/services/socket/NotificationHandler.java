@@ -1,16 +1,16 @@
 package com.wetrack.ikongtiao.notification.services.socket;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.domain.User;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.container.ContainerContext;
 import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.message.MessageId;
 import com.wetrack.ikongtiao.notification.services.WebSocketManager;
 import com.wetrack.ikongtiao.notification.services.messages.WebNotificationMessage;
+import com.wetrack.message.MessageId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.*;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.domain.User;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 /**
  * Created by zhangsong on 16/2/1.

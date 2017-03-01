@@ -1,6 +1,6 @@
 package com.wetrack.ikongtiao.events;
 
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,6 +12,6 @@ import java.util.Date;
 public class Event{
 
     Date time;
-    AccountType operatorType;
+    OperatorType operatorType;
     String operatorId;
 }

@@ -1,15 +1,12 @@
 package com.wetrack.ikongtiao.service.impl.fixer;
 
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.domain.User;
-import com.wetrack.auth.service.TokenService;
 import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.Fixer;
+import com.wetrack.ikongtiao.domain.admin.UserType;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerProfessionInfo;
-import com.wetrack.ikongtiao.domain.fixer.FixerType;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.FixerQueryForm;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerCertInfoRepo;
@@ -24,6 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.domain.User;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -311,9 +311,9 @@ public class FixerServiceImpl implements FixerService {
         if(fixer.getJkMaintainer() != null){
             Collection<Token> tokens = tokenService.findAllByUserId(Constants.TOKEN_ID_PREFIX_FIXER + fixer.getId().toString());
             if(fixer.getJkMaintainer()){
-                fixer.setType(FixerType.MAINTAINER);
+                fixer.setType(UserType.MAINTAINER);
             }else{
-                fixer.setType(FixerType.COMMON);
+                fixer.setType(UserType.COMMON);
             }
             //给token改权限，这样维修员无需重新登录，权限变化马上可以生效
             if(tokens != null){
@@ -389,7 +389,7 @@ public class FixerServiceImpl implements FixerService {
         fixer.setName(name);
         fixer.setPassword(password);
         fixer.setJkMaintainer(false);
-        fixer.setType(FixerType.COMMON);
+        fixer.setType(UserType.COMMON);
         return fixerRepo.save(fixer);
     }
 
@@ -407,7 +407,7 @@ public class FixerServiceImpl implements FixerService {
         fixer.setName(name);
         fixer.setPassword(password);
         fixer.setJkMaintainer(true);
-        fixer.setType(FixerType.MAINTAINER);
+        fixer.setType(UserType.MAINTAINER);
         return fixerRepo.save(fixer);
     }
 
@@ -416,12 +416,12 @@ public class FixerServiceImpl implements FixerService {
         FixerQueryForm form = new FixerQueryForm();
         form.setPhone(phone);
         form.setDeleted(false);
-        List<Fixer> results = fixerRepo.listFixerByQueryParam(form);
-        if(results != null && results.size() > 0){
-            Fixer found = results.get(0);
-            if(found.getPassword().equals(password)){
-                User authUser = new User(Constants.TOKEN_ID_PREFIX_FIXER + found.getId().toString(),
-                        password, User.NEVER_EXPIRED, found.getType().getRolesStringArray());
+        Fixer fixer = fixerRepo.getFixerByPhone(phone);
+        if(fixer != null){
+//            Fixer found = results.get(0);
+            if(fixer.getPassword().equals(password)){
+                User authUser = new User(Constants.TOKEN_ID_PREFIX_FIXER + fixer.getId().toString(),
+                        password, User.NEVER_EXPIRED, fixer.getType().getRolesStringArray());
                 return tokenService.login(authUser);
             }else{
                 throw new BusinessException("密码错误");

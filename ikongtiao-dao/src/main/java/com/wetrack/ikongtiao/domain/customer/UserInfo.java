@@ -7,6 +7,7 @@
  */
 package com.wetrack.ikongtiao.domain.customer;
 
+import com.wetrack.ikongtiao.domain.admin.UserType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -359,6 +360,18 @@ public class UserInfo implements Serializable {
         this.organization = organization;
     }
 
+    public UserType getUserType(){
+        switch (type){
+            case 0:
+                return UserType.CUSTOMER;
+            case 1:
+                return UserType.CUSTOMER_FACTORY;
+            case 2:
+                return UserType.CUSTOMER_AGENCY;
+            default:
+                return null;
+        }
+    }
     /**
      * This method corresponds to the database table user_info
      */

@@ -1,6 +1,5 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
-import com.wetrack.auth.domain.User;
 import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.base.page.PageList;
 import com.wetrack.base.utils.encrypt.MD5;
@@ -17,6 +16,7 @@ import com.wetrack.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.auth.domain.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;

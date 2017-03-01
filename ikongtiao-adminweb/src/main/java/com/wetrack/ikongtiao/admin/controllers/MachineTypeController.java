@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
 import com.wetrack.base.result.AjaxResult;
-import com.wetrack.ikongtiao.domain.MachineType;
+import com.wetrack.ikongtiao.domain.machine.MachineType;
 import com.wetrack.ikongtiao.repo.api.machine.MachineTypeRepo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +23,9 @@ public class MachineTypeController {
 	@RequestMapping("/machine/machineType/list")
 	@ResponseBody
 	public AjaxResult<List<MachineType>> listAllMachineType(
-			@RequestParam(value = "parentId", required = false) Integer parentId) {
+			@RequestParam(value = "parentId", required = false) Long parentId) {
 		if (parentId == null) {
-			parentId = 0;
+			parentId = 0l;
 		}
 		return new AjaxResult<>(machineTypeRepo.listAllMachineType(parentId));
 	}

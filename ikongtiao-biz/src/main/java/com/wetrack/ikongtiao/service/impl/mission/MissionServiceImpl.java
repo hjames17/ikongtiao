@@ -4,7 +4,7 @@ import com.wetrack.base.page.PageList;
 import com.wetrack.base.result.AjaxException;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.constant.MissionState;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.FaultType;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
@@ -87,7 +87,7 @@ public class MissionServiceImpl implements MissionService{
 //		params.put(MessageParamKey.MISSION_SID, mission.getSerialNumber());
 //		params.put(MessageParamKey.USER_ID, mission.getUserId());
 //		messageService.send(MessageId.NEW_COMMISSION, params);
-		notify(mission.getId(), MissionState.NEW, null, AccountType.CUSTOMER, param.getUserId());
+		notify(mission.getId(), MissionState.NEW, null, OperatorType.CUSTOMER, param.getUserId());
 
 
 		//加入提醒任务
@@ -217,7 +217,7 @@ public class MissionServiceImpl implements MissionService{
 //		messageService.send(MessageId.ACCEPT_MISSION, params);
 
 
-		notify(mission.getId(), MissionState.ACCEPT, null, AccountType.ADMIN, adminUserId.toString());
+		notify(mission.getId(), MissionState.ACCEPT, null, OperatorType.ADMIN, adminUserId.toString());
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class MissionServiceImpl implements MissionService{
 //		params.put(MessageParamKey.ADMIN_ID, adminUserId);
 //		messageService.send(MessageId.REJECT_MISSION, params);
 
-		notify(mission.getId(), MissionState.CLOSED, null, AccountType.ADMIN, adminUserId.toString());
+		notify(mission.getId(), MissionState.CLOSED, null, OperatorType.ADMIN, adminUserId.toString());
 
 	}
 
@@ -272,7 +272,7 @@ public class MissionServiceImpl implements MissionService{
 //		params.put(MessageParamKey.ADMIN_ID, adminUserId);
 //		messageService.send(MessageId.ASSIGNED_MISSION, params);
 
-		notify(mission.getId(), MissionState.DISPATCHED, null, AccountType.ADMIN, adminUserId.toString());
+		notify(mission.getId(), MissionState.DISPATCHED, null, OperatorType.ADMIN, adminUserId.toString());
 
 	}
 
@@ -336,15 +336,9 @@ public class MissionServiceImpl implements MissionService{
 	RepairOrderRepo repairOrderRepo;
 
 	@Override
-	public void finishMission(String id, AccountType operatorType, String operatorId) throws Exception {
+	public void finishMission(String id, OperatorType operatorType, String operatorId) throws Exception {
 
-		Mission mission = new Mission();
-		try{
-			int iid = Integer.parseInt(id);
-			mission.setId(iid);
-		}catch (NumberFormatException e){
-			mission.setSerialNumber(id);
-		}
+		Mission mission = getMission(id);
 
 		int unfinished = repairOrderRepo.countUnfinishedForMission(mission);
 		if(unfinished > 0){
@@ -355,15 +349,6 @@ public class MissionServiceImpl implements MissionService{
 		mission.setMissionState(MissionState.COMPLETED.getCode());
 		mission.setUpdateTime(new Date());
 		missionRepo.update(mission);
-
-		//发送消息
-//		Map<String, Object> params = new HashMap<String, Object>();
-//		params.put(MessageParamKey.MISSION_SID, id);
-//		params.put(MessageParamKey.USER_ID, mission.getUserId());
-//		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
-//		params.put(MessageParamKey.FIXER_ID, mission.getFixerId());
-//		params.put(MessageParamKey.ADMIN_ID, mission.getAdminUserId());
-//		messageService.send(MessageId.COMPLETED_MISSION, params);
 
 
 		notify(mission.getId(), MissionState.COMPLETED, null, operatorType, operatorId);
@@ -388,7 +373,7 @@ public class MissionServiceImpl implements MissionService{
 	}
 
 	@Override
-	public void notify(int missionId, MissionState newState, MissionState oldState, AccountType operatorType, String operatorId){
+	public void notify(int missionId, MissionState newState, MissionState oldState, OperatorType operatorType, String operatorId){
 
 		Integer messageId = null;
 		try {

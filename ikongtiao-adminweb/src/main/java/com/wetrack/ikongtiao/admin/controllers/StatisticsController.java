@@ -1,18 +1,20 @@
 package com.wetrack.ikongtiao.admin.controllers;
 
+import com.wetrack.base.page.PageList;
 import com.wetrack.ikongtiao.constant.MissionState;
 import com.wetrack.ikongtiao.constant.RepairOrderState;
+import com.wetrack.ikongtiao.domain.statistics.MissionCompDuration;
 import com.wetrack.ikongtiao.domain.statistics.StatsCount;
+import com.wetrack.ikongtiao.dto.MissionDetail;
 import com.wetrack.ikongtiao.param.StatsQueryParam;
 import com.wetrack.ikongtiao.service.api.RepairOrderService;
+import com.wetrack.ikongtiao.service.api.StatisticService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,6 +30,9 @@ public class StatisticsController {
     @Autowired
     RepairOrderService repairOrderService;
 
+    @Autowired
+    StatisticService statisticService;
+
     @ResponseBody
     @RequestMapping(value = "/mission" , method = {RequestMethod.POST})
     public List<StatsCount> statsMission(@RequestBody StatsQueryParam queryParam) {
@@ -42,6 +47,23 @@ public class StatisticsController {
 
         return missionService.statsMission(queryParam);
     }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/mission/duration" , method = {RequestMethod.GET})
+    public MissionCompDuration statsMissionDuration(@RequestParam(value = "start") String startStr, @RequestParam(value = "end") String endStr) {
+        long startLong = Long.parseLong(startStr);
+        long endLong = Long.parseLong(endStr);
+
+        return statisticService.statsDuration(new Date(startLong), new Date(endLong));
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/mission/duration/list" , method = {RequestMethod.POST})
+    public PageList<MissionDetail> listMissionDuration(@RequestBody StatsQueryParam queryParam) {
+        return statisticService.listByDuration(queryParam);
+    }
+
     @ResponseBody
     @RequestMapping(value = "/repairOrder" , method = {RequestMethod.POST})
     public List<StatsCount> statsRepairOrder(@RequestBody StatsQueryParam queryParam) {
@@ -57,6 +79,7 @@ public class StatisticsController {
 
         return repairOrderService.statsRepairOrder(queryParam);
     }
+
 
 
 }

@@ -4,6 +4,7 @@ import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.service.api.monitor.TaskMonitorService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class TaskMonitorServiceImpl implements TaskMonitorService, InitializingB
      */
 
     @Autowired
+    @Qualifier("redisTemplate")
     RedisTemplate<String, Long> jedisTemplate;
 
     BoundHashOperations<String, String, Long> hashOps;

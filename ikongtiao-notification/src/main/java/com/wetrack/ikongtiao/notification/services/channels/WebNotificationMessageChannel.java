@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
 import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.ikongtiao.domain.AccountType;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.Mission;
 import com.wetrack.ikongtiao.domain.RepairOrder;
@@ -193,8 +193,8 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
         registerAdapter(MessageId.SERVICE_LOG_NOTIFY, new MessageAdapter() {
             @Override
             public Message build(int messageId, Map<String, Object> params) {
-                AccountType targetUserType = AccountType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
-                if(targetUserType != AccountType.ADMIN){
+                OperatorType targetUserType = OperatorType.valueOf(params.get(MessageParamKey.OPERATOR_TYPE).toString());
+                if(targetUserType != OperatorType.ADMIN){
                     return null;
                 }
 

@@ -1,14 +1,14 @@
 package com.wetrack.auth.filter;
 
-import com.wetrack.auth.exceptions.TokenAuthorizationException;
-import com.wetrack.auth.domain.SimpleGrantedAuthority;
-import com.wetrack.auth.domain.Token;
-import com.wetrack.auth.service.AuthorizationService;
-import com.wetrack.auth.service.TokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import studio.wetrack.accountService.auth.domain.SimpleGrantedAuthority;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.service.AuthorizationService;
+import studio.wetrack.accountService.auth.service.TokenService;
+import studio.wetrack.web.auth.exceptions.TokenAuthorizationException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -76,7 +76,7 @@
                 <version>2.2</version>
                 <configuration>
                     <warFile>target/push.war</warFile>
-                    <url>http://115.29.203.145:8090/manager/text</url>
+                    <url>http://test.waids.cn:8080/manager/text</url>
                     <server>RemoteTomcatServer</server>
                     <path>/push</path>
                 </configuration>

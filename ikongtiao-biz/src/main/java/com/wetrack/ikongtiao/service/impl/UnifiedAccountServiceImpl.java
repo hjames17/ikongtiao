@@ -3,7 +3,6 @@ package com.wetrack.ikongtiao.service.impl;
 import com.wetrack.ikongtiao.domain.AccountType;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import studio.wetrack.accountService.AbstrackAccountService;
 import studio.wetrack.accountService.AccountException;
@@ -15,8 +14,9 @@ import studio.wetrack.accountService.domain.Type;
 
 /**
  * Created by zhanghong on 17/2/22.
+ * 当前无用
  */
-@Service
+//@Service
 public class UnifiedAccountServiceImpl extends AbstrackAccountService {
 
     @Autowired
@@ -70,20 +70,38 @@ public class UnifiedAccountServiceImpl extends AbstrackAccountService {
     }
 
     @Override
+    protected String findUserAndCheckPassAndReturnId(LoginForm form) throws AccountException {
+//        switch (form.getType().getName()){
+//            case AccountType.ADMIN:
+//                try {
+//                    Token token = adminService.login(form.getEmail(), form.getPassword());
+//                } catch (Exception e) {
+//                    throw new AccountException(e.getMessage());
+//                }
+//                break;
+//            case AccountType.FIXER:
+//                break;
+//            case AccountType.CUSTOMER:
+//                break;
+//        }
+        return null;
+    }
+
+    @Override
     protected String findUserAndReturnId(LoginForm form) throws AccountException {
-        switch (form.getType().getName()){
-            case AccountType.ADMIN:
-                try {
-                    Token token = adminService.login(form.getEmail(), form.getPassword());
-                } catch (Exception e) {
-                    throw new AccountException(e.getMessage());
-                }
-                break;
-            case AccountType.FIXER:
-                break;
-            case AccountType.CUSTOMER:
-                break;
-        }
+//        switch (form.getType().getName()){
+//            case AccountType.ADMIN:
+//                try {
+//                    Token token = adminService.login(form.getEmail(), form.getPassword());
+//                } catch (Exception e) {
+//                    throw new AccountException(e.getMessage());
+//                }
+//                break;
+//            case AccountType.FIXER:
+//                break;
+//            case AccountType.CUSTOMER:
+//                break;
+//        }
         return null;
     }
 

@@ -12,7 +12,6 @@ import com.wetrack.verification.VerificationCodeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import studio.wetrack.accountService.auth.domain.Token;
@@ -33,16 +32,6 @@ import java.util.Map;
 
 @Controller
 public class FixerController {
-
-
-//    @Value("${file.location.images}")
-//    String imageLocation;
-
-    @Value("${host.static}")
-    String host;
-
-    @Value("${wechat.app.token}")
-    String token;
 
     @Autowired
     FixerService fixerService;

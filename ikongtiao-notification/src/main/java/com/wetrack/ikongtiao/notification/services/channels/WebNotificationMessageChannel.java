@@ -216,9 +216,6 @@ public class WebNotificationMessageChannel extends AbstractMessageChannel {
         });
     }
 
-//    @Value("${host.admin}")
-//    private String hostAdmin;
-
 //    @Override
 //    protected void doSend(Message message) {
 //        WebNotificationMessage webMessage = (WebNotificationMessage)message;

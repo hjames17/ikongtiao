@@ -11,7 +11,9 @@ import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.AppMissionQueryParam;
 import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
+import com.wetrack.ikongtiao.utils.RegExUtil;
 import com.wetrack.message.MessageService;
+import com.wetrack.verification.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -29,14 +31,33 @@ public class MissionController {
 	@Resource
 	private MissionService missionService;
 
+	@Autowired
+	VerificationCodeService verificationCodeService;
+
 	@RequestMapping("/mission/save")
 	@ResponseBody
-	public Integer addMission(@RequestBody Mission param) throws Exception{
+	public Integer addMission(@RequestBody MissionSubmit param) throws Exception{
+		if(StringUtils.isEmpty(param.getSmsCode())){
+			throw new BusinessException("需要填写报修人手机验证码");
+		}
+		if(!verificationCodeService.verifyCode(param.getContacterPhone(), param.getSmsCode())){
+			throw new BusinessException("报修人手机验证码无效");
+
+		}
 		if (param == null || StringUtils.isEmpty(param.getContacterPhone()) || StringUtils.isEmpty(param.getFaultType())) {
 			throw new BusinessException("任务参数缺失");
 		}
 		Mission mission = missionService.saveMissionFromUser(param);
 		return mission.getId();
+	}
+
+	@RequestMapping("/mission/smsCode")
+	@ResponseBody
+	public void getSmsCode(@RequestParam String mobilePhone) throws Exception{
+		if(!RegExUtil.isMobilePhone(mobilePhone)){
+			throw new BusinessException("无效的手机号码");
+		}
+		verificationCodeService.sendVericationCode(mobilePhone);
 	}
 
 	@RequestMapping("/mission/list")
@@ -108,6 +129,18 @@ public class MissionController {
 
 		public void setUserId(String userId) {
 			this.userId = userId;
+		}
+	}
+
+	static class MissionSubmit extends Mission{
+		String smsCode;
+
+		public String getSmsCode() {
+			return smsCode;
+		}
+
+		public void setSmsCode(String smsCode) {
+			this.smsCode = smsCode;
 		}
 	}
 }

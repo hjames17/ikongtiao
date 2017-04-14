@@ -8,8 +8,6 @@ import com.wetrack.ikongtiao.service.api.MachineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * Created by zhanghong on 16/12/15.
  */
@@ -22,14 +20,14 @@ public class MachineServiceImpl implements MachineService {
     @Override
     public PageList<MachineUnitDto> searchMachineUnits(MachineUnitQueryParam param) {
         PageList<MachineUnitDto> page = new PageList<>();
-        page.setPage(param.getPage());
-        page.setPageSize(param.getPageSize());
-        param.setStart(page.getStart());
-        // 设置总数量
-        page.setTotalSize(machineUnitRepo.countByParam(param));
-        // 获取内容
-        List<MachineUnitDto> machineUnitDtos = machineUnitRepo.listByParam(param);
-        page.setData(machineUnitDtos);
+//        page.setPage(param.getPage());
+//        page.setPageSize(param.getPageSize());
+//        param.setStart(page.getStart());
+//        // 设置总数量
+//        page.setTotalSize(machineUnitRepo.queryCount(param));
+//        // 获取内容
+//        List<MachineUnitDto> machineUnitDtos = machineUnitRepo.queryList(param);
+//        page.setData(machineUnitDtos);
         return page;
     }
 }

@@ -16,6 +16,7 @@ public class AppMissionQueryParam extends BaseCondition {
 	 * 用户id
 	 */
 	private String userId;
+	private Long machineUnitId;
 
 	private Integer adminUserId;
 	private Integer notForAdminUserId;
@@ -116,5 +117,13 @@ public class AppMissionQueryParam extends BaseCondition {
 
 	public void setFixerName(String fixerName) {
 		this.fixerName = fixerName;
+	}
+
+	public Long getMachineUnitId() {
+		return machineUnitId;
+	}
+
+	public void setMachineUnitId(Long machineUnitId) {
+		this.machineUnitId = machineUnitId;
 	}
 }

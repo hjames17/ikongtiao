@@ -4,7 +4,7 @@ import com.wetrack.auth.filter.SignTokenAuth;
 import com.wetrack.ikongtiao.Constants;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.exception.BusinessException;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.verification.VerificationCodeService;

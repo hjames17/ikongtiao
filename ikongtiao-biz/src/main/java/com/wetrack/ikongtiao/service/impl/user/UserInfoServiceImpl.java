@@ -8,13 +8,12 @@ import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.geo.GeoLocation;
 import com.wetrack.ikongtiao.geo.GeoUtil;
 import com.wetrack.ikongtiao.param.UserQueryParam;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
 import com.wetrack.ikongtiao.service.api.im.ImMessageService;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
 import com.wetrack.ikongtiao.utils.RegExUtil;
-import com.wetrack.ikongtiao.utils.SequenceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +54,21 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public UserInfo CreateFromWeChatOpenId(String weChatOpenId) {
 		UserInfo userInfo = new UserInfo();
-		userInfo.setId(SequenceGenerator.generateUserId());
+//		userInfo.setId(SequenceGenerator.generateUserId());
 		userInfo.setWechatOpenId(weChatOpenId);
-		userInfoRepo.save(userInfo);
+		userInfo.setType(0);
+		userInfoRepo.create(userInfo);
 		return userInfo;
 	}
 
 	@Override
 	public UserInfo create(UserInfo userInfo) {
-		userInfo.setId(SequenceGenerator.generateUserId());
-		userInfoRepo.save(userInfo);
+
+//		userInfo.setId(SequenceGenerator.generateUserId());
+		if(!StringUtils.isEmpty(userInfo.getPhone()) && userInfoRepo.findByPhone(userInfo.getPhone()) != null){
+			throw new BusinessException("重复的手机号码");
+		}
+		userInfoRepo.create(userInfo);
 		return userInfo;
 	}
 
@@ -91,7 +95,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public void update(UserInfo userInfo) throws Exception {
+	public void update(UserInfo userInfo){
 //		if(!StringUtils.isEmpty(userInfo.getContacterPhone())){
 //			UserInfo exist = findByOrganizationOrContacterPhone(null, userInfo.getContacterPhone());
 //
@@ -140,9 +144,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 		page.setPage(param.getPage());
 		page.setPageSize(param.getPageSize());
 		param.setStart(page.getStart());
-		page.setTotalSize(userInfoRepo.countByQueryParam(param));
+		page.setTotalSize(userInfoRepo.queryCount(param));
 
-		List<UserInfoDto> data = userInfoRepo.listByQueryParam(param);
+		List<UserInfoDto> data = userInfoRepo.queryList(param);
 
 		page.setData(data);
 		return page;
@@ -157,7 +161,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public Token login(String accountName, String password) throws Exception {
 		UserInfo userInfo = null;
 		if(RegExUtil.isMobilePhone(accountName)){
-			userInfo = userInfoRepo.findByOrganizationOrContacterPhone(null, accountName);
+			userInfo = userInfoRepo.findByPhone(accountName);
 			if (userInfo == null) {
 				throw new BusinessException("不存在的联系人号码");
 			}
@@ -179,8 +183,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 			throw new BusinessException("无效的用户类型" + userInfo.getType());
 		}
 
-		User authUser = new User(Constants.TOKEN_ID_PREFIX_CUSTOMER + userInfo.getId(), password, User.NEVER_EXPIRED, userInfo.getUserType().getRolesStringArray());
+		userInfo.setPassword(password);
+		return tokenForCustomer(userInfo);
+	}
+
+	@Override
+	public Token tokenForCustomer(UserInfo userInfo){
+		User authUser = new User(Constants.TOKEN_ID_PREFIX_CUSTOMER + userInfo.getId(), userInfo.getPassword(), User.NEVER_EXPIRED, userInfo.getUserType().getRolesStringArray());
 		return tokenService.login(authUser);
+	}
+
+	@Override
+	public boolean deleteById(String userId) {
+		userInfoRepo.delete(userId);
+		return true;
 	}
 
 	@Override
@@ -191,7 +207,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public UserInfo findByAccountName(String accountName) {
 		if(RegExUtil.isMobilePhone(accountName)){
-			return userInfoRepo.findByOrganizationOrContacterPhone(null, accountName);
+			return userInfoRepo.findByPhone(accountName);
 
 		}else if(RegExUtil.isValidEmail(accountName)){
 			return userInfoRepo.findByAccountEmail(accountName);

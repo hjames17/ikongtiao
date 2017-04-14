@@ -12,6 +12,8 @@ import java.util.Date;
 public class UserQueryParam extends BaseCondition {
 
 
+	Long orgId;
+	@Deprecated
 	//0：业主，1：厂家，2：代理
 	Integer type;
 	String userName;

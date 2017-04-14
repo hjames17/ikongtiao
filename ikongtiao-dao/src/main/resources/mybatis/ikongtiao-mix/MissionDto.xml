@@ -5,6 +5,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="serial_number" property="serialNumber" jdbcType="VARCHAR" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="machine_unit_id" property="machineUnitId" jdbcType="BIGINT" />
     <!--<result column="machine_type_id" property="machineTypeId" jdbcType="INTEGER" />-->
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
     <result column="mission_state" property="missionState" jdbcType="TINYINT" />
@@ -39,7 +40,7 @@
     <!--admin_user_id, operator, create_time, update_time-->
   <!--</sql>-->
   <sql id="Mission_Dto_List" >
-    mission.id, mission.serial_number, mission.user_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.close_reason, mission.is_need_more, mission.fixer_id,
+    mission.id, mission.serial_number, mission.user_id, mission.machine_unit_id, mission.fault_type, mission.mission_desc, mission.mission_state, mission.close_reason, mission.is_need_more, mission.fixer_id,
     mission.admin_user_id, mission.operator, mission.create_time, mission.update_time, mission.setup_sheet,
     organization, contacter_name, contacter_phone,
     mission.province_id, mission.city_id, mission.district_id, mission.address, mission.longitude, mission.latitude,
@@ -126,6 +127,9 @@
       </if>
       <if test="fixerName!=null">
         and fixer.name LIKE #{fixerName}
+      </if>
+      <if test="machineUnitId!=null">
+        and mission.machine_unit_id = #{machineUnitId}
       </if>
     </where>
     GROUP BY mission.id

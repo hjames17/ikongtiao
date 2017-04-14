@@ -1,11 +1,9 @@
 package com.wetrack.ikongtiao.domain.admin;
 
-import studio.wetrack.accountService.domain.Type;
-
 /**
  * Created by zhanghong on 16/3/9.
  */
-public enum UserType implements Type {
+public enum  UserType {
 
     //后台账号
     MANAGER("管理员", new Role[]{Role.VIEW_MISSION, Role.VIEW_CUSTOMER, Role.VIEW_REPAIR_ORDER, Role.VIEW_FIXER,
@@ -32,12 +30,21 @@ public enum UserType implements Type {
 
 
     //维修和服务人员账号
-    COMMON("普通维修员", new Role[]{Role.FIXER}),//维大师维修人员
+    COMMON_FIXER("普通维修员", new Role[]{Role.FIXER}),//维大师维修人员
     MAINTAINER("维保人员", new Role[]{Role.JK_LEVEL_2, Role.FIXER, Role.JK_LEVEL_1}),//集控系统
 
 
     //客户账号
-    CUSTOMER("业主", new Role[]{
+    CUSTOMER_ADMIN("客户管理员", new Role[]{
+            Role.JK_LEVEL_1,
+            Role.VIEW_MACHINE,
+            Role.EDIT_MACHINE,
+            Role.VIEW_MISSION_SELF,
+            Role.EDIT_MISSION_SELF,
+            Role.VIEW_REPAIR_ORDER_SELF,
+            Role.EDIT_REPAIR_ORDER_SELF,
+            Role.VIEW_CUSTOMER,Role.EDIT_CUSTOMER}),
+    CUSTOMER("客户监控员", new Role[]{
             Role.JK_LEVEL_1,
             Role.VIEW_MACHINE,
             Role.EDIT_MACHINE,
@@ -45,22 +52,22 @@ public enum UserType implements Type {
             Role.EDIT_MISSION_SELF,
             Role.VIEW_REPAIR_ORDER_SELF,
             Role.EDIT_REPAIR_ORDER_SELF}),
-    CUSTOMER_FACTORY("工厂", new Role[]{
-            Role.JK_LEVEL_1,
-            Role.VIEW_MACHINE,
-            Role.EDIT_MACHINE,
-            Role.VIEW_MISSION_SELF,
-            Role.EDIT_MISSION_SELF,
-            Role.VIEW_REPAIR_ORDER_SELF,
-            Role.EDIT_REPAIR_ORDER_SELF}),
-    CUSTOMER_AGENCY("代理", new Role[]{
-            Role.JK_LEVEL_1,
-            Role.VIEW_MACHINE,
-            Role.EDIT_MACHINE,
-            Role.VIEW_MISSION_SELF,
-            Role.EDIT_MISSION_SELF,
-            Role.VIEW_REPAIR_ORDER_SELF,
-            Role.EDIT_REPAIR_ORDER_SELF}),
+//    CUSTOMER_FACTORY("工厂", new Role[]{
+//            Role.JK_LEVEL_1,
+//            Role.VIEW_MACHINE,
+//            Role.EDIT_MACHINE,
+//            Role.VIEW_MISSION_SELF,
+//            Role.EDIT_MISSION_SELF,
+//            Role.VIEW_REPAIR_ORDER_SELF,
+//            Role.EDIT_REPAIR_ORDER_SELF}),
+//    CUSTOMER_AGENCY("代理", new Role[]{
+//            Role.JK_LEVEL_1,
+//            Role.VIEW_MACHINE,
+//            Role.EDIT_MACHINE,
+//            Role.VIEW_MISSION_SELF,
+//            Role.EDIT_MISSION_SELF,
+//            Role.VIEW_REPAIR_ORDER_SELF,
+//            Role.EDIT_REPAIR_ORDER_SELF}),
 
     ;
 
@@ -72,7 +79,6 @@ public enum UserType implements Type {
         this.roles = roles;
     }
 
-    @Override
     public String[] getRolesStringArray(){
         String[] rolesStringArray = new String[roles.length];
         for(int i = 0; i < roles.length; i++){
@@ -81,7 +87,6 @@ public enum UserType implements Type {
         return rolesStringArray;
     }
 
-    @Override
     public String getName(){
         return name;
     }

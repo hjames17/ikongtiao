@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
-import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Fixer;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerCertInfo;
 import com.wetrack.ikongtiao.domain.fixer.FixerInsuranceInfo;
@@ -11,7 +11,7 @@ import com.wetrack.ikongtiao.notification.services.Message;
 import com.wetrack.ikongtiao.notification.services.MessageAdapter;
 import com.wetrack.ikongtiao.notification.services.messages.SmsMessage;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.ikongtiao.sms.util.SendWeSms;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Service
 public class SmsMessageChannel extends AbstractMessageChannel {
-    private Logger LOGGER = LoggerFactory.getLogger(SmsMessageChannel.class);
+    private Logger log = LoggerFactory.getLogger(SmsMessageChannel.class);
 
     @Autowired
     UserInfoRepo userInfoRepo;

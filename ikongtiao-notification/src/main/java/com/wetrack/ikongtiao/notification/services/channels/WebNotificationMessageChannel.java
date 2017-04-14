@@ -1,9 +1,9 @@
 package com.wetrack.ikongtiao.notification.services.channels;
 
 import com.wetrack.base.utils.jackson.Jackson;
-import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Fixer;
 import com.wetrack.ikongtiao.domain.Mission;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.admin.Role;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
@@ -16,7 +16,7 @@ import com.wetrack.ikongtiao.repo.api.FaultTypeRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.mission.MissionRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.message.MessageId;
 import com.wetrack.message.MessageParamKey;
 import org.slf4j.Logger;

@@ -313,7 +313,7 @@ public class FixerServiceImpl implements FixerService {
             if(fixer.getJkMaintainer()){
                 fixer.setType(UserType.MAINTAINER);
             }else{
-                fixer.setType(UserType.COMMON);
+                fixer.setType(UserType.COMMON_FIXER);
             }
             //给token改权限，这样维修员无需重新登录，权限变化马上可以生效
             if(tokens != null){
@@ -353,7 +353,7 @@ public class FixerServiceImpl implements FixerService {
     }
 
     @Override
-    public Fixer getFixerByPhone(String phone) throws Exception {
+    public Fixer getFixerByPhone(String phone) {
         return fixerRepo.getFixerByPhone(phone);
     }
 
@@ -389,7 +389,7 @@ public class FixerServiceImpl implements FixerService {
         fixer.setName(name);
         fixer.setPassword(password);
         fixer.setJkMaintainer(false);
-        fixer.setType(UserType.COMMON);
+        fixer.setType(UserType.COMMON_FIXER);
         return fixerRepo.save(fixer);
     }
 

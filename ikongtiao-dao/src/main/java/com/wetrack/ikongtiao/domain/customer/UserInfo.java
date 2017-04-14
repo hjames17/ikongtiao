@@ -10,16 +10,27 @@ package com.wetrack.ikongtiao.domain.customer;
 import com.wetrack.ikongtiao.domain.admin.UserType;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
+@Entity(name = "user_info")
 public class UserInfo implements Serializable {
     /**
      * id:
      */
+    @Id
     private String id;
+
+    @Column(name = "org_id")
+    private Long orgId;
+    @Column(length = 10)
+    private String name;
     /**
      * 关联的企业id
      * 集控系统需要创建用户账号
@@ -27,98 +38,76 @@ public class UserInfo implements Serializable {
      * 因此同一个客户可能存在两个账号
      * 两个账号在通过微信绑定操作互相关联之后，在这个字段上互为引用
      */
+    @Transient
     private String referenceId;
 
     /**
      * wechat_open_id:微信openId
      */
+    @Column(name = "wechat_open_id", length = 36)
     private String wechatOpenId;
 
     /**
      * phone:账户手机号
      */
+    @Column(length = 16)
     private String phone;
 
     /**
      * avatar:头像
      */
+    @Column(length = 100)
     private String avatar;
 
-    /**
-     * type:用户类型,0：业主，1：厂家，2：代理
-     */
-    private Integer type;
 
-    /**
-     * organization:单位名称
-     */
-    private String organization;
 
     /**
      * account_email:账户邮箱
      */
+    @Column(length = 50, name = "account_email")
     private String accountEmail;
     /**
      * 密码可空，对于非集控系统用户来说
      */
+    @Column(length = 36)
     private String password;
 
-    String contacterName;
-    String contacterPhone;
-
-    /**
-     * 集控系统用户，有维保人员
-     */
-    private Integer maintainerId;
-
-    /**
-     * auth_state:认证状态,0：待认证，1：认证中，2：认证成功；3:认证失败
-     */
-    private Integer authState;
-
-    /**
-     * auth_img:认证图片地址
-     */
-    private String authImg;
-
-    /**
-     * license_no:证件号码
-     */
-    private String licenseNo;
-
-    /**
-     * address_id:用户地址id
-     */
-//    private Integer addressId;
 
     /**
      * create_time:
      */
+    @Column(name = "create_time")
     private Date createTime;
 
     /**
      * update_time:
      */
+    @Column(name = "update_time")
     private Date updateTime;
 
     /**
      * province_id:
      */
+    @Column(name = "province_id")
     private Integer provinceId;
 
     /**
      * city_id:
      */
+    @Column(name = "city_id")
     private Integer cityId;
 
     /**
      * district_id:区
      */
+    @Column(name = "district_id")
     private Integer districtId;
 
     /**
      * address:详细地址
      */
+
+    @Column(length = 100)
     private String address;
 
     /**
@@ -140,234 +129,62 @@ public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @return the value of id
+     * type:账号类型,0：普通账号，1：客户管理员
      */
-    public String getId() {
-        return id;
-    }
+    private Integer type;
 
-    /**
-     * @param id the value for id
-     */
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
 
-    /**
-     * @return the value of wechat_open_id
-     */
-    public String getWechatOpenId() {
-        return wechatOpenId;
-    }
+    @Deprecated //以下字段
 
-    /**
-     * @param wechatOpenId the value for wechat_open_id
-     */
-    public void setWechatOpenId(String wechatOpenId) {
-        this.wechatOpenId = wechatOpenId == null ? null : wechatOpenId.trim();
-    }
-
-    /**
-     * @return the value of avatar
-     */
-    public String getAvatar() {
-        return avatar;
-    }
-
-    /**
-     * @param avatar the value for avatar
-     */
-    public void setAvatar(String avatar) {
-        this.avatar = avatar == null ? null : avatar.trim();
-    }
-
-    /**
-     * @return the value of type
-     */
-    public Integer getType() {
-        return type;
-    }
-
-    /**
-     * @param type the value for type
-     */
-    public void setType(Integer type) {
-        this.type = type;
-    }
 
 
     /**
-     * @return the value of account_email
+     * organization:单位名称
      */
-    public String getAccountEmail() {
-        return accountEmail;
-    }
+    private String organization;
+
+    @Column(name = "contacter_name", length = 10)
+    String contacterName;
+    @Column(name = "contacter_phone", length = 16)
+    String contacterPhone;
 
     /**
-     * @param accountEmail the value for account_email
+     * 集控系统用户，有维保人员
      */
-    public void setAccountEmail(String accountEmail) {
-        this.accountEmail = accountEmail == null ? null : accountEmail.trim();
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    @Column(name = "maintainer_id")
+    private Integer maintainerId;
 
     /**
-     * @return the value of auth_state
+     * auth_state:认证状态,0：待认证，1：认证中，2：认证成功；3:认证失败
      */
-    public Integer getAuthState() {
-        return authState;
-    }
+    @Column(name = "auth_state")
+    private Integer authState;
 
     /**
-     * @param authState the value for auth_state
+     * auth_img:认证图片地址
      */
-    public void setAuthState(Integer authState) {
-        this.authState = authState;
-    }
+    @Column(name = "auth_img")
+    private String authImg;
 
     /**
-     * @return the value of auth_img
+     * license_no:证件号码
      */
-    public String getAuthImg() {
-        return authImg;
-    }
-
-    /**
-     * @param authImg the value for auth_img
-     */
-    public void setAuthImg(String authImg) {
-        this.authImg = authImg == null ? null : authImg.trim();
-    }
-
-    /**
-     * @return the value of license_no
-     */
-    public String getLicenseNo() {
-        return licenseNo;
-    }
-
-    /**
-     * @param licenseNo the value for license_no
-     */
-    public void setLicenseNo(String licenseNo) {
-        this.licenseNo = licenseNo == null ? null : licenseNo.trim();
-    }
-
-    /**
-     * @return the value of create_time
-     */
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    /**
-     * @param createTime the value for create_time
-     */
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    /**
-     * @return the value of update_time
-     */
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    /**
-     * @param updateTime the value for update_time
-     */
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getContacterName() {
-        return contacterName;
-    }
-
-    public void setContacterName(String contacterName) {
-        this.contacterName = contacterName;
-    }
-
-    public String getContacterPhone() {
-        return contacterPhone;
-    }
-
-    public void setContacterPhone(String contacterPhone) {
-        this.contacterPhone = contacterPhone;
-    }
-
-    public Integer getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(Integer provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    public Integer getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(Integer cityId) {
-        this.cityId = cityId;
-    }
-
-    public Integer getDistrictId() {
-        return districtId;
-    }
-
-    public void setDistrictId(Integer districtId) {
-        this.districtId = districtId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
-
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
+    @Column(name = "license_no")
+    private String licenseNo;
 
     public UserType getUserType(){
+        if(type == null){
+            return UserType.CUSTOMER;
+        }
         switch (type){
             case 0:
                 return UserType.CUSTOMER;
             case 1:
-                return UserType.CUSTOMER_FACTORY;
-            case 2:
-                return UserType.CUSTOMER_AGENCY;
+                return UserType.CUSTOMER_ADMIN;
+//            case 1:
+//                return UserType.CUSTOMER_FACTORY;
+//            case 2:
+//                return UserType.CUSTOMER_AGENCY;
             default:
                 return null;
         }

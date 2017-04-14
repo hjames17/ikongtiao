@@ -9,14 +9,15 @@ import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.notification.services.AbstractMessageChannel;
 import com.wetrack.ikongtiao.notification.services.Message;
 import com.wetrack.ikongtiao.notification.services.MessageAdapter;
+import com.wetrack.ikongtiao.notification.services.messages.WechatMessage;
 import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.im.ImMessageRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
-import com.wetrack.message.*;
-import com.wetrack.ikongtiao.notification.services.messages.WechatMessage;
+import com.wetrack.message.MessageId;
+import com.wetrack.message.MessageParamKey;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.WxMpCustomMessage;
@@ -33,7 +34,7 @@ import java.util.Map;
  */
 @Service
 public class WechatMessageChannel extends AbstractMessageChannel {
-	private Logger LOGGER = LoggerFactory.getLogger(WechatMessageChannel.class);
+	private Logger log = LoggerFactory.getLogger(WechatMessageChannel.class);
 
 	@Autowired
 	UserInfoRepo userInfoRepo;
@@ -298,12 +299,12 @@ public class WechatMessageChannel extends AbstractMessageChannel {
 		                                                       .toUser(wechatMessage.getReceiver())
 		                                                       .addArticle(article1)
 		                                                       .build();
-		LOGGER.info("发送微信通知,openId:{},内容:{}", wechatMessage.getReceiver(),
+		log.info("发送微信通知,openId:{},内容:{}", wechatMessage.getReceiver(),
 				Jackson.mobile().writeValueAsString(wxMpCustomMessage));
 		try {
 			wxMpService.customMessageSend(wxMpCustomMessage);
 		} catch (WxErrorException e) {
-			LOGGER.error("发送微信通知失败,openId:{},内容:{}, 原因:{}", wechatMessage.getReceiver(),
+			log.error("发送微信通知失败,openId:{},内容:{}, 原因:{}", wechatMessage.getReceiver(),
 					Jackson.mobile().writeValueAsString(wxMpCustomMessage), e.getMessage());
 			e.printStackTrace();
 		}

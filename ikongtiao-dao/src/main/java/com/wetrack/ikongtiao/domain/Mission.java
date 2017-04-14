@@ -22,6 +22,10 @@ public class Mission implements Serializable {
     @Id
     private Integer id;
 
+
+    @Column(name = "machine_unit_id")
+    private Long machineUnitId;
+
     @Column(name = "serial_number")
     String serialNumber;
 
@@ -412,5 +416,13 @@ public class Mission implements Serializable {
 
     public void setRequestArriveTime(Date requestArriveTime) {
         this.requestArriveTime = requestArriveTime;
+    }
+
+    public Long getMachineUnitId() {
+        return machineUnitId;
+    }
+
+    public void setMachineUnitId(Long machineUnitId) {
+        this.machineUnitId = machineUnitId;
     }
 }

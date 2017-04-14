@@ -1,7 +1,7 @@
 package com.wetrack.ikongtiao.events;
 
-import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.Fixer;
+import com.wetrack.ikongtiao.domain.OperatorType;
 import com.wetrack.ikongtiao.domain.RepairOrder;
 import com.wetrack.ikongtiao.domain.ServiceLog;
 import com.wetrack.ikongtiao.domain.admin.User;
@@ -10,7 +10,7 @@ import com.wetrack.ikongtiao.repo.api.ServiceLogRepo;
 import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.repairOrder.RepairOrderRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

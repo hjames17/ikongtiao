@@ -11,7 +11,7 @@ import com.wetrack.ikongtiao.param.ServiceLogQueryParam;
 import com.wetrack.ikongtiao.repo.api.ServiceLogRepo;
 import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.ServiceLogService;
 import com.wetrack.ikongtiao.service.api.mission.MissionService;
 import com.wetrack.message.MessageId;

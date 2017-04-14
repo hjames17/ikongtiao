@@ -6,9 +6,9 @@ import com.wetrack.ikongtiao.domain.Address;
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.param.UserQueryParam;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.api.user.UserInfoRepoCustom;
 import com.wetrack.ikongtiao.utils.SequenceGenerator;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -16,13 +16,14 @@ import java.util.List;
 /**
  * Created by zhangsong on 15/12/15.
  */
-@Repository("userInfoRepo")
-public class UserInfoRepoImpl implements UserInfoRepo {
+//@Repository("userInfoRepo")
+@Service
+public class UserInfoRepoImpl implements UserInfoRepoCustom {
 
 	@Resource
 	protected CommonDao commonDao;
 
-	@Override public UserInfo save(UserInfo userInfo) {
+	@Override public UserInfo create(UserInfo userInfo) {
 		if(userInfo!=null){
 			userInfo.setId(SequenceGenerator.generateUserId());
 			commonDao.mapper(UserInfo.class).sql("insertSelective").session().insert(userInfo);
@@ -87,7 +88,7 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 	}
 
 	@Override
-	public List<UserInfoDto> listByQueryParam(UserQueryParam param) throws Exception {
+	public List<UserInfoDto> queryList(UserQueryParam param) throws Exception {
 		if(param.getPhone() != null){
 			//加上sql like查询通配符
 			param.setPhone("%" + param.getPhone() + "%");
@@ -104,7 +105,7 @@ public class UserInfoRepoImpl implements UserInfoRepo {
 	}
 
 	@Override
-	public int countByQueryParam(UserQueryParam param) throws Exception {
+	public int queryCount(UserQueryParam param) throws Exception {
 
 		if(param.getPhone() != null){
 			//加上sql like查询通配符

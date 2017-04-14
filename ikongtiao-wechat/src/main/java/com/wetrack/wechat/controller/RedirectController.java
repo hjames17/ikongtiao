@@ -17,9 +17,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import studio.wetrack.accountService.auth.domain.Token;
+import studio.wetrack.accountService.auth.service.TokenService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created by zhanghong on 15/12/14.
@@ -37,6 +40,13 @@ public class RedirectController {
     String setting;
     @Value("${weixin.page.support}")
     String support;
+    @Value("${weixin.page.machine}")
+    String machine;
+    @Value("${weixin.page.jk}")
+    String jk;
+
+    @Autowired
+    TokenService tokenService;
 
 //    private static final String WEIXIN_REDIRECT = "/redirect";
 
@@ -48,13 +58,13 @@ public class RedirectController {
     @Autowired
     UserInfoService userInfoService;
 
-
-
     enum Action{
         MISSION_LIST(1),
         MISSION_NEW(2),
         USER_SETTING(3),
         ONLINE_SUPPORT(4),
+        MACHINE_UNIT(5),
+        JK(6),
         ;
 
         int value;
@@ -135,6 +145,19 @@ public class RedirectController {
                 if(userInfo == null){
                     userInfo = userInfoService.CreateFromWeChatOpenId(token.getOpenId());
                 }
+                Token t = null;
+                Collection<Token> tokens = tokenService.findAllByUserId(userInfo.getId());
+                if(tokens != null && tokens.size() > 0){
+                    for (Token tk : tokens) {
+                        if(!tk.isExpired()){
+                            t = tk;
+                            break;
+                        }
+                    }
+                }
+                if(t == null) {
+                    t = userInfoService.tokenForCustomer(userInfo);
+                }
                 if(StringUtils.isEmpty(userInfo.getContacterName())){
                     try {
                         WxMpUser wxMpUser = weixinService.userInfo(userInfo.getWechatOpenId(), null);
@@ -152,17 +175,23 @@ public class RedirectController {
                 }
                 switch (state.action){
                     case MISSION_NEW:
-                        redirectUrl = host + mission + "&action=new&uid=" + userInfo.getId();
+                        redirectUrl = host + mission + "&action=new&uid=" + userInfo.getId() + "&token=" + t.getToken();
                         break;
                     case USER_SETTING:
-                        redirectUrl = host + setting + "&uid=" + userInfo.getId();
+                        redirectUrl = host + setting + "&uid=" + userInfo.getId()+ "&token=" + t.getToken();
                         break;
                     case ONLINE_SUPPORT:
-                        redirectUrl = host + support + "&uid=" + userInfo.getId();
+                        redirectUrl = host + support + "&uid=" + userInfo.getId()+ "&token=" + t.getToken();
+                        break;
+                    case MACHINE_UNIT:
+                        redirectUrl = host + machine + "&uid=" + userInfo.getId() + "&machineUnitId=" + state.addtional+ "&token=" + t.getToken();
+                        break;
+                    case JK :
+                        redirectUrl = jk + "&uid=" + userInfo.getId() + "&token=" + t.getToken();
                         break;
                     case MISSION_LIST:
                     default:
-                        redirectUrl = host + mission + "&action=list&uid=" + userInfo.getId();
+                        redirectUrl = host + mission + "&action=list&uid=" + userInfo.getId()+ "&token=" + t.getToken();
 
                 }
                 response.sendRedirect(redirectUrl);
@@ -171,7 +200,7 @@ public class RedirectController {
         } catch (IOException e) {
             log.error("open page get failed! " + e.getMessage());
             try {
-                response.getWriter().write("open page get faile! " + e.getMessage());
+                response.getWriter().write("open page get failed! " + e.getMessage());
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

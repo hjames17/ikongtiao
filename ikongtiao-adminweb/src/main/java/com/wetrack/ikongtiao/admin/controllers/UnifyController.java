@@ -9,16 +9,17 @@ import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.service.api.admin.AdminService;
 import com.wetrack.ikongtiao.service.api.fixer.FixerService;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
+import com.wetrack.ikongtiao.service.impl.UnifiedAccountServiceImpl;
 import com.wetrack.message.MessageService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import studio.wetrack.accountService.SmsCodeService;
 import studio.wetrack.accountService.auth.domain.Token;
 import studio.wetrack.accountService.auth.service.TokenService;
+import studio.wetrack.accountService.domain.ChangePass;
+import studio.wetrack.accountService.domain.ResetPass;
 import studio.wetrack.accountService.domain.Type;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,11 +44,16 @@ public class UnifyController {
     @Autowired
     AdminController adminController;
 
+    @Autowired
+    SmsCodeService smsCodeService;
 
     @Autowired
     FixerService fixerService;
     @Autowired
     UserInfoService userInfoService;
+
+    @Autowired
+    UnifiedAccountServiceImpl unifiedAccountService;
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     studio.wetrack.accountService.domain.LoginOut unifyLogin(@RequestBody UnifiedLoginForm unifiedLoginForm) throws Exception{
@@ -72,6 +78,26 @@ public class UnifyController {
                 throw new BusinessException("无效的用户类型" + unifiedLoginForm.getType().getName());
         }
 
+    }
+
+
+    @RequestMapping(value="/resetPass/smsCode")
+    @ResponseBody
+    public void getSmsCode(@RequestParam String mobilePhone){
+        smsCodeService.requestSmsCode(mobilePhone, SmsCodeService.CodeType.RESET_PASS);
+    }
+
+    @RequestMapping(value="/changePass")
+    @ResponseBody
+    public void changePassword(@RequestBody ChangePass form){
+        unifiedAccountService.changePass(form);
+
+    }
+
+    @RequestMapping(value="/resetPass")
+    @ResponseBody
+    public void resetPassword(@RequestBody ResetPass form){
+        unifiedAccountService.resetPass(form);
     }
 
     private Type toUserType(UserType userType) {

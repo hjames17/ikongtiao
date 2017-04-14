@@ -1,10 +1,11 @@
 package com.wetrack.ikongtiao.dao.test;
 
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
-        locations = {"classpath*:spring/*.xml"}
+        locations = {"classpath*:spring/*.xml", "classpath*:mybatis/*.xml"}
 )
 public class UserInfoTest {
 

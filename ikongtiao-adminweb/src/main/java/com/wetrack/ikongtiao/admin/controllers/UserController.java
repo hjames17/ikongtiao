@@ -7,7 +7,6 @@ import com.wetrack.ikongtiao.dto.UserInfoDto;
 import com.wetrack.ikongtiao.exception.BusinessException;
 import com.wetrack.ikongtiao.param.UserQueryParam;
 import com.wetrack.ikongtiao.service.api.user.UserInfoService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -31,6 +30,7 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/list" , method = {RequestMethod.GET})
     public PageList<UserInfoDto> listMission(@RequestParam(required = false, value = "name") String name,
+                                             @RequestParam(required = false, value = "orgId") Long orgId,
                                              @RequestParam(required = false, value = "phone") String phone,
                                              @RequestParam(required = false, value = "address") String address,
                                              @RequestParam(required = false, value = "districtId") Integer districtId,
@@ -38,6 +38,7 @@ public class UserController {
                                              @RequestParam(required = false, value = "pageSize") Integer pageSize) throws Exception{
         UserQueryParam userQueryParam = new UserQueryParam();
         userQueryParam.setAddress(address);
+        userQueryParam.setOrgId(orgId);
         userQueryParam.setPhone(phone);
         userQueryParam.setUserName(name);
         userQueryParam.setDistrictId(districtId);
@@ -60,20 +61,20 @@ public class UserController {
     public UserInfo get(@PathVariable String userId) throws Exception{
         return userInfoService.getBasicInfoById(userId);
     }
+    @SignTokenAuth(roleNameRequired = "EDIT_CUSTOMER")
+    @ResponseBody
+    @RequestMapping(value = BASE_PATH + "/{userId}" , method = {RequestMethod.DELETE})
+    public void del(@PathVariable String userId) throws Exception{
+        userInfoService.deleteById(userId);
+    }
 
 
     @SignTokenAuth(roleNameRequired = "EDIT_CUSTOMER")
     @ResponseBody
     @RequestMapping(value = BASE_PATH + "/create" , method = {RequestMethod.POST}, produces = MediaType.TEXT_PLAIN_VALUE)
     public String create(@RequestBody UserInfo userInfo) throws Exception{
-        if(StringUtils.isEmpty(userInfo.getOrganization())){
-            throw new BusinessException("客户单位名称未填");
-        }
-        if(StringUtils.isEmpty(userInfo.getContacterName())){
-            throw new BusinessException("联系人姓名未填");
-        }
-        if(StringUtils.isEmpty(userInfo.getContacterPhone())){
-            throw new BusinessException("联系人电话未填");
+        if(userInfo.getOrgId() == null){
+            throw new BusinessException("未指定所属客户id");
         }
         userInfo.setId(null);
         UserInfo created = userInfoService.create(userInfo);

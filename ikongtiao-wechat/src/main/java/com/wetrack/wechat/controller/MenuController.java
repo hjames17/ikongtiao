@@ -44,7 +44,7 @@ public class MenuController {
 //        WxMpService weixinService = weixinServiceProvider.getWeixinService(appId);
         WxMenu menu = weixinMenuGenerator.generateMenu();
         weixinService.menuCreate(menu);
-        return "菜单创建完成";
+        return "menu created";
     }
 
 

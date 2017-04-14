@@ -27,39 +27,15 @@ public class UserInfoDto implements Serializable{
      */
     private String avatar;
 
-    /**
-     * type:用户类型,0：业主，1：厂家，2：代理
-     */
-    private Integer type;
-    private Integer maintainerId;
+    private Long orgId;
+    private String name;
 
-    /**
-     * organization:账户名称
-     */
-    private String organization;
 
     /**
      * account_email:账户邮箱
      */
     private String accountEmail;
 
-    String contacterName;
-    String contacterPhone;
-
-    /**
-     * auth_state:认证状态,0：待认证，1：认证中，2：认证成功；3:认证失败
-     */
-    private Integer authState;
-
-    /**
-     * auth_img:认证图片地址
-     */
-    private String authImg;
-
-    /**
-     * license_no:证件号码
-     */
-    private String licenseNo;
 
     /**
      * create_time:
@@ -104,219 +80,34 @@ public class UserInfoDto implements Serializable{
 //    List<Address> contactsList;
 
 
+    @Deprecated
+    /**
+     * type:用户类型,0：业主，1：厂家，2：代理
+     */
+    private Integer type;
+    private Integer maintainerId;
 
     /**
-     * @return the value of id
+     * organization:账户名称
      */
-    public String getId() {
-        return id;
-    }
+    private String organization;
+
+    String contacterName;
+    String contacterPhone;
 
     /**
-     * @param id the value for id
+     * auth_state:认证状态,0：待认证，1：认证中，2：认证成功；3:认证失败
      */
-    public void setId(String id) {
-        this.id = id == null ? null : id.trim();
-    }
+    private Integer authState;
 
     /**
-     * @return the value of avatar
+     * auth_img:认证图片地址
      */
-    public String getAvatar() {
-        return avatar;
-    }
+    private String authImg;
 
     /**
-     * @param avatar the value for avatar
+     * license_no:证件号码
      */
-    public void setAvatar(String avatar) {
-        this.avatar = avatar == null ? null : avatar.trim();
-    }
+    private String licenseNo;
 
-    /**
-     * @return the value of type
-     */
-    public Integer getType() {
-        return type;
-    }
-
-    /**
-     * @param type the value for type
-     */
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    /**
-     * @return the value of account_name
-     */
-    public String getOrganization() {
-        return organization;
-    }
-
-    /**
-     * @param organization the value for account_name
-     */
-    public void setOrganization(String organization) {
-        this.organization = organization == null ? null : organization.trim();
-    }
-
-    /**
-     * @return the value of account_email
-     */
-    public String getAccountEmail() {
-        return accountEmail;
-    }
-
-    /**
-     * @param accountEmail the value for account_email
-     */
-    public void setAccountEmail(String accountEmail) {
-        this.accountEmail = accountEmail == null ? null : accountEmail.trim();
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    /**
-     * @return the value of auth_state
-     */
-    public Integer getAuthState() {
-        return authState;
-    }
-
-    /**
-     * @param authState the value for auth_state
-     */
-    public void setAuthState(Integer authState) {
-        this.authState = authState;
-    }
-
-    /**
-     * @return the value of auth_img
-     */
-    public String getAuthImg() {
-        return authImg;
-    }
-
-    /**
-     * @param authImg the value for auth_img
-     */
-    public void setAuthImg(String authImg) {
-        this.authImg = authImg == null ? null : authImg.trim();
-    }
-
-    /**
-     * @return the value of license_no
-     */
-    public String getLicenseNo() {
-        return licenseNo;
-    }
-
-    /**
-     * @param licenseNo the value for license_no
-     */
-    public void setLicenseNo(String licenseNo) {
-        this.licenseNo = licenseNo == null ? null : licenseNo.trim();
-    }
-
-
-    /**
-     * @return the value of create_time
-     */
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    /**
-     * @param createTime the value for create_time
-     */
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Integer getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(Integer cityId) {
-        this.cityId = cityId;
-    }
-
-    public Integer getDistrictId() {
-        return districtId;
-    }
-
-    public void setDistrictId(Integer districtId) {
-        this.districtId = districtId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public BigDecimal getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(BigDecimal latitude) {
-        this.latitude = latitude;
-    }
-
-    public BigDecimal getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(BigDecimal longitude) {
-        this.longitude = longitude;
-    }
-
-    public Integer getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(Integer provinceId) {
-        this.provinceId = provinceId;
-    }
-
-    public Integer getMissionCount() {
-        return missionCount;
-    }
-
-    public void setMissionCount(Integer missionCount) {
-        this.missionCount = missionCount;
-    }
-
-    public String getContacterName() {
-        return contacterName;
-    }
-
-    public void setContacterName(String contacterName) {
-        this.contacterName = contacterName;
-    }
-
-    public String getContacterPhone() {
-        return contacterPhone;
-    }
-
-    public void setContacterPhone(String contacterPhone) {
-        this.contacterPhone = contacterPhone;
-    }
-
-    //    public List<Address> getContactsList() {
-//        return contactsList;
-////    }
-//
-//    public void setContactsList(List<Address> contactsList) {
-//        this.contactsList = contactsList;
-//    }
 }

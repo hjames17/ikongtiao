@@ -51,7 +51,7 @@ public interface FixerService {
 
     void changePassword(Integer id, String oldPass, String newPass) throws Exception;
 
-    Fixer getFixerByPhone(String phone) throws Exception;
+    Fixer getFixerByPhone(String phone);
 
     void resetPassword(Integer id, String newPass) throws Exception;
 

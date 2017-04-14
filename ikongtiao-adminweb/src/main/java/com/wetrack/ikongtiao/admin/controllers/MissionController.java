@@ -81,13 +81,6 @@ public class MissionController {
         param.setMissionState(MissionState.ACCEPT.getCode());
         Mission created = missionService.saveMission(param);
 
-        //发送消息
-//        Map<String, Object> params = new HashMap<String, Object>();
-//        params.put(MessageParamKey.MISSION_ID, created.getSerialNumber());
-//        params.put(MessageParamKey.USER_ID, created.getUserId());
-//        params.put(MessageParamKey.ADMIN_ID, created.getAdminUserId());
-//        messageService.send(MessageId.ACCEPT_MISSION, params);
-
         missionService.notify(created.getId(), MissionState.fromCode(created.getMissionState()), null, OperatorType.ADMIN, user.getId());
 
         return created.getId();

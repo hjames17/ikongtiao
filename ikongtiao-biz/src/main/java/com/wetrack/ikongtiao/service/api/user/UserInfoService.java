@@ -23,7 +23,7 @@ public interface UserInfoService {
 
     String userIdFromToken(String tokenId);
 
-    void update(UserInfo userInfo) throws Exception;
+    void update(UserInfo userInfo);
 
     //    Address createAddress(Address address) throws Exception;
 
@@ -35,5 +35,9 @@ public interface UserInfoService {
 
     UserInfo findByOrganizationOrContacterPhone(String organization, String contacterPhone);
     UserInfo findByAccountName(String accountName);
+
+    Token tokenForCustomer(UserInfo userInfo);
+
+    boolean deleteById(String userId);
 }
 

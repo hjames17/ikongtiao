@@ -5,6 +5,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="serial_number" property="serialNumber" jdbcType="VARCHAR" />
     <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="machine_unit_id" property="machineUnitId" jdbcType="BIGINT" />
     <result column="fault_type" property="faultType" jdbcType="VARCHAR" />
     <result column="mission_desc" property="missionDesc" jdbcType="VARCHAR" />
     <result column="mission_state" property="missionState" jdbcType="INTEGER" />
@@ -32,7 +33,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, serial_number, user_id, fault_type, mission_desc, mission_state, close_reason, is_need_more, fixer_id,
-    admin_user_id, operator, create_time, update_time,
+    admin_user_id, operator, create_time, update_time, machine_unit_id,
     organization, contacter_name, contacter_phone,
     province_id, city_id, district_id, address, longitude, latitude, setup_sheet
     ,  field_contacter_name, field_contacter_phone, request_arrive_time
@@ -72,6 +73,9 @@
         serial_number, user_id, fault_type,
       <if test="missionDesc != null" >
         mission_desc,
+      </if>
+      <if test="machineUnitId != null" >
+        machine_unit_id,
       </if>
       <if test="missionState != null" >
         mission_state,
@@ -141,6 +145,9 @@
         #{faultType},
       <if test="missionDesc != null" >
         #{missionDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="machineUnitId != null" >
+        #{machineUnitId},
       </if>
       <if test="missionState != null" >
         #{missionState,jdbcType=INTEGER},

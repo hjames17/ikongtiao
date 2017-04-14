@@ -25,7 +25,7 @@ public interface FixerRepo {
 
     Fixer getFixerById(Integer fixId);
 
-    Fixer getFixerByPhone(String phone) throws Exception;
+    Fixer getFixerByPhone(String phone) ;
 
     List<Fixer> listFixerOfIds(List<Integer> ids);
 }

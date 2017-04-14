@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.Set;
 
@@ -25,7 +28,7 @@ public class RedisSentinelConfig {
 	private String master;
 
 	@Bean(name = "redisSentinelConfiguration")
-	public RedisSentinelConfiguration getConfig() {
+	public RedisSentinelConfiguration redisSentinelConfiguration() {
 		config = new RedisSentinelConfiguration();
 		config.setMaster(master);
 
@@ -43,5 +46,38 @@ public class RedisSentinelConfig {
 		}
 		config.setSentinels(sentinels);
 		return config;
+	}
+
+	@Bean(name = "stringRedisSerializer")
+	public StringRedisSerializer stringRedisSerializer(){
+		return new StringRedisSerializer();
+	}
+
+	@Bean(name = "jedisConnFactory")
+	public JedisConnectionFactory jedisConnectionFactory(){
+		return new JedisConnectionFactory(redisSentinelConfiguration());
+	}
+
+	@Bean(name = "redisTemplate")
+	public RedisTemplate redisTemplate(){
+		RedisTemplate redisTemplate = new RedisTemplate();
+		redisTemplate.setConnectionFactory(jedisConnectionFactory());
+		redisTemplate.setHashKeySerializer(stringRedisSerializer());
+		return redisTemplate;
+	}
+	@Bean(name = "tokenRedisTemplate")
+	public RedisTemplate tokenRedisTemplate(){
+		RedisTemplate redisTemplate = new RedisTemplate();
+		redisTemplate.setConnectionFactory(jedisConnectionFactory());
+		redisTemplate.setHashKeySerializer(stringRedisSerializer());
+		return redisTemplate;
+	}
+
+	@Bean(name = "commonRedisTemplate")
+	public RedisTemplate commonRedisTemplate(){
+		RedisTemplate redisTemplate = new RedisTemplate();
+		redisTemplate.setConnectionFactory(jedisConnectionFactory());
+		redisTemplate.setHashKeySerializer(stringRedisSerializer());
+		return redisTemplate;
 	}
 }

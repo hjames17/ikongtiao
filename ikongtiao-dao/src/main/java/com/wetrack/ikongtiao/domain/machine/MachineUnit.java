@@ -8,6 +8,7 @@ import java.util.Date;
 /**
  * Created by zhanghong on 16/12/5.
  */
+@Deprecated
 @Entity(name = "machine_unit")
 @Data
 public class MachineUnit {

@@ -47,7 +47,7 @@
                     <warFile>target/weixin.war</warFile>
                     <url>http://test.waids.cn:8080/manager/text</url>
                     <server>RemoteTomcatServer</server>
-                    <path>/wechat</path>
+                    <path>/weixin</path>
                 </configuration>
             </plugin>
             <plugin>

@@ -5,6 +5,8 @@
     <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="org_id" property="orgId" jdbcType="BIGINT" />
     <result column="type" property="type" jdbcType="INTEGER" />
     <result column="organization" property="organization" jdbcType="VARCHAR" />
     <result column="maintainer_id" property="maintainerId" jdbcType="INTEGER" />
@@ -25,7 +27,7 @@
 
   </resultMap>
   <sql id="Base_Column_List" >
-    user_info.id, user_info.phone, user_info.avatar, user_info.type, user_info.organization, user_info.account_email, user_info.auth_state,
+    user_info.id, user_info.org_id, user_info.name, user_info.phone, user_info.avatar, user_info.type, user_info.organization, user_info.account_email, user_info.auth_state,
     user_info.auth_img, user_info.license_no, user_info.create_time, user_info.contacter_name, user_info.contacter_phone,user_info.maintainer_id,
     user_info.province_id, user_info.city_id, user_info.district_id, user_info.address, user_info.latitude, user_info.longitude
   </sql>
@@ -48,6 +50,9 @@
           user_info.organization LIKE #{userName}
           or user_info.contacter_name LIKE #{userName}
         )
+      </if>
+      <if test="orgId != null ">
+        and user_info.org_id=#{orgId}
       </if>
       <if test="address != null ">
         and user_info.address LIKE #{address}

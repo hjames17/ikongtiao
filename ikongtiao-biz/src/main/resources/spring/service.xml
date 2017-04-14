@@ -31,7 +31,7 @@
     <mvc:annotation-driven />
 
 
-    <import resource="classpath*:/spring/redis-repo.xml"></import>
+    <!--<import resource="classpath*:/spring/redis-repo.xml"></import>-->
     <!--<import resource="classpath*:/spring/datasource.xml"></import>-->
 
 

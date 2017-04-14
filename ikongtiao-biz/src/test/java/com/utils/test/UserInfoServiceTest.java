@@ -1,7 +1,7 @@
 package com.utils.test;
 
 import com.wetrack.ikongtiao.domain.customer.UserInfo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

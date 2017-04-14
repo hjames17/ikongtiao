@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * Created by zhangsong on 15/12/15.
  */
-public interface UserInfoRepo {
+public interface UserInfoRepoCustom {
 
-	UserInfo save(UserInfo userInfo);
+	UserInfo create(UserInfo userInfo);
 
 	int update(UserInfo userInfo);
 
@@ -48,9 +48,9 @@ public interface UserInfoRepo {
 
 	boolean updateAddress(Address address);
 
-	List<UserInfoDto> listByQueryParam(UserQueryParam param) throws Exception;
+	List<UserInfoDto> queryList(UserQueryParam param) throws Exception;
 
-	int countByQueryParam(UserQueryParam param) throws Exception;
+	int queryCount(UserQueryParam param) throws Exception;
 
 	List<UserInfo> listInIds(List<String> ids);
 

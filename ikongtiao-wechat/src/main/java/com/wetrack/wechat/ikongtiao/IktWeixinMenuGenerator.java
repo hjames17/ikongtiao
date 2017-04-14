@@ -33,6 +33,7 @@ public class IktWeixinMenuGenerator implements WeixinMenuGenerator, Initializing
     String appId;
 
 
+
     @Override
     public WxMenu generateMenu() throws Exception{
 

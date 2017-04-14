@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wetrack.ikongtiao.domain.customer.Organization">
+  <resultMap id="BaseResultMap" type="com.wetrack.ikongtiao.domain.customer.Organization">
+    <id column="id" property="id" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, auth_state, email, avatar, name, legal_person, org_types,
+    province_id, city_id, district_id, address, latitude, longitude,
+    contacter_phone, contacter_name, contacter_email, admin_id, fixer_id,
+    auth_img, license_no, create_time, update_time
+  </sql>
+
+  <update id="updateExistFields" parameterType="com.wetrack.ikongtiao.domain.customer.Organization">
+    update organization
+    <set >
+
+      <if test="longitude != null" >
+        longitude = #{longitude},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude},
+      </if>
+      <if test="address != null" >
+        address = #{address},
+      </if>
+      <if test="districtId != null" >
+        district_id = #{districtId},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="authState != null" >
+        auth_state = #{authState},
+      </if>
+      <if test="authImg != null" >
+        auth_img = #{authImg},
+      </if>
+      <if test="licenseNo != null" >
+        license_no = #{licenseNo},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="legalPerson != null">
+        legal_person = #{legalPerson},
+      </if>
+      <if test="email != null">
+        email = #{email},
+      </if>
+      <if test="contacterPhone != null">
+        contacter_phone = #{contacterPhone},
+      </if>
+      <if test="contacterName != null">
+        contacter_name = #{contacterName},
+      </if>
+      <if test="contacterEmail != null">
+        contacter_email = #{contacterEmail},
+      </if>
+      <if test="name != null">
+        name = #{name},
+      </if>
+      <if test="avatar != null">
+        avatar = #{avatar},
+      </if>
+      <if test="adminId != null">
+        admin_id = #{adminId},
+      </if>
+      <if test="fixerId != null">
+        fixer_id = #{fixerId},
+      </if>
+    </set>
+    <where>
+      <if test="id != null">
+        id = #{id}
+      </if>
+    </where>
+  </update>
+
+  <select id="listByParam" resultMap="BaseResultMap" parameterType="com.wetrack.ikongtiao.param.OrgQueryParam" >
+    select DISTINCT
+    <include refid="Base_Column_List" />
+    from organization
+    <where>
+      <if test="name != null ">
+        organization.name LIKE #{name}
+      </if>
+      <if test="address != null ">
+        and user_info.address LIKE #{address}
+      </if>
+      <if test="provinceId != null">
+        and organization.province_id = #{provinceId}
+      </if>
+      <if test="cityId != null">
+        and organization.city_id = #{cityId}
+      </if>
+      <if test="districtId != null">
+        and organization.district_id = #{districtId}
+      </if>
+      <if test="type != null">
+        and organization.org_types LIKE #{type}
+      </if>
+      <if test="createTimeStart!=null">
+        and organization.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd!=null">
+        and organization.create_time &lt;= #{createTimeEnd}
+      </if>
+    </where>
+    GROUP BY organization.id
+    ORDER BY organization.create_time DESC
+    limit #{start},#{pageSize}
+  </select>
+
+  <select id="countByParam" resultType="com.wetrack.base.page.BaseCondition" parameterType="com.wetrack.ikongtiao.param.OrgQueryParam" >
+    select count(organization.id) as totalSize
+    from organization
+    <where>
+      <if test="name != null ">
+        organization.name LIKE #{name}
+      </if>
+      <if test="address != null ">
+        and user_info.address LIKE #{address}
+      </if>
+      <if test="provinceId != null">
+        and organization.province_id = #{provinceId}
+      </if>
+      <if test="cityId != null">
+        and organization.city_id = #{cityId}
+      </if>
+      <if test="districtId != null">
+        and organization.district_id = #{districtId}
+      </if>
+      <if test="type != null">
+        and organization.org_types LIKE #{type}
+      </if>
+      <if test="createTimeStart!=null">
+        and organization.create_time &gt;= #{createTimeStart}
+      </if>
+      <if test="createTimeEnd!=null">
+        and organization.create_time &lt;= #{createTimeEnd}
+      </if>
+    </where>
+  </select>
+</mapper>

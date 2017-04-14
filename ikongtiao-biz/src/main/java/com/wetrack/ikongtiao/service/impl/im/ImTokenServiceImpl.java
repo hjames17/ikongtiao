@@ -13,7 +13,7 @@ import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
 import com.wetrack.ikongtiao.repo.api.im.ImSessionRepo;
 import com.wetrack.ikongtiao.repo.api.im.ImTokenRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import com.wetrack.ikongtiao.service.api.im.ImTokenService;
 import com.wetrack.ikongtiao.service.api.im.dto.ImRoleType;
 import com.wetrack.rong.RongCloudApiService;

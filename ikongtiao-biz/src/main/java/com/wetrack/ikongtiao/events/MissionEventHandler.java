@@ -8,7 +8,7 @@ import com.wetrack.ikongtiao.domain.customer.UserInfo;
 import com.wetrack.ikongtiao.repo.api.ServiceLogRepo;
 import com.wetrack.ikongtiao.repo.api.admin.AdminRepo;
 import com.wetrack.ikongtiao.repo.api.fixer.FixerRepo;
-import com.wetrack.ikongtiao.repo.api.user.UserInfoRepo;
+import com.wetrack.ikongtiao.repo.jpa.UserInfoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

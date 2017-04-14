@@ -268,6 +268,7 @@ public class Address implements Serializable {
         this.userId = userId == null ? null : userId.trim();
     }
 
+
     /**
      * This method corresponds to the database table address
      */

@@ -17,6 +17,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import studio.wetrack.base.exception.SmsCodeException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -149,5 +150,24 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
             }
         });
 
+    }
+
+
+    @Override
+    public String sendCode(String phone, String code) throws SmsCodeException {
+        if(code == null) {
+            code = generateACode();
+        }
+        String smsResult = sendCodeToMobilePhone(phone, code);
+        if ("0".equals(smsResult)) {
+            return code;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public boolean sendMessage(String phone, String content) throws SmsCodeException {
+        return false;
     }
 }
